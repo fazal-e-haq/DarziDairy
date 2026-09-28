@@ -4,116 +4,118 @@ import '../../core/constants/app_dimensions.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_formatter.dart';
 import '../../features/orders/domain/entities/order_entity.dart';
-import 'status_chip.dart';
 
-/// High-density workshop card displaying Token ID, Customer Name, Garment,
-/// Deadline countdown, Balance due, and rapid status advancement actions.
+/// Clean, high-contrast workshop card displaying order token, customer,
+/// garment, delivery deadline, balance due, and a direct status toggle.
 class OrderCard extends StatelessWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
-  final VoidCallback? onAdvanceStatus;
-  final VoidCallback? onCallCustomer;
+  final VoidCallback? onToggleStatus;
 
   const OrderCard({
     super.key,
     required this.order,
     this.onTap,
-    this.onAdvanceStatus,
-    this.onCallCustomer,
+    this.onToggleStatus,
   });
-
-  Color _getStatusColor(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.pending:
-        return AppColors.statusPending;
-      case OrderStatus.cutting:
-        return AppColors.statusCutting;
-      case OrderStatus.stitching:
-        return AppColors.statusStitching;
-      case OrderStatus.trialReady:
-        return AppColors.statusTrialReady;
-      case OrderStatus.completed:
-        return AppColors.statusReady;
-      case OrderStatus.delivered:
-        return AppColors.statusDelivered;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _getStatusColor(order.status);
     final deadlineText = DateFormatter.formatDeadline(order.targetDeadline);
-    final isOverdue = deadlineText.contains('Overdue');
+    final isOverdue = deadlineText.contains('Overdue') && !order.isCompleted;
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppDimensions.space12),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+        side: BorderSide(
+          color: order.isCompleted
+              ? AppColors.statusReady.withValues(alpha: 0.3)
+              : order.isUrgent
+                  ? AppColors.statusError.withValues(alpha: 0.5)
+                  : AppColors.border,
+          width: order.isUrgent && !order.isCompleted ? 1.5 : 1.0,
+        ),
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: AppDimensions.roundedMedium,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
         child: Padding(
           padding: const EdgeInsets.all(AppDimensions.space16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Row: Token ID + Urgent Flag + Status Badge
+              // Top Bar: Order Token + Urgent Tag + Status Badge
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppDimensions.space8,
-                      vertical: AppDimensions.space4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: order.isUrgent
-                          ? AppColors.statusError.withValues(alpha: 0.15)
-                          : AppColors.primary.withValues(alpha: 0.1),
+                      color: AppColors.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                      border: Border.all(
-                        color: order.isUrgent ? AppColors.statusError : AppColors.primary,
-                        width: 1.2,
-                      ),
+                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       order.orderToken,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'monospace',
                         fontWeight: FontWeight.w800,
-                        fontSize: 14,
-                        color: order.isUrgent ? AppColors.statusError : AppColors.primary,
+                        fontSize: 13,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
-                  if (order.isUrgent) ...[
+                  if (order.isUrgent && !order.isCompleted) ...[
                     const SizedBox(width: AppDimensions.space8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.statusError,
                         borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
                       ),
                       child: const Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.bolt, size: 12, color: Colors.white),
                           SizedBox(width: 2),
                           Text(
                             'URGENT',
-                            style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.4,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ],
                   const Spacer(),
-                  StatusChip(
-                    label: order.status.displayName,
-                    color: statusColor,
+                  // Active / Completed Status Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: order.isCompleted
+                          ? AppColors.statusReady.withValues(alpha: 0.12)
+                          : AppColors.secondary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                    ),
+                    child: Text(
+                      order.status.displayName,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: order.isCompleted ? AppColors.statusReady : AppColors.secondary,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: AppDimensions.space12),
 
-              // Customer Details & Garment Badge
+              // Customer & Garment Details
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -125,26 +127,33 @@ class OrderCard extends StatelessWidget {
                           order.customerName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: TextStyle(
+                            fontSize: 17,
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color: order.isCompleted ? AppColors.textMuted : AppColors.textPrimary,
+                            decoration: order.isCompleted ? TextDecoration.lineThrough : null,
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          order.customerPhone,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textSecondary,
-                          ),
+                        Row(
+                          children: [
+                            const Icon(Icons.phone_outlined, size: 13, color: AppColors.textSecondary),
+                            const SizedBox(width: 4),
+                            Text(
+                              order.customerPhone,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceVariant,
                       borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
@@ -163,14 +172,15 @@ class OrderCard extends StatelessWidget {
               ),
               const SizedBox(height: AppDimensions.space12),
 
-              const Divider(),
-              const SizedBox(height: AppDimensions.space8),
+              const Divider(height: 1, thickness: 1, color: AppColors.border),
+              const SizedBox(height: AppDimensions.space10),
 
-              // Bottom Row: Deadline Countdown & Balance Due
+              // Bottom Row: Target Date, Balance Due & Quick Action
               Row(
                 children: [
+                  // Target Delivery Date
                   Icon(
-                    Icons.schedule,
+                    Icons.event_outlined,
                     size: 15,
                     color: isOverdue ? AppColors.statusError : AppColors.textMuted,
                   ),
@@ -179,11 +189,13 @@ class OrderCard extends StatelessWidget {
                     deadlineText,
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: isOverdue ? AppColors.statusError : AppColors.textSecondary,
                     ),
                   ),
                   const Spacer(),
+
+                  // Balance Due
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -205,16 +217,24 @@ class OrderCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (onAdvanceStatus != null && order.status != OrderStatus.delivered) ...[
+
+                  // Quick Action Toggle Button
+                  if (onToggleStatus != null) ...[
                     const SizedBox(width: AppDimensions.space12),
-                    IconButton.filledTonal(
-                      onPressed: onAdvanceStatus,
+                    IconButton(
+                      onPressed: onToggleStatus,
                       style: IconButton.styleFrom(
-                        backgroundColor: statusColor.withValues(alpha: 0.15),
-                        foregroundColor: statusColor,
+                        backgroundColor: order.isCompleted
+                            ? AppColors.statusReady.withValues(alpha: 0.15)
+                            : AppColors.secondary.withValues(alpha: 0.12),
+                        foregroundColor: order.isCompleted ? AppColors.statusReady : AppColors.secondary,
+                        minimumSize: const Size(40, 40),
                       ),
-                      icon: const Icon(Icons.arrow_forward, size: 18),
-                      tooltip: 'Advance to next stage',
+                      icon: Icon(
+                        order.isCompleted ? Icons.check_circle : Icons.check_circle_outline,
+                        size: 22,
+                      ),
+                      tooltip: order.isCompleted ? 'Mark as Active' : 'Mark as Completed',
                     ),
                   ],
                 ],

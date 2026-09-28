@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import '../../domain/entities/order_entity.dart';
 import '../../domain/repositories/i_order_repository.dart';
 
-enum OrderFilter { all, today, cutting, trialReady, urgent }
+enum OrderFilter { active, completed, all }
 
-/// Provider for managing workshop order pipeline and filtering
+/// Provider for managing workshop order list, search, and status toggle
 class OrderListProvider extends ChangeNotifier {
   final IOrderRepository repository;
 
@@ -13,47 +13,49 @@ class OrderListProvider extends ChangeNotifier {
   }
 
   List<OrderEntity> _allOrders = [];
-  OrderFilter _activeFilter = OrderFilter.all;
+  OrderFilter _activeFilter = OrderFilter.active;
+  String _searchQuery = '';
   OrderEntity? _selectedOrder;
   bool _isLoading = false;
 
   List<OrderEntity> get allOrders => _allOrders;
   OrderFilter get activeFilter => _activeFilter;
+  String get searchQuery => _searchQuery;
   OrderEntity? get selectedOrder => _selectedOrder;
   bool get isLoading => _isLoading;
 
-  /// Returns filtered list based on the active filter pill
+  /// Returns filtered list based on the active filter and search query
   List<OrderEntity> get filteredOrders {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-
+    List<OrderEntity> list;
     switch (_activeFilter) {
+      case OrderFilter.active:
+        list = _allOrders.where((o) => o.status == OrderStatus.active).toList();
+        break;
+      case OrderFilter.completed:
+        list = _allOrders.where((o) => o.status == OrderStatus.completed).toList();
+        break;
       case OrderFilter.all:
-        return _allOrders;
-      case OrderFilter.today:
-        return _allOrders.where((o) {
-          final target = DateTime(o.targetDeadline.year, o.targetDeadline.month, o.targetDeadline.day);
-          return target.isBefore(today.add(const Duration(days: 1)));
-        }).toList();
-      case OrderFilter.cutting:
-        return _allOrders.where((o) => o.status == OrderStatus.cutting).toList();
-      case OrderFilter.trialReady:
-        return _allOrders.where((o) => o.status == OrderStatus.trialReady).toList();
-      case OrderFilter.urgent:
-        return _allOrders.where((o) => o.isUrgent).toList();
+        list = List.from(_allOrders);
+        break;
     }
+
+    if (_searchQuery.trim().isNotEmpty) {
+      final query = _searchQuery.trim().toLowerCase();
+      list = list.where((o) {
+        return o.customerName.toLowerCase().contains(query) ||
+            o.customerPhone.contains(query) ||
+            o.orderToken.toLowerCase().contains(query) ||
+            o.garmentType.toLowerCase().contains(query);
+      }).toList();
+    }
+
+    return list;
   }
 
-  // Count getters for filter badges
+  // Count getters for badges
+  int get countActive => _allOrders.where((o) => o.status == OrderStatus.active).length;
+  int get countCompleted => _allOrders.where((o) => o.status == OrderStatus.completed).length;
   int get countAll => _allOrders.length;
-  int get countUrgent => _allOrders.where((o) => o.isUrgent).length;
-  int get countToday => _allOrders.where((o) {
-        final now = DateTime.now();
-        final target = DateTime(o.targetDeadline.year, o.targetDeadline.month, o.targetDeadline.day);
-        return target.isBefore(DateTime(now.year, now.month, now.day + 1));
-      }).length;
-  int get countCutting => _allOrders.where((o) => o.status == OrderStatus.cutting).length;
-  int get countTrialReady => _allOrders.where((o) => o.status == OrderStatus.trialReady).length;
 
   Future<void> loadOrders() async {
     _isLoading = true;
@@ -61,7 +63,6 @@ class OrderListProvider extends ChangeNotifier {
 
     _allOrders = await repository.getActiveOrders();
 
-    // Auto-seed or fallback to sample orders for instant UI preview
     if (_allOrders.isEmpty) {
       await _seedSampleOrders();
       _allOrders = await repository.getActiveOrders();
@@ -83,20 +84,26 @@ class OrderListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
   void selectOrder(OrderEntity order) {
     _selectedOrder = order;
     notifyListeners();
   }
 
-  Future<void> advanceStatus(int orderId) async {
+  /// Toggle status between Active and Completed with a single tap
+  Future<void> toggleOrderStatus(int orderId) async {
     final index = _allOrders.indexWhere((o) => o.id == orderId);
     if (index >= 0) {
-      final currentOrder = _allOrders[index];
-      if (currentOrder.status.index < OrderStatus.values.length - 1) {
-        final nextStatus = OrderStatus.values[currentOrder.status.index + 1];
-        await repository.updateOrderStatus(orderId, nextStatus);
-        await loadOrders();
-      }
+      final current = _allOrders[index];
+      final newStatus = current.status == OrderStatus.active
+          ? OrderStatus.completed
+          : OrderStatus.active;
+      await repository.updateOrderStatus(orderId, newStatus);
+      await loadOrders();
     }
   }
 
@@ -123,7 +130,7 @@ class OrderListProvider extends ChangeNotifier {
         bookingDate: now.subtract(const Duration(days: 3)),
         targetDeadline: now.add(const Duration(days: 1)),
         isUrgent: true,
-        status: OrderStatus.cutting,
+        status: OrderStatus.active,
         stitchingRate: 1800.0,
         fabricCharges: 400.0,
         urgentSurcharge: 300.0,
@@ -139,7 +146,7 @@ class OrderListProvider extends ChangeNotifier {
         bookingDate: now.subtract(const Duration(days: 5)),
         targetDeadline: now,
         isUrgent: true,
-        status: OrderStatus.stitching,
+        status: OrderStatus.active,
         stitchingRate: 6500.0,
         fabricCharges: 1200.0,
         urgentSurcharge: 500.0,
@@ -155,7 +162,7 @@ class OrderListProvider extends ChangeNotifier {
         bookingDate: now.subtract(const Duration(days: 2)),
         targetDeadline: now.add(const Duration(days: 3)),
         isUrgent: false,
-        status: OrderStatus.trialReady,
+        status: OrderStatus.completed,
         stitchingRate: 1600.0,
         fabricCharges: 0.0,
         urgentSurcharge: 0.0,
@@ -171,7 +178,7 @@ class OrderListProvider extends ChangeNotifier {
         bookingDate: now.subtract(const Duration(days: 1)),
         targetDeadline: now.add(const Duration(days: 4)),
         isUrgent: false,
-        status: OrderStatus.pending,
+        status: OrderStatus.active,
         stitchingRate: 2200.0,
         fabricCharges: 600.0,
         urgentSurcharge: 0.0,

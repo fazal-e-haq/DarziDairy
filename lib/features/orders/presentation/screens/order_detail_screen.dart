@@ -6,13 +6,9 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/confirmation_dialog.dart';
-import '../../../../shared/widgets/fabric_photo_picker.dart';
-import '../../../../shared/widgets/status_stepper.dart';
 import '../providers/order_list_provider.dart';
-import '../../domain/entities/order_entity.dart';
 
-/// Comprehensive order detail screen featuring workshop pipeline transitions,
-/// customer shortcuts, fabric pattern zoom inspections, and financial settlement.
+/// Clean order detail screen featuring status toggling and financial summary
 class OrderDetailScreen extends StatelessWidget {
   final int? orderId;
 
@@ -36,17 +32,18 @@ class OrderDetailScreen extends StatelessWidget {
     final order = matches.first;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text('Order ${order.orderToken}'),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_outline),
-            tooltip: 'Move to Recycle Bin',
+            tooltip: 'Delete Order',
             onPressed: () async {
               final confirm = await ConfirmationDialog.show(
                 context,
                 title: 'Delete Order ${order.orderToken}?',
-                message: 'This will move the order to the Recycle Bin. You can restore it later if needed.',
+                message: 'Are you sure you want to remove this order from your workshop?',
               );
               if (confirm == true && context.mounted) {
                 await provider.deleteOrder(order.id);
@@ -61,57 +58,141 @@ class OrderDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top Customer & Token Banner
+            // 1. Order Header Card
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(AppDimensions.space16),
-                child: Row(
+                child: Column(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: order.isUrgent ? AppColors.statusError : AppColors.primary,
-                        borderRadius: AppDimensions.roundedMedium,
-                      ),
-                      child: Text(
-                        order.orderToken,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          fontFamily: 'monospace',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppDimensions.space16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            order.customerName,
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: order.isUrgent ? AppColors.statusError : AppColors.primary,
+                            borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${order.garmentType} • ${order.customerPhone}',
-                            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                          child: Text(
+                            order.orderToken,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ),
+                        if (order.isUrgent) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppColors.statusError.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.bolt, color: AppColors.statusError, size: 14),
+                                SizedBox(width: 2),
+                                Text(
+                                  'URGENT',
+                                  style: TextStyle(
+                                    color: AppColors.statusError,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
-                      ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: order.isCompleted
+                                ? AppColors.statusReady.withValues(alpha: 0.12)
+                                : AppColors.secondary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                          ),
+                          child: Text(
+                            order.status.displayName,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: order.isCompleted ? AppColors.statusReady : AppColors.secondary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    IconButton.filledTonal(
-                      icon: const Icon(Icons.phone),
-                      tooltip: 'Call Customer',
-                      onPressed: () {},
+                    const Divider(height: 24),
+
+                    // Customer info
+                    Row(
+                      children: [
+                        const CircleAvatar(
+                          backgroundColor: AppColors.surfaceVariant,
+                          child: Icon(Icons.person, color: AppColors.primary),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                order.customerName,
+                                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                order.customerPhone,
+                                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: AppDimensions.space16),
+            const SizedBox(height: AppDimensions.space12),
 
-            // Workshop Status Stepper
+            // 2. Garment & Dates Card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppDimensions.space16),
+                child: Column(
+                  children: [
+                    _DetailRow(
+                      icon: Icons.checkroom,
+                      label: 'Garment Type',
+                      value: order.garmentType,
+                    ),
+                    const Divider(height: 20),
+                    _DetailRow(
+                      icon: Icons.calendar_today,
+                      label: 'Booking Date',
+                      value: DateFormatter.formatDate(order.bookingDate),
+                    ),
+                    const Divider(height: 20),
+                    _DetailRow(
+                      icon: Icons.event,
+                      label: 'Delivery Date',
+                      value: DateFormatter.formatDate(order.targetDeadline),
+                      valueColor: DateFormatter.formatDeadline(order.targetDeadline).contains('Overdue') && !order.isCompleted
+                          ? AppColors.statusError
+                          : AppColors.textPrimary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: AppDimensions.space12),
+
+            // 3. Payment Breakdown Card
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(AppDimensions.space16),
@@ -119,145 +200,123 @@ class OrderDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Workshop Pipeline Stage',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                      'Payment Summary',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                     ),
-                    const SizedBox(height: AppDimensions.space12),
-                    StatusStepper(
-                      currentStatus: order.status,
-                      onStatusChanged: (newStatus) {
-                        provider.updateStatus(order.id, newStatus);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppDimensions.space16),
-
-            // Timeline & Deadlines
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.space16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Schedule & Deadlines', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: AppDimensions.space12),
-                    Row(
-                      children: [
-                        const Icon(Icons.book_online, size: 18, color: AppColors.textMuted),
-                        const SizedBox(width: 8),
-                        Text('Booked on: ${DateFormatter.formatShortDate(order.bookingDate)}'),
-                      ],
-                    ),
+                    const SizedBox(height: 14),
+                    _PriceRow(label: 'Total Rate', value: CurrencyFormatter.format(order.stitchingRate)),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.alarm,
-                          size: 18,
-                          color: order.isUrgent ? AppColors.statusError : AppColors.secondary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Promised Delivery: ${DateFormatter.formatShortDate(order.targetDeadline)} (${DateFormatter.formatDeadline(order.targetDeadline)})',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: order.isUrgent ? AppColors.statusError : AppColors.textPrimary,
-                          ),
-                        ),
-                      ],
+                    _PriceRow(label: 'Advance Paid', value: CurrencyFormatter.format(order.advancePaid)),
+                    const Divider(height: 24),
+                    _PriceRow(
+                      label: order.isFullyPaid ? 'Status' : 'Balance Due',
+                      value: order.isFullyPaid ? 'FULLY PAID' : CurrencyFormatter.format(order.balanceDue),
+                      isTotal: true,
+                      color: order.isFullyPaid ? AppColors.statusReady : AppColors.primary,
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: AppDimensions.space16),
+            const SizedBox(height: AppDimensions.space20),
 
-            // Fabric Patterns
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.space16),
-                child: FabricPhotoPicker(
-                  imagePaths: order.fabricImagePaths,
-                  onImageAdded: (path) {},
-                  onImageRemoved: (idx) {},
+            // Status Toggle Button
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: order.isCompleted ? AppColors.textMuted : AppColors.statusReady,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                  ),
                 ),
+                icon: Icon(order.isCompleted ? Icons.undo : Icons.check_circle, size: 22),
+                label: Text(
+                  order.isCompleted ? 'Mark as Active' : 'Mark as Completed',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                ),
+                onPressed: () => provider.toggleOrderStatus(order.id),
               ),
             ),
-            const SizedBox(height: AppDimensions.space16),
-
-            // Financial Settlement Card
-            Card(
-              color: AppColors.surface,
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.space16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Financial Summary', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: AppDimensions.space12),
-                    _buildPriceRow('Stitching Charge', CurrencyFormatter.format(order.stitchingRate)),
-                    if (order.fabricCharges > 0)
-                      _buildPriceRow('Fabric Addon', CurrencyFormatter.format(order.fabricCharges)),
-                    if (order.urgentSurcharge > 0)
-                      _buildPriceRow('Urgent Surcharge', CurrencyFormatter.format(order.urgentSurcharge)),
-                    const Divider(),
-                    _buildPriceRow('Total Job Bill', CurrencyFormatter.format(order.totalBill), isBold: true),
-                    _buildPriceRow('Advance Deposited', CurrencyFormatter.format(order.advancePaid), color: Colors.green.shade700),
-                    const Divider(),
-                    _buildPriceRow(
-                      order.isFullyPaid ? 'Settlement Status' : 'Remaining Balance Due',
-                      order.isFullyPaid ? 'FULLY PAID' : CurrencyFormatter.format(order.balanceDue),
-                      isHighlight: true,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppDimensions.space24),
-
-            // Actions
-            if (order.status != OrderStatus.delivered)
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.check_circle_outline),
-                  label: const Text('Advance to Next Workflow Stage'),
-                  onPressed: () => provider.advanceStatus(order.id),
-                ),
-              ),
+            const SizedBox(height: AppDimensions.space32),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildPriceRow(String label, String value, {bool isBold = false, bool isHighlight = false, Color? color}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: isHighlight ? 15 : 13,
-              fontWeight: (isBold || isHighlight) ? FontWeight.w700 : FontWeight.w500,
-              color: isHighlight ? AppColors.primary : AppColors.textSecondary,
-            ),
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  const _DetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.textSecondary),
+        const SizedBox(width: 10),
+        Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+        const Spacer(),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+            color: valueColor ?? AppColors.textPrimary,
           ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: isHighlight ? 17 : 14,
-              fontWeight: (isBold || isHighlight) ? FontWeight.w800 : FontWeight.w600,
-              color: color ?? (isHighlight ? AppColors.secondary : AppColors.textPrimary),
-            ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PriceRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isTotal;
+  final Color? color;
+
+  const _PriceRow({
+    required this.label,
+    required this.value,
+    this.isTotal = false,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isTotal ? 16 : 14,
+            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w500,
+            color: isTotal ? AppColors.textPrimary : AppColors.textSecondary,
           ),
-        ],
-      ),
+        ),
+        const Spacer(),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: isTotal ? 18 : 14,
+            fontWeight: FontWeight.w800,
+            color: color ?? AppColors.textPrimary,
+          ),
+        ),
+      ],
     );
   }
 }

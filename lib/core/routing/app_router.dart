@@ -9,7 +9,6 @@ import '../../features/customers/presentation/screens/customer_list_screen.dart'
 import '../../features/customers/presentation/screens/customer_detail_screen.dart';
 import '../../features/customers/presentation/screens/add_edit_customer_screen.dart';
 import '../../features/diary/presentation/screens/diary_screen.dart';
-import '../../features/backup/presentation/screens/backup_settings_screen.dart';
 
 /// Centralized declarative routing architecture using GoRouter.
 ///
@@ -30,7 +29,6 @@ class AppRouter {
   static const String editCustomer = '/customers/edit/:id';
 
   static const String diary = '/diary';
-  static const String backup = '/backup';
 
   // Helper generators for parameterized paths
   static String orderDetailPath(int id) => '/orders/$id';
@@ -137,16 +135,6 @@ class AppRouter {
         pageBuilder: (context, state) => _buildTransitionPage(
           state: state,
           child: const DiaryScreen(),
-        ),
-      ),
-
-      // 5. Offline Data Protection & Backup Settings
-      GoRoute(
-        path: backup,
-        name: 'backup',
-        pageBuilder: (context, state) => _buildTransitionPage(
-          state: state,
-          child: const BackupSettingsScreen(),
         ),
       ),
     ],

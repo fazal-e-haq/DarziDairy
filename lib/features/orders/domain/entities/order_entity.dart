@@ -1,28 +1,9 @@
-/// Workflow Status Enum for Workshop Pipeline
+/// Workflow Status Enum - simplified to Active and Completed
 enum OrderStatus {
-  pending,
-  cutting,
-  stitching,
-  trialReady,
-  completed,
-  delivered;
+  active,
+  completed;
 
-  String get displayName {
-    switch (this) {
-      case OrderStatus.pending:
-        return 'Pending';
-      case OrderStatus.cutting:
-        return 'Cutting';
-      case OrderStatus.stitching:
-        return 'Stitching';
-      case OrderStatus.trialReady:
-        return 'Trial Ready';
-      case OrderStatus.completed:
-        return 'Completed';
-      case OrderStatus.delivered:
-        return 'Delivered';
-    }
-  }
+  String get displayName => this == OrderStatus.active ? 'Active' : 'Completed';
 }
 
 /// Pure Order domain entity
@@ -33,7 +14,6 @@ class OrderEntity {
   final String customerName;
   final String customerPhone;
   final String garmentType;
-  final List<String> fabricImagePaths;
   final DateTime bookingDate;
   final DateTime targetDeadline;
   final bool isUrgent;
@@ -52,11 +32,10 @@ class OrderEntity {
     required this.customerName,
     required this.customerPhone,
     required this.garmentType,
-    this.fabricImagePaths = const [],
     required this.bookingDate,
     required this.targetDeadline,
     this.isUrgent = false,
-    this.status = OrderStatus.pending,
+    this.status = OrderStatus.active,
     this.stitchingRate = 0.0,
     this.fabricCharges = 0.0,
     this.urgentSurcharge = 0.0,
@@ -68,4 +47,5 @@ class OrderEntity {
   double get totalBill => stitchingRate + fabricCharges + urgentSurcharge;
   double get balanceDue => totalBill - advancePaid;
   bool get isFullyPaid => balanceDue <= 0;
+  bool get isCompleted => status == OrderStatus.completed;
 }

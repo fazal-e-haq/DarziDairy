@@ -81,7 +81,6 @@ class OrderRepositoryImpl implements IOrderRepository {
       customerName: m.customerName,
       customerPhone: m.customerPhone,
       garmentType: m.garmentType,
-      fabricImagePaths: m.fabricImagePaths,
       bookingDate: m.bookingDate,
       targetDeadline: m.targetDeadline,
       isUrgent: m.isUrgent,
@@ -102,7 +101,6 @@ class OrderRepositoryImpl implements IOrderRepository {
       ..customerName = e.customerName
       ..customerPhone = e.customerPhone
       ..garmentType = e.garmentType
-      ..fabricImagePaths = e.fabricImagePaths
       ..bookingDate = e.bookingDate
       ..targetDeadline = e.targetDeadline
       ..isUrgent = e.isUrgent

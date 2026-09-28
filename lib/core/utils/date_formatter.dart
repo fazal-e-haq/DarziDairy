@@ -12,6 +12,9 @@ class DateFormatter {
     return '${date.day.toString().padLeft(2, '0')} ${_months[date.month - 1]} ${date.year}';
   }
 
+  /// Alias for formatShortDate
+  static String formatDate(DateTime date) => formatShortDate(date);
+
   /// Returns relative deadline text, e.g., "Today", "Tomorrow", "In 3 days", or "Overdue by 2 days"
   static String formatDeadline(DateTime deadline) {
     final now = DateTime.now();

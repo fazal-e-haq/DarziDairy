@@ -15,8 +15,6 @@ import 'features/customers/presentation/providers/customer_form_provider.dart';
 import 'features/diary/data/datasources/diary_local_datasource.dart';
 import 'features/diary/data/repositories/diary_repository_impl.dart';
 import 'features/diary/presentation/providers/diary_provider.dart';
-import 'features/backup/data/services/backup_service.dart';
-import 'features/backup/presentation/providers/backup_provider.dart';
 
 /// MaterialApp entry configuring theme, declarative GoRouter, and MultiProvider injection
 class TailorMasterApp extends StatelessWidget {
@@ -50,9 +48,6 @@ class TailorMasterApp extends StatelessWidget {
           create: (_) => DiaryProvider(
             repository: DiaryRepositoryImpl(localDataSource: DiaryLocalDataSource()),
           ),
-        ),
-        ChangeNotifierProvider<BackupProvider>(
-          create: (_) => BackupProvider(backupService: BackupService()),
         ),
       ],
       child: MaterialApp.router(

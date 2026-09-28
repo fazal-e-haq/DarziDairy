@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final bool isNumericOnly;
   final String? prefixText;
   final String? suffixText;
+  final IconData? prefixIcon;
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
 
@@ -23,6 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.isNumericOnly = false,
     this.prefixText,
     this.suffixText,
+    this.prefixIcon,
     this.onChanged,
     this.validator,
   });
@@ -40,7 +42,7 @@ class CustomTextField extends StatelessWidget {
             color: AppColors.textSecondary,
           ),
         ),
-        const SizedBox(height: AppDimensions.p4),
+        const SizedBox(height: AppDimensions.space4),
         TextFormField(
           controller: controller,
           keyboardType: isNumericOnly
@@ -52,6 +54,7 @@ class CustomTextField extends StatelessWidget {
             hintText: hint,
             prefixText: prefixText,
             suffixText: suffixText,
+            prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20) : null,
           ),
         ),
       ],

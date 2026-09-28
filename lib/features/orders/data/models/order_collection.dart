@@ -8,7 +8,6 @@ class OrderCollection {
   String customerName = '';
   String customerPhone = '';
   String garmentType = '';
-  List<String> fabricImagePaths = [];
 
   DateTime bookingDate = DateTime.now();
 

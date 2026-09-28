@@ -6,7 +6,8 @@ enum ButtonVariant { primary, secondary, destructive }
 
 /// Common action button supporting primary, secondary, and destructive variants
 class CustomButton extends StatelessWidget {
-  final String label;
+  final String? label;
+  final String? text;
   final VoidCallback? onPressed;
   final ButtonVariant variant;
   final IconData? icon;
@@ -14,12 +15,15 @@ class CustomButton extends StatelessWidget {
 
   const CustomButton({
     super.key,
-    required this.label,
+    this.label,
+    this.text,
     required this.onPressed,
     this.variant = ButtonVariant.primary,
     this.icon,
     this.isLoading = false,
-  });
+  }) : assert(label != null || text != null, 'Either label or text must be provided');
+
+  String get _buttonText => text ?? label ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -28,27 +32,29 @@ class CustomButton extends StatelessWidget {
 
     switch (variant) {
       case ButtonVariant.primary:
-        backgroundColor = AppColors.deepIndigo;
-        foregroundColor = AppColors.pureWhite;
+        backgroundColor = AppColors.primary;
+        foregroundColor = AppColors.surface;
         break;
       case ButtonVariant.secondary:
-        backgroundColor = AppColors.amberUrgent;
-        foregroundColor = AppColors.pureWhite;
+        backgroundColor = AppColors.secondary;
+        foregroundColor = AppColors.surface;
         break;
       case ButtonVariant.destructive:
-        backgroundColor = AppColors.urgentRed;
-        foregroundColor = AppColors.pureWhite;
+        backgroundColor = AppColors.statusError;
+        foregroundColor = AppColors.surface;
         break;
     }
 
     return SizedBox(
-      height: AppDimensions.minTouchTarget,
+      height: AppDimensions.buttonHeight,
+      width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: foregroundColor,
+          elevation: 2,
           shape: RoundedRectangleBorder(
-            borderRadius: AppDimensions.roundedMedium,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
           ),
         ),
         onPressed: isLoading ? null : onPressed,
@@ -63,10 +69,13 @@ class CustomButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: AppDimensions.iconSmall),
-                    const SizedBox(width: AppDimensions.p8),
+                    Icon(icon, size: 20),
+                    const SizedBox(width: AppDimensions.space8),
                   ],
-                  Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text(
+                    _buttonText,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
                 ],
               ),
       ),
