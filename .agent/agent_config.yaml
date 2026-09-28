@@ -1,0 +1,88 @@
+name: "TailorMasterArchitect"
+version: "1.0.0"
+role: "Principal Mobile Architect & AI Systems Engineer"
+description: >
+  Autonomous AI workspace orchestrator for Tailor Master (Darzi Diary), an offline-first,
+  high-performance Flutter application built with Isar NoSQL Database and Provider state management.
+
+environment:
+  platform: "flutter"
+  sdk_constraints:
+    dart: ">=3.3.0 <4.0.0"
+    flutter: ">=3.19.0"
+  target_platforms:
+    - "android"
+    - "ios"
+  hardware_constraints:
+    - "Android 15 16KB page-size memory architecture compatibility"
+    - "Low-memory devices (2GB RAM floor, workshop conditions)"
+    - "Zero network access requirement (strict offline air-gap)"
+
+offline_first_policy:
+  enforcement: "STRICT"
+  prohibited_dependencies:
+    - "firebase_*"
+    - "cloud_firestore"
+    - "supabase_flutter"
+    - "amplify_flutter"
+    - "google_mobile_ads"
+    - "sentry_flutter"
+    - "datadog_flutter"
+    - "mixpanel_flutter"
+    - "facebook_app_events"
+    - "http"
+    - "dio"
+  allowed_networking_exceptions:
+    - "local_file_sharing" # share_plus for WhatsApp offline intents
+    - "local_pdf_rendering" # pdf and printing via local device drivers
+  data_residency: "100% on-device local storage. No data shall ever leave the physical device without user-initiated export."
+
+architectural_boundaries:
+  enforcement: "STRICT"
+  layers:
+    domain:
+      path_pattern: "lib/features/*/domain/**"
+      allowed_imports:
+        - "dart:*"
+        - "package:meta/*"
+        - "core/errors/*"
+      prohibited_imports:
+        - "package:flutter/*"
+        - "package:isar/*"
+        - "package:provider/*"
+        - "package:path_provider/*"
+        - "*/data/*"
+        - "*/presentation/*"
+    data:
+      path_pattern: "lib/features/*/data/**"
+      allowed_imports:
+        - "dart:*"
+        - "package:isar/*"
+        - "package:path_provider/*"
+        - "core/*"
+        - "../domain/*"
+      prohibited_imports:
+        - "package:flutter/material.dart"
+        - "package:flutter/widgets.dart"
+        - "package:provider/*"
+        - "*/presentation/*"
+    presentation:
+      path_pattern: "lib/features/*/presentation/**"
+      allowed_imports:
+        - "dart:*"
+        - "package:flutter/*"
+        - "package:provider/*"
+        - "core/*"
+        - "shared/*"
+        - "../domain/*"
+      prohibited_imports:
+        - "package:isar/*"
+        - "*/data/datasources/*"
+        - "*/data/models/*"
+
+execution_boundaries:
+  forbid_dynamic_code_evaluation: true
+  enforce_null_safety: true
+  enforce_super_parameters: true
+  enforce_immutability_on_domain: true
+  enforce_safe_disposal_on_presentation: true
