@@ -1,13 +1,7 @@
-import 'package:isar/isar.dart';
-
-part 'order_collection.g.dart';
-
-/// Isar model for Order persistence
-@collection
+/// Data model for Order persistence
 class OrderCollection {
-  Id id = Isar.autoIncrement;
+  int id = 0;
 
-  @Index(type: IndexType.hash)
   String orderToken = '';
 
   int customerId = 0;
@@ -18,12 +12,10 @@ class OrderCollection {
 
   DateTime bookingDate = DateTime.now();
 
-  @Index()
   DateTime targetDeadline = DateTime.now();
 
   bool isUrgent = false;
 
-  @Index()
   int status = 0;
 
   double stitchingRate = 0.0;
@@ -32,7 +24,6 @@ class OrderCollection {
   double advancePaid = 0.0;
   double balanceDue = 0.0;
 
-  @Index()
   bool isDeleted = false;
 
   DateTime? deletedAt;

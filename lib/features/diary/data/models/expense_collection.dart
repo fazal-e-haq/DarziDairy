@@ -1,17 +1,11 @@
-import 'package:isar/isar.dart';
-
-part 'expense_collection.g.dart';
-
-/// Isar schema for daily shop expenditures
-@collection
+/// Schema for daily shop expenditures
 class ExpenseCollection {
-  Id id = Isar.autoIncrement;
+  int id = 0;
 
   String category = '';
   double amount = 0.0;
   String? note;
 
-  @Index()
   DateTime expenseDate = DateTime.now();
 
   DateTime createdAt = DateTime.now();

@@ -22,3 +22,25 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+subprojects {
+    plugins.withId("com.android.library") {
+        val android = project.extensions.findByName("android")
+        if (android != null) {
+            try {
+                val getNamespace = android.javaClass.getMethod("getNamespace")
+                val currentNamespace = getNamespace.invoke(android)
+                if (currentNamespace == null) {
+                    val setNamespace = android.javaClass.getMethod("setNamespace", String::class.java)
+                    val defaultNamespace = if (project.group.toString().isNotEmpty()) project.group.toString() else "dev.isar.${project.name}"
+                    setNamespace.invoke(android, defaultNamespace)
+                }
+            } catch (_: Exception) {}
+
+            try {
+                val setCompileSdk = android.javaClass.getMethod("setCompileSdkVersion", Int::class.javaPrimitiveType)
+                setCompileSdk.invoke(android, 36)
+            } catch (_: Exception) {}
+        }
+    }
+}

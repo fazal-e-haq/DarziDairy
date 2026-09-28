@@ -31,10 +31,20 @@ class DiaryProvider extends ChangeNotifier {
 
     _dailySummary = await repository.getDailySummary(_selectedDate);
 
-    // Seed sample expenses if none exist for today
-    if (_dailySummary!.expenses.isEmpty) {
+    // Seed sample expenses if none exist for today, or fallback for UI preview
+    if (_dailySummary == null || _dailySummary!.expenses.isEmpty) {
       await _seedSampleExpenses();
       _dailySummary = await repository.getDailySummary(_selectedDate);
+      if (_dailySummary == null || _dailySummary!.expenses.isEmpty) {
+        _dailySummary = DailySummaryEntity(
+          date: _selectedDate,
+          totalCashIn: 7400.0,
+          totalCashOut: 1330.0,
+          ordersBooked: 4,
+          ordersDelivered: 1,
+          expenses: _getSampleExpensesList(),
+        );
+      }
     }
 
     _isLoading = false;
@@ -64,11 +74,11 @@ class DiaryProvider extends ChangeNotifier {
     await loadDailySummary(_selectedDate);
   }
 
-  Future<void> _seedSampleExpenses() async {
+  List<ExpenseEntity> _getSampleExpensesList() {
     final now = DateTime.now();
-    final samples = [
+    return [
       ExpenseEntity(
-        id: 0,
+        id: 1,
         category: 'Threads (Dhaga)',
         amount: 350.0,
         note: 'Silk and matching cotton spools',
@@ -76,7 +86,7 @@ class DiaryProvider extends ChangeNotifier {
         createdAt: now,
       ),
       ExpenseEntity(
-        id: 0,
+        id: 2,
         category: 'Bukram / Interlining',
         amount: 800.0,
         note: 'Hard collar and cuff rolls',
@@ -84,7 +94,7 @@ class DiaryProvider extends ChangeNotifier {
         createdAt: now,
       ),
       ExpenseEntity(
-        id: 0,
+        id: 3,
         category: 'Tea & Refreshments',
         amount: 180.0,
         note: 'Evening tea for karigars',
@@ -92,8 +102,10 @@ class DiaryProvider extends ChangeNotifier {
         createdAt: now,
       ),
     ];
+  }
 
-    for (final e in samples) {
+  Future<void> _seedSampleExpenses() async {
+    for (final e in _getSampleExpensesList()) {
       await repository.addExpense(e);
     }
   }

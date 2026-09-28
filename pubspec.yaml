@@ -20,14 +20,13 @@ dependencies:
   # Declarative Routing
   go_router: ^14.2.0
 
-  # Offline Local Database
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
+  # Offline Local Database (temporarily commented out for UI preview)
+  # isar: ^3.1.0+1
+  # isar_flutter_libs: ^3.1.0+1
 
   # Device & Storage Utilities
   path_provider: ^2.1.4
   image_picker: ^1.1.2
-  file_picker: ^8.1.2
 
   # Formatting, Locales & UUIDs
   intl: ^0.19.0
@@ -40,7 +39,7 @@ dev_dependencies:
 
   # Code Generation
   build_runner: ^2.4.9
-  isar_generator: ^3.1.0+1
+  # isar_generator: ^3.1.0+1
 
 flutter:
   uses-material-design: true

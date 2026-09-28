@@ -61,10 +61,13 @@ class OrderListProvider extends ChangeNotifier {
 
     _allOrders = await repository.getActiveOrders();
 
-    // Auto-seed sample orders for initial showcase if database is empty
+    // Auto-seed or fallback to sample orders for instant UI preview
     if (_allOrders.isEmpty) {
       await _seedSampleOrders();
       _allOrders = await repository.getActiveOrders();
+      if (_allOrders.isEmpty) {
+        _allOrders = _getSampleOrdersList();
+      }
     }
 
     if (_selectedOrder == null && _allOrders.isNotEmpty) {
@@ -107,11 +110,11 @@ class OrderListProvider extends ChangeNotifier {
     await loadOrders();
   }
 
-  Future<void> _seedSampleOrders() async {
+  List<OrderEntity> _getSampleOrdersList() {
     final now = DateTime.now();
-    final sampleOrders = [
+    return [
       OrderEntity(
-        id: 0,
+        id: 1,
         orderToken: '#B-101',
         customerId: 1,
         customerName: 'Chaudhry Nadeem',
@@ -127,7 +130,7 @@ class OrderListProvider extends ChangeNotifier {
         advancePaid: 1000.0,
       ),
       OrderEntity(
-        id: 0,
+        id: 2,
         orderToken: '#B-102',
         customerId: 2,
         customerName: 'Sheikh Tariq',
@@ -143,7 +146,7 @@ class OrderListProvider extends ChangeNotifier {
         advancePaid: 4000.0,
       ),
       OrderEntity(
-        id: 0,
+        id: 3,
         orderToken: '#B-103',
         customerId: 3,
         customerName: 'Bilal Farooq',
@@ -159,7 +162,7 @@ class OrderListProvider extends ChangeNotifier {
         advancePaid: 1600.0,
       ),
       OrderEntity(
-        id: 0,
+        id: 4,
         orderToken: '#B-104',
         customerId: 4,
         customerName: 'Malik Zeeshan',
@@ -175,8 +178,10 @@ class OrderListProvider extends ChangeNotifier {
         advancePaid: 800.0,
       ),
     ];
+  }
 
-    for (final order in sampleOrders) {
+  Future<void> _seedSampleOrders() async {
+    for (final order in _getSampleOrdersList()) {
       await repository.saveOrder(order);
     }
   }

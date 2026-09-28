@@ -1,53 +1,54 @@
-import 'package:isar/isar.dart';
-import 'package:darzi_dairy/core/database/isar_service.dart';
+import 'dart:async';
 import '../models/customer_collection.dart';
 import '../models/measurement_collection.dart';
 
-/// Direct Isar datasource for customer directory and measurement sheets with defensive fallback
+/// In-memory datasource for customer directory and measurement sheets
 class CustomerLocalDataSource {
-  Isar? get _isar => IsarService.instance.isOpen ? IsarService.instance.isar : null;
+  static final List<CustomerCollection> _store = [];
+  static int _nextId = 1;
 
   Future<List<CustomerCollection>> getCustomers() async {
-    final db = _isar;
-    if (db == null) return [];
-    return db.customerCollections.where().sortByName().findAll();
+    return List<CustomerCollection>.from(_store)
+      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   }
 
   Future<CustomerCollection?> getCustomerById(int id) async {
-    final db = _isar;
-    if (db == null) return null;
-    return db.customerCollections.get(id);
+    try {
+      return _store.firstWhere((c) => c.id == id);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<List<CustomerCollection>> search(String query) async {
-    final db = _isar;
-    if (db == null) return [];
     if (query.trim().isEmpty) return getCustomers();
     final lower = query.trim().toLowerCase();
-    return db.customerCollections
-        .filter()
-        .nameContains(lower, caseSensitive: false)
-        .or()
-        .phoneContains(lower)
-        .findAll();
+    return _store.where((c) {
+      return c.name.toLowerCase().contains(lower) || c.phone.contains(lower);
+    }).toList();
   }
 
   Future<int> putCustomer(CustomerCollection customer) async {
-    final db = _isar;
-    if (db == null) return customer.id;
-    return db.writeTxn(() => db.customerCollections.put(customer));
+    if (customer.id == 0) {
+      customer.id = _nextId++;
+      _store.add(customer);
+    } else {
+      final index = _store.indexWhere((c) => c.id == customer.id);
+      if (index >= 0) {
+        _store[index] = customer;
+      } else {
+        _store.add(customer);
+      }
+    }
+    return customer.id;
   }
 
   Future<void> deleteCustomer(int id) async {
-    final db = _isar;
-    if (db == null) return;
-    await db.writeTxn(() => db.customerCollections.delete(id));
+    _store.removeWhere((c) => c.id == id);
   }
 
   Future<void> saveMeasurementProfile(int customerId, MeasurementProfileModel profile) async {
-    final db = _isar;
-    if (db == null) return;
-    final customer = await db.customerCollections.get(customerId);
+    final customer = await getCustomerById(customerId);
     if (customer != null) {
       final list = List<MeasurementProfileModel>.from(customer.measurements);
       final existingIndex = list.indexWhere((p) => p.garmentType == profile.garmentType);
@@ -58,13 +59,10 @@ class CustomerLocalDataSource {
       }
       customer.measurements = list;
       customer.updatedAt = DateTime.now();
-      await db.writeTxn(() => db.customerCollections.put(customer));
     }
   }
 
   Stream<List<CustomerCollection>> watchCustomers() {
-    final db = _isar;
-    if (db == null) return Stream.value([]);
-    return db.customerCollections.where().sortByName().watch(fireImmediately: true);
+    return Stream.value(List<CustomerCollection>.from(_store));
   }
 }

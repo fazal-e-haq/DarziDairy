@@ -1,110 +1,82 @@
-import 'package:isar/isar.dart';
-import 'package:darzi_dairy/core/database/isar_service.dart';
+import 'dart:async';
 import '../models/order_collection.dart';
 
-/// Direct Isar datasource for workshop orders with defensive fallback
+/// In-memory datasource for workshop orders
 class OrderLocalDataSource {
-  Isar? get _isar => IsarService.instance.isOpen ? IsarService.instance.isar : null;
+  static final List<OrderCollection> _store = [];
+  static int _nextId = 1;
 
   Future<List<OrderCollection>> getActiveOrders() async {
-    final db = _isar;
-    if (db == null) return [];
-    return db.orderCollections
-        .filter()
-        .isDeletedEqualTo(false)
-        .sortByTargetDeadline()
-        .findAll();
+    return _store.where((o) => !o.isDeleted).toList()
+      ..sort((a, b) => a.targetDeadline.compareTo(b.targetDeadline));
   }
 
   Future<List<OrderCollection>> getOrdersByStatus(int statusIndex) async {
-    final db = _isar;
-    if (db == null) return [];
-    return db.orderCollections
-        .filter()
-        .isDeletedEqualTo(false)
-        .statusEqualTo(statusIndex)
-        .sortByTargetDeadline()
-        .findAll();
+    return _store.where((o) => !o.isDeleted && o.status == statusIndex).toList()
+      ..sort((a, b) => a.targetDeadline.compareTo(b.targetDeadline));
   }
 
   Future<List<OrderCollection>> getUrgentOrders() async {
-    final db = _isar;
-    if (db == null) return [];
-    return db.orderCollections
-        .filter()
-        .isDeletedEqualTo(false)
-        .isUrgentEqualTo(true)
-        .sortByTargetDeadline()
-        .findAll();
+    return _store.where((o) => !o.isDeleted && o.isUrgent).toList()
+      ..sort((a, b) => a.targetDeadline.compareTo(b.targetDeadline));
   }
 
   Future<List<OrderCollection>> getOrdersForCustomer(int customerId) async {
-    final db = _isar;
-    if (db == null) return [];
-    return db.orderCollections
-        .filter()
-        .customerIdEqualTo(customerId)
-        .sortByBookingDateDesc()
-        .findAll();
+    return _store.where((o) => o.customerId == customerId && !o.isDeleted).toList()
+      ..sort((a, b) => b.bookingDate.compareTo(a.bookingDate));
   }
 
   Future<OrderCollection?> getOrderById(int id) async {
-    final db = _isar;
-    if (db == null) return null;
-    return db.orderCollections.get(id);
+    try {
+      return _store.firstWhere((o) => o.id == id);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<int> putOrder(OrderCollection order) async {
-    final db = _isar;
-    if (db == null) return order.id;
-    return db.writeTxn(() => db.orderCollections.put(order));
+    if (order.id == 0) {
+      order.id = _nextId++;
+      _store.add(order);
+    } else {
+      final index = _store.indexWhere((o) => o.id == order.id);
+      if (index >= 0) {
+        _store[index] = order;
+      } else {
+        _store.add(order);
+      }
+    }
+    return order.id;
   }
 
   Future<void> updateStatus(int id, int statusIndex) async {
-    final db = _isar;
-    if (db == null) return;
-    final order = await db.orderCollections.get(id);
+    final order = await getOrderById(id);
     if (order != null) {
       order.status = statusIndex;
-      await db.writeTxn(() => db.orderCollections.put(order));
     }
   }
 
   Future<void> softDelete(int id) async {
-    final db = _isar;
-    if (db == null) return;
-    final order = await db.orderCollections.get(id);
+    final order = await getOrderById(id);
     if (order != null) {
       order.isDeleted = true;
       order.deletedAt = DateTime.now();
-      await db.writeTxn(() => db.orderCollections.put(order));
     }
   }
 
   Future<void> restore(int id) async {
-    final db = _isar;
-    if (db == null) return;
-    final order = await db.orderCollections.get(id);
+    final order = await getOrderById(id);
     if (order != null) {
       order.isDeleted = false;
       order.deletedAt = null;
-      await db.writeTxn(() => db.orderCollections.put(order));
     }
   }
 
   Future<List<OrderCollection>> getRecycleBinOrders() async {
-    final db = _isar;
-    if (db == null) return [];
-    return db.orderCollections.filter().isDeletedEqualTo(true).findAll();
+    return _store.where((o) => o.isDeleted).toList();
   }
 
   Stream<List<OrderCollection>> watchOrders() {
-    final db = _isar;
-    if (db == null) return Stream.value([]);
-    return db.orderCollections
-        .filter()
-        .isDeletedEqualTo(false)
-        .sortByTargetDeadline()
-        .watch(fireImmediately: true);
+    return Stream.value(_store.where((o) => !o.isDeleted).toList());
   }
 }

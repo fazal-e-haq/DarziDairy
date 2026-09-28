@@ -1,17 +1,10 @@
-import 'package:isar/isar.dart';
 import 'measurement_collection.dart';
 
-part 'customer_collection.g.dart';
-
-/// Customer collection model for Isar DB persistence
-@collection
+/// Customer collection model for persistence
 class CustomerCollection {
-  Id id = Isar.autoIncrement;
+  int id = 0;
 
-  @Index(type: IndexType.value, caseSensitive: false)
   String name = '';
-
-  @Index(type: IndexType.hash)
   String phone = '';
 
   String? secondaryPhone;

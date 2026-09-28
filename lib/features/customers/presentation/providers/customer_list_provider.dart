@@ -38,6 +38,9 @@ class CustomerListProvider extends ChangeNotifier {
     if (_allCustomers.isEmpty) {
       await _seedSampleCustomers();
       _allCustomers = await repository.getAllCustomers();
+      if (_allCustomers.isEmpty) {
+        _allCustomers = _getSampleCustomersList();
+      }
     }
 
     if (_selectedCustomer == null && _allCustomers.isNotEmpty) {
@@ -68,11 +71,11 @@ class CustomerListProvider extends ChangeNotifier {
     await loadCustomers();
   }
 
-  Future<void> _seedSampleCustomers() async {
+  List<CustomerEntity> _getSampleCustomersList() {
     final now = DateTime.now();
-    final sampleCustomers = [
+    return [
       CustomerEntity(
-        id: 0,
+        id: 1,
         customerId: 'CUST-101',
         name: 'Chaudhry Nadeem',
         phone: '0300-8452199',
@@ -110,7 +113,7 @@ class CustomerListProvider extends ChangeNotifier {
         ],
       ),
       CustomerEntity(
-        id: 0,
+        id: 2,
         customerId: 'CUST-102',
         name: 'Sheikh Tariq',
         phone: '0321-4567890',
@@ -137,7 +140,7 @@ class CustomerListProvider extends ChangeNotifier {
         ],
       ),
       CustomerEntity(
-        id: 0,
+        id: 3,
         customerId: 'CUST-103',
         name: 'Bilal Farooq',
         phone: '0333-9876543',
@@ -163,8 +166,10 @@ class CustomerListProvider extends ChangeNotifier {
         ],
       ),
     ];
+  }
 
-    for (final c in sampleCustomers) {
+  Future<void> _seedSampleCustomers() async {
+    for (final c in _getSampleCustomersList()) {
       await repository.saveCustomer(c);
     }
   }
