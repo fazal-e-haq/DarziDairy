@@ -56,68 +56,23 @@ class OrderCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Row: Big Customer Name + Urgent Badge (if urgent) + Price
+                // Top Row: Big Customer Name + Price
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Big Customer Name
                     Expanded(
-                      child: Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              order.customerName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontFamily: AppFonts.heading,
-                                fontSize: 21,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.primary,
-                                letterSpacing: -0.3,
-                              ),
-                            ),
-                          ),
-                          // Urgent Label (Clean pill with icon, no loud text)
-                          if (order.isUrgent) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFEF2F2),
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                  color: const Color(0xFFFECACA),
-                                  width: 1,
-                                ),
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.flash_on_rounded,
-                                    size: 12,
-                                    color: Color(0xFFDC2626),
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    'Urgent',
-                                    style: TextStyle(
-                                      fontFamily: AppFonts.body,
-                                      color: Color(0xFFDC2626),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: 0.2,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ],
+                      child: Text(
+                        order.customerName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: AppFonts.heading,
+                          fontSize: 21,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                          letterSpacing: -0.3,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),

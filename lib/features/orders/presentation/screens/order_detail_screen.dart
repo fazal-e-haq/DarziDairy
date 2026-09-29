@@ -83,31 +83,6 @@ class OrderDetailScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (order.isUrgent) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: AppColors.statusError.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.bolt, color: AppColors.statusError, size: 14),
-                                SizedBox(width: 2),
-                                Text(
-                                  'URGENT',
-                                  style: TextStyle(
-                                    fontFamily: AppFonts.body,
-                                    color: AppColors.statusError,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                         const Spacer(),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
