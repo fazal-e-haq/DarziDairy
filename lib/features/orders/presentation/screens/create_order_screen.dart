@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/responsive_layout.dart';
+import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
@@ -171,7 +172,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       appBar: AppBar(
         title: Text(
           widget.orderId != null ? 'Edit Order' : 'New Order',
-          style: const TextStyle(fontWeight: FontWeight.w800),
+          style: const TextStyle(
+            fontFamily: AppFonts.heading,
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
       body: SafeArea(
@@ -271,8 +275,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               Text(
                 'Customer Details',
                 style: TextStyle(
+                  fontFamily: AppFonts.heading,
                   fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.primary,
                 ),
               ),
@@ -334,8 +339,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               Text(
                 'Garment & Delivery',
                 style: TextStyle(
+                  fontFamily: AppFonts.heading,
                   fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.primary,
                 ),
               ),
@@ -347,6 +353,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           const Text(
             'Garment Type',
             style: TextStyle(
+              fontFamily: AppFonts.body,
               fontSize: 13,
               fontWeight: FontWeight.w600,
               color: AppColors.textSecondary,
@@ -370,6 +377,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   ),
                 ),
                 labelStyle: TextStyle(
+                  fontFamily: AppFonts.body,
                   color: isSelected ? Colors.white : const Color(0xFF334155),
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   fontSize: 13,
@@ -403,6 +411,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         const Text(
                           'Delivery Date',
                           style: TextStyle(
+                            fontFamily: AppFonts.body,
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textMuted,
@@ -423,6 +432,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
+                                  fontFamily: AppFonts.body,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 13.5,
                                   color: AppColors.textPrimary,
@@ -463,6 +473,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       Text(
                         'Urgent',
                         style: TextStyle(
+                          fontFamily: AppFonts.body,
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
                           color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF64748B),
@@ -512,8 +523,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               Text(
                 'Payment',
                 style: TextStyle(
+                  fontFamily: AppFonts.heading,
                   fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.primary,
                 ),
               ),
@@ -569,8 +581,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               Text(
                 'Measurements (Inches)',
                 style: TextStyle(
+                  fontFamily: AppFonts.heading,
                   fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.primary,
                 ),
               ),

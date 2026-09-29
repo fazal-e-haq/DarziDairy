@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
+import '../../core/theme/text_styles.dart';
 
 /// Reusable text field with support for numeric keypad mode for measurements
 class CustomTextField extends StatelessWidget {
@@ -37,6 +38,7 @@ class CustomTextField extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
+            fontFamily: AppFonts.body,
             fontSize: 13,
             fontWeight: FontWeight.w600,
             color: AppColors.textSecondary,
@@ -48,10 +50,21 @@ class CustomTextField extends StatelessWidget {
           keyboardType: isNumericOnly
               ? const TextInputType.numberWithOptions(decimal: true)
               : keyboardType,
+          style: const TextStyle(
+            fontFamily: AppFonts.body,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textPrimary,
+          ),
           onChanged: onChanged,
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
+            hintStyle: const TextStyle(
+              fontFamily: AppFonts.body,
+              color: AppColors.textDisabled,
+              fontSize: 14,
+            ),
             prefixText: prefixText,
             suffixText: suffixText,
             prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20) : null,

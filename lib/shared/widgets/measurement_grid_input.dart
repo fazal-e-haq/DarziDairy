@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
+import '../../core/theme/text_styles.dart';
 
 /// Numeric keypad-friendly grid of measurement inputs with quick fractional decimal selectors (.25, .5, .75)
 class MeasurementGridInput extends StatefulWidget {
@@ -56,7 +57,12 @@ class _MeasurementGridInputState extends State<MeasurementGridInput> {
               const SizedBox(width: AppDimensions.space8),
               Text(
                 _activeField != null ? 'Quick Add to "$_activeField":' : 'Select field to add fraction:',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                style: const TextStyle(
+                  fontFamily: AppFonts.body,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textSecondary,
+                ),
               ),
               const Spacer(),
               _buildFractionChip('.25', () => _applyFraction(0.25)),
@@ -109,6 +115,7 @@ class _MeasurementGridInputState extends State<MeasurementGridInput> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
+                        fontFamily: AppFonts.body,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: isActive ? AppColors.primary : AppColors.textSecondary,
@@ -122,6 +129,7 @@ class _MeasurementGridInputState extends State<MeasurementGridInput> {
                             controller: controller,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             style: const TextStyle(
+                              fontFamily: AppFonts.heading,
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                               color: AppColors.textPrimary,
@@ -133,7 +141,11 @@ class _MeasurementGridInputState extends State<MeasurementGridInput> {
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
                               hintText: '0.0',
-                              hintStyle: TextStyle(color: AppColors.textDisabled, fontSize: 16),
+                              hintStyle: TextStyle(
+                                fontFamily: AppFonts.heading,
+                                color: AppColors.textDisabled,
+                                fontSize: 16,
+                              ),
                             ),
                             onTap: () {
                               setState(() => _activeField = key);
@@ -144,6 +156,7 @@ class _MeasurementGridInputState extends State<MeasurementGridInput> {
                         const Text(
                           'in',
                           style: TextStyle(
+                            fontFamily: AppFonts.body,
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                             color: AppColors.textMuted,
@@ -175,6 +188,7 @@ class _MeasurementGridInputState extends State<MeasurementGridInput> {
         child: Text(
           label,
           style: TextStyle(
+            fontFamily: AppFonts.body,
             fontSize: 12,
             fontWeight: FontWeight.w700,
             color: isEnabled ? Colors.white : AppColors.textDisabled,

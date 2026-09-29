@@ -5,7 +5,7 @@ import 'text_styles.dart';
 
 /// Complete Material 3 Craft Theme for Tailor Master.
 ///
-/// Tailored for high legibility, tactile precision, and workshop resilience.
+/// Uses Nunito for big text and headings, and Poppins for body and small text.
 class AppTheme {
   AppTheme._();
 
@@ -38,59 +38,100 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: colorScheme,
 
-      // --- Typography ---
-      fontFamily: 'Roboto',
+      // --- Typography: Poppins as base font, Nunito for headings & big text ---
+      fontFamily: AppFonts.body,
       textTheme: const TextTheme(
         displayLarge: TextStyle(
+          fontFamily: AppFonts.heading,
           fontSize: 32,
           fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
           letterSpacing: -0.5,
         ),
         displayMedium: TextStyle(
+          fontFamily: AppFonts.heading,
           fontSize: 26,
+          fontWeight: FontWeight.w800,
+          color: AppColors.textPrimary,
+        ),
+        displaySmall: TextStyle(
+          fontFamily: AppFonts.heading,
+          fontSize: 24,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
         headlineLarge: TextStyle(
+          fontFamily: AppFonts.heading,
           fontSize: 22,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
         ),
         headlineMedium: TextStyle(
+          fontFamily: AppFonts.heading,
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textPrimary,
+        ),
+        headlineSmall: TextStyle(
+          fontFamily: AppFonts.heading,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
         titleLarge: TextStyle(
+          fontFamily: AppFonts.heading,
           fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
         titleMedium: TextStyle(
+          fontFamily: AppFonts.body,
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: AppColors.textSecondary,
         ),
+        titleSmall: TextStyle(
+          fontFamily: AppFonts.body,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textSecondary,
+        ),
         bodyLarge: TextStyle(
+          fontFamily: AppFonts.body,
           fontSize: 15,
           fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
           height: 1.4,
         ),
         bodyMedium: TextStyle(
+          fontFamily: AppFonts.body,
           fontSize: 13,
           fontWeight: FontWeight.w400,
           color: AppColors.textSecondary,
           height: 1.4,
         ),
+        bodySmall: TextStyle(
+          fontFamily: AppFonts.body,
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: AppColors.textMuted,
+          height: 1.4,
+        ),
         labelLarge: TextStyle(
+          fontFamily: AppFonts.body,
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
           letterSpacing: 0.2,
         ),
+        labelMedium: TextStyle(
+          fontFamily: AppFonts.body,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: AppColors.textSecondary,
+        ),
         labelSmall: TextStyle(
+          fontFamily: AppFonts.body,
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: AppColors.textMuted,
@@ -105,10 +146,11 @@ class AppTheme {
         scrolledUnderElevation: 2,
         centerTitle: false,
         titleTextStyle: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
+          fontFamily: AppFonts.heading,
+          fontSize: 19,
+          fontWeight: FontWeight.w800,
           color: AppColors.surface,
-          letterSpacing: 0.15,
+          letterSpacing: 0.1,
         ),
         iconTheme: IconThemeData(
           color: AppColors.surface,
@@ -132,7 +174,7 @@ class AppTheme {
         clipBehavior: Clip.antiAlias,
       ),
 
-      // --- Input Decoration Theme (Tailor-suited Numeric & Text Fields) ---
+      // --- Input Decoration Theme ---
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surface,
@@ -142,16 +184,19 @@ class AppTheme {
         ),
         isDense: false,
         hintStyle: const TextStyle(
+          fontFamily: AppFonts.body,
           color: AppColors.textDisabled,
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
         labelStyle: const TextStyle(
+          fontFamily: AppFonts.body,
           color: AppColors.textSecondary,
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
         floatingLabelStyle: const TextStyle(
+          fontFamily: AppFonts.body,
           color: AppColors.primary,
           fontSize: 13,
           fontWeight: FontWeight.w600,
@@ -177,6 +222,7 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.statusError, width: 2.0),
         ),
         suffixStyle: const TextStyle(
+          fontFamily: AppFonts.body,
           color: AppColors.textSecondary,
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -195,6 +241,7 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: AppDimensions.space20),
           textStyle: const TextStyle(
+            fontFamily: AppFonts.body,
             fontSize: 15,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.3,
@@ -213,6 +260,7 @@ class AppTheme {
           side: const BorderSide(color: AppColors.border, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: AppDimensions.space20),
           textStyle: const TextStyle(
+            fontFamily: AppFonts.body,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
@@ -245,6 +293,7 @@ class AppTheme {
           side: const BorderSide(color: AppColors.border, width: 1.0),
         ),
         labelStyle: const TextStyle(
+          fontFamily: AppFonts.body,
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
@@ -267,6 +316,7 @@ class AppTheme {
         ),
         titleTextStyle: AppTextStyles.headlineMedium,
         contentTextStyle: const TextStyle(
+          fontFamily: AppFonts.body,
           color: AppColors.textSecondary,
           fontSize: 14,
         ),
@@ -278,8 +328,16 @@ class AppTheme {
         unselectedLabelColor: Colors.white70,
         indicatorColor: AppColors.secondary,
         indicatorSize: TabBarIndicatorSize.tab,
-        labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-        unselectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        labelStyle: TextStyle(
+          fontFamily: AppFonts.heading,
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontFamily: AppFonts.body,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

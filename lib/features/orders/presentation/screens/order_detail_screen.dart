@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/confirmation_dialog.dart';
@@ -75,10 +76,10 @@ class OrderDetailScreen extends StatelessWidget {
                           child: Text(
                             order.orderToken,
                             style: const TextStyle(
+                              fontFamily: AppFonts.heading,
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
-                              fontFamily: 'monospace',
                             ),
                           ),
                         ),
@@ -97,6 +98,7 @@ class OrderDetailScreen extends StatelessWidget {
                                 Text(
                                   'URGENT',
                                   style: TextStyle(
+                                    fontFamily: AppFonts.body,
                                     color: AppColors.statusError,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
@@ -118,6 +120,7 @@ class OrderDetailScreen extends StatelessWidget {
                           child: Text(
                             order.status.displayName,
                             style: TextStyle(
+                              fontFamily: AppFonts.body,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: order.isCompleted ? AppColors.statusReady : AppColors.secondary,
@@ -142,12 +145,20 @@ class OrderDetailScreen extends StatelessWidget {
                             children: [
                               Text(
                                 order.customerName,
-                                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                                style: const TextStyle(
+                                  fontFamily: AppFonts.heading,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 order.customerPhone,
-                                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                                style: const TextStyle(
+                                  fontFamily: AppFonts.body,
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                             ],
                           ),
@@ -201,7 +212,11 @@ class OrderDetailScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Payment Summary',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontFamily: AppFonts.heading,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 14),
                     _PriceRow(label: 'Total Rate', value: CurrencyFormatter.format(order.stitchingRate)),
@@ -235,7 +250,11 @@ class OrderDetailScreen extends StatelessWidget {
                 icon: Icon(order.isCompleted ? Icons.undo : Icons.check_circle, size: 22),
                 label: Text(
                   order.isCompleted ? 'Mark as Active' : 'Mark as Completed',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    fontFamily: AppFonts.body,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 onPressed: () => provider.toggleOrderStatus(order.id),
               ),
@@ -267,11 +286,19 @@ class _DetailRow extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: AppColors.textSecondary),
         const SizedBox(width: 10),
-        Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: AppFonts.body,
+            color: AppColors.textSecondary,
+            fontSize: 14,
+          ),
+        ),
         const Spacer(),
         Text(
           value,
           style: TextStyle(
+            fontFamily: AppFonts.body,
             fontWeight: FontWeight.w700,
             fontSize: 14,
             color: valueColor ?? AppColors.textPrimary,
@@ -302,8 +329,9 @@ class _PriceRow extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w500,
+            fontFamily: AppFonts.body,
+            fontSize: isTotal ? 15 : 14,
+            fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
             color: isTotal ? AppColors.textPrimary : AppColors.textSecondary,
           ),
         ),
@@ -311,7 +339,8 @@ class _PriceRow extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontSize: isTotal ? 18 : 14,
+            fontFamily: AppFonts.heading,
+            fontSize: isTotal ? 18 : 15,
             fontWeight: FontWeight.w800,
             color: color ?? AppColors.textPrimary,
           ),

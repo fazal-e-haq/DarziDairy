@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
+import '../../core/theme/text_styles.dart';
 
 enum ButtonVariant { primary, secondary, destructive }
 
@@ -74,7 +75,11 @@ class CustomButton extends StatelessWidget {
                   ],
                   Text(
                     _buttonText,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                    style: const TextStyle(
+                      fontFamily: AppFonts.body,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                    ),
                   ),
                 ],
               ),
