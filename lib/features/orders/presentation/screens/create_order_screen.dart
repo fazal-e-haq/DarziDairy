@@ -448,12 +448,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(width: 12),
 
-              // Urgent Switch Tile
+              // Urgent Check Tile (Check icon with name instead of toggle)
               InkWell(
                 onTap: () => setState(() => _isUrgent = !_isUrgent),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
                     color: _isUrgent ? const Color(0xFFFEF2F2) : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
@@ -463,28 +463,36 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     ),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.flash_on_rounded,
-                        color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF94A3B8),
-                        size: 18,
+                      Container(
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          color: _isUrgent ? const Color(0xFFDC2626) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF94A3B8),
+                            width: 1.8,
+                          ),
+                        ),
+                        child: _isUrgent
+                            ? const Icon(
+                                Icons.check_rounded,
+                                size: 16,
+                                color: Colors.white,
+                              )
+                            : null,
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 8),
                       Text(
                         'Urgent',
                         style: TextStyle(
                           fontFamily: AppFonts.body,
                           fontWeight: FontWeight.w700,
-                          fontSize: 13,
-                          color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF64748B),
+                          fontSize: 13.5,
+                          color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF475569),
                         ),
-                      ),
-                      const SizedBox(width: 6),
-                      Switch(
-                        value: _isUrgent,
-                        onChanged: (val) => setState(() => _isUrgent = val),
-                        activeTrackColor: const Color(0xFFDC2626),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ],
                   ),
