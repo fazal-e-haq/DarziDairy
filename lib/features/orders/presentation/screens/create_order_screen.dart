@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:darzi_dairy/features/customers/presentation/providers/customer_list_provider.dart';
-import 'package:darzi_dairy/features/customers/domain/entities/customer.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
@@ -30,7 +28,6 @@ class CreateOrderScreen extends StatefulWidget {
 class _CreateOrderScreenState extends State<CreateOrderScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  CustomerEntity? _selectedCustomer;
   final TextEditingController _customerNameController = TextEditingController();
   final TextEditingController _customerPhoneController = TextEditingController();
   String _selectedGarment = AppStrings.defaultGarments.first;
@@ -57,36 +54,27 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     _stitchingRateController.addListener(_onPriceChanged);
     _advancePaidController.addListener(_onPriceChanged);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final customers = context.read<CustomerListProvider>().allCustomers;
-      if (customers.isNotEmpty) {
-        _onCustomerChanged(customers.first);
-      }
-    });
+    if (widget.orderId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final order = context.read<OrderListProvider>().allOrders.firstWhere(
+              (o) => o.id == widget.orderId,
+              orElse: () => context.read<OrderListProvider>().allOrders.first,
+            );
+        _customerNameController.text = order.customerName;
+        _customerPhoneController.text = order.customerPhone;
+        _tokenController.text = order.orderToken;
+        _selectedGarment = order.garmentType;
+        _stitchingRateController.text = order.stitchingRate.toInt().toString();
+        _advancePaidController.text = order.advancePaid.toInt().toString();
+        _targetDeadline = order.targetDeadline;
+        _isUrgent = order.isUrgent;
+        setState(() {});
+      });
+    }
   }
 
   void _onPriceChanged() {
     setState(() {});
-  }
-
-  void _onCustomerChanged(CustomerEntity customer) {
-    setState(() {
-      _selectedCustomer = customer;
-      _customerNameController.text = customer.name;
-      _customerPhoneController.text = customer.phone;
-
-      // Pre-fill measurements if available
-      final matches = customer.measurementProfiles.where((p) => p.garmentType == _selectedGarment);
-      if (matches.isNotEmpty) {
-        final profile = matches.first;
-        for (final v in profile.values) {
-          if (_measurementControllers.containsKey(v.label)) {
-            _measurementControllers[v.label]!.text = v.value.toString();
-          }
-        }
-      }
-    });
   }
 
   @override
@@ -135,12 +123,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   Future<void> _saveOrder() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final customerName = _selectedCustomer?.name ?? _customerNameController.text.trim();
-    final customerPhone = _selectedCustomer?.phone ?? _customerPhoneController.text.trim();
+    final customerName = _customerNameController.text.trim();
+    final customerPhone = _customerPhoneController.text.trim();
 
     if (customerName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter or select a customer.')),
+        const SnackBar(content: Text('Please enter customer name.')),
       );
       return;
     }
@@ -148,7 +136,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     final newOrder = OrderEntity(
       id: widget.orderId ?? 0,
       orderToken: _tokenController.text.trim(),
-      customerId: _selectedCustomer?.id ?? 1,
+      customerId: 0,
       customerName: customerName,
       customerPhone: customerPhone,
       garmentType: _selectedGarment,
@@ -222,50 +210,21 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     ),
                     const Divider(height: 24),
 
-                    // Customer Selection
-                    Consumer<CustomerListProvider>(
-                      builder: (context, custProvider, _) {
-                        final customers = custProvider.allCustomers;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (customers.isNotEmpty) ...[
-                              DropdownButtonFormField<CustomerEntity>(
-                                initialValue: _selectedCustomer,
-                                decoration: const InputDecoration(
-                                  labelText: 'Select Existing Customer',
-                                  prefixIcon: Icon(Icons.person_outline),
-                                ),
-                                items: customers.map((c) {
-                                  return DropdownMenuItem(
-                                    value: c,
-                                    child: Text('${c.name} (${c.phone})'),
-                                  );
-                                }).toList(),
-                                onChanged: (cust) {
-                                  if (cust != null) _onCustomerChanged(cust);
-                                },
-                              ),
-                              const SizedBox(height: AppDimensions.space12),
-                            ],
-                            CustomTextField(
-                              controller: _customerNameController,
-                              label: 'Customer Name',
-                              hint: 'Enter customer name',
-                              prefixIcon: Icons.badge_outlined,
-                              validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
-                            ),
-                            const SizedBox(height: AppDimensions.space12),
-                            CustomTextField(
-                              controller: _customerPhoneController,
-                              label: 'Phone Number',
-                              hint: '0300-1234567',
-                              prefixIcon: Icons.phone_outlined,
-                              keyboardType: TextInputType.phone,
-                            ),
-                          ],
-                        );
-                      },
+                    // Customer Inputs
+                    CustomTextField(
+                      controller: _customerNameController,
+                      label: 'Customer Name',
+                      hint: 'Enter customer name',
+                      prefixIcon: Icons.person_outline,
+                      validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
+                    ),
+                    const SizedBox(height: AppDimensions.space12),
+                    CustomTextField(
+                      controller: _customerPhoneController,
+                      label: 'Phone Number',
+                      hint: '0300-1234567',
+                      prefixIcon: Icons.phone_outlined,
+                      keyboardType: TextInputType.phone,
                     ),
                   ],
                 ),
@@ -281,7 +240,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Garment Type',
+                      'Garment / Job Type',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: AppDimensions.space12),

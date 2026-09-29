@@ -5,15 +5,8 @@ import '../constants/app_colors.dart';
 import '../../features/orders/presentation/screens/orders_dashboard_screen.dart';
 import '../../features/orders/presentation/screens/order_detail_screen.dart';
 import '../../features/orders/presentation/screens/create_order_screen.dart';
-import '../../features/customers/presentation/screens/customer_list_screen.dart';
-import '../../features/customers/presentation/screens/customer_detail_screen.dart';
-import '../../features/customers/presentation/screens/add_edit_customer_screen.dart';
-import '../../features/diary/presentation/screens/diary_screen.dart';
 
 /// Centralized declarative routing architecture using GoRouter.
-///
-/// Features custom subtle fade/slide transitions, type-safe route parameters,
-/// deep linking, and an error boundary fallback screen.
 class AppRouter {
   AppRouter._();
 
@@ -23,18 +16,9 @@ class AppRouter {
   static const String createOrder = '/orders/create';
   static const String editOrder = '/orders/edit/:id';
 
-  static const String customerList = '/customers';
-  static const String customerDetail = '/customers/:id';
-  static const String addCustomer = '/customers/add';
-  static const String editCustomer = '/customers/edit/:id';
-
-  static const String diary = '/diary';
-
   // Helper generators for parameterized paths
   static String orderDetailPath(int id) => '/orders/$id';
   static String editOrderPath(int id) => '/orders/edit/$id';
-  static String customerDetailPath(int id) => '/customers/$id';
-  static String editCustomerPath(int id) => '/customers/edit/$id';
 
   /// Navigation key for root navigator
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -46,7 +30,7 @@ class AppRouter {
     initialLocation: dashboard,
     debugLogDiagnostics: false,
     routes: [
-      // 1. Dashboard (Orders Workshop Pipeline)
+      // 1. Dashboard (Orders Main Screen)
       GoRoute(
         path: dashboard,
         name: 'dashboard',
@@ -87,56 +71,6 @@ class AppRouter {
           );
         },
       ),
-
-      // 3. Customers Module Routes
-      GoRoute(
-        path: customerList,
-        name: 'customerList',
-        pageBuilder: (context, state) => _buildTransitionPage(
-          state: state,
-          child: const CustomerListScreen(),
-        ),
-      ),
-      GoRoute(
-        path: addCustomer,
-        name: 'addCustomer',
-        pageBuilder: (context, state) => _buildTransitionPage(
-          state: state,
-          child: const AddEditCustomerScreen(),
-        ),
-      ),
-      GoRoute(
-        path: editCustomer,
-        name: 'editCustomer',
-        pageBuilder: (context, state) {
-          final id = int.tryParse(state.pathParameters['id'] ?? '');
-          return _buildTransitionPage(
-            state: state,
-            child: AddEditCustomerScreen(customerId: id),
-          );
-        },
-      ),
-      GoRoute(
-        path: customerDetail,
-        name: 'customerDetail',
-        pageBuilder: (context, state) {
-          final id = int.tryParse(state.pathParameters['id'] ?? '');
-          return _buildTransitionPage(
-            state: state,
-            child: CustomerDetailScreen(customerId: id),
-          );
-        },
-      ),
-
-      // 4. Roznamcha Daily Diary / Cash Book
-      GoRoute(
-        path: diary,
-        name: 'diary',
-        pageBuilder: (context, state) => _buildTransitionPage(
-          state: state,
-          child: const DiaryScreen(),
-        ),
-      ),
     ],
 
     // Fallback Error Boundary
@@ -162,7 +96,7 @@ class AppRouter {
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.home),
-                label: const Text('Return to Workshop'),
+                label: const Text('Return to Dashboard'),
                 onPressed: () => context.go(dashboard),
               ),
             ],
@@ -172,7 +106,7 @@ class AppRouter {
     ),
   );
 
-  /// Consistent, subtle fade and slide transition page builder
+  /// Consistent subtle fade and slide transition page builder
   static Page<dynamic> _buildTransitionPage({
     required GoRouterState state,
     required Widget child,

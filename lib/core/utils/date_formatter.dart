@@ -15,6 +15,19 @@ class DateFormatter {
   /// Alias for formatShortDate
   static String formatDate(DateTime date) => formatShortDate(date);
 
+  /// Returns 12-hour formatted time with AM/PM (e.g. "04:30 PM")
+  static String formatTime(DateTime date) {
+    final hour = date.hour == 0 ? 12 : (date.hour > 12 ? date.hour - 12 : date.hour);
+    final minute = date.minute.toString().padLeft(2, '0');
+    final period = date.hour >= 12 ? 'PM' : 'AM';
+    return '${hour.toString().padLeft(2, '0')}:$minute $period';
+  }
+
+  /// Returns formatted date with time (e.g. "12 Oct 2026 • 04:30 PM")
+  static String formatDateTime(DateTime date) {
+    return '${formatDate(date)} • ${formatTime(date)}';
+  }
+
   /// Returns relative deadline text, e.g., "Today", "Tomorrow", "In 3 days", or "Overdue by 2 days"
   static String formatDeadline(DateTime deadline) {
     final now = DateTime.now();
