@@ -54,6 +54,26 @@ class OrderListProvider extends ChangeNotifier {
   int get countCompleted => _allOrders.where((o) => o.status == OrderStatus.completed).length;
   int get countAll => _allOrders.length;
 
+  /// Returns only active orders, filtered by search query
+  List<OrderEntity> get activeOrders {
+    var list = _allOrders.where((o) => o.status == OrderStatus.active).toList();
+    if (_searchQuery.trim().isNotEmpty) {
+      final query = _searchQuery.trim().toLowerCase();
+      list = list.where((o) => o.customerName.toLowerCase().contains(query)).toList();
+    }
+    return list;
+  }
+
+  /// Returns completed orders, optionally filtered by customer query
+  List<OrderEntity> getCompletedOrders([String? query]) {
+    var list = _allOrders.where((o) => o.status == OrderStatus.completed).toList();
+    if (query != null && query.trim().isNotEmpty) {
+      final q = query.trim().toLowerCase();
+      list = list.where((o) => o.customerName.toLowerCase().contains(q)).toList();
+    }
+    return list;
+  }
+
   Future<void> loadOrders() async {
     _isLoading = true;
     notifyListeners();
@@ -172,6 +192,20 @@ class OrderListProvider extends ChangeNotifier {
         status: OrderStatus.active,
         stitchingRate: 2200.0,
         advancePaid: 800.0,
+      ),
+      OrderEntity(
+        id: 5,
+        orderToken: '#B-105',
+        customerId: 0,
+        customerName: 'Haji Abdul Rehman',
+        customerPhone: '0345-1234567',
+        garmentType: 'Silai Kurta Shalwar',
+        bookingDate: DateTime(now.year, now.month, now.day - 6, 12, 0),
+        targetDeadline: DateTime(now.year, now.month, now.day - 1),
+        isUrgent: false,
+        status: OrderStatus.completed,
+        stitchingRate: 2000.0,
+        advancePaid: 2000.0,
       ),
     ];
   }

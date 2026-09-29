@@ -5,6 +5,8 @@ import '../constants/app_colors.dart';
 import '../../features/orders/presentation/screens/orders_dashboard_screen.dart';
 import '../../features/orders/presentation/screens/order_detail_screen.dart';
 import '../../features/orders/presentation/screens/create_order_screen.dart';
+import '../../features/orders/presentation/screens/order_history_screen.dart';
+import '../../features/settings/presentation/screens/settings_screen.dart';
 
 /// Centralized declarative routing architecture using GoRouter.
 class AppRouter {
@@ -15,6 +17,8 @@ class AppRouter {
   static const String orderDetail = '/orders/:id';
   static const String createOrder = '/orders/create';
   static const String editOrder = '/orders/edit/:id';
+  static const String history = '/history';
+  static const String settings = '/settings';
 
   // Helper generators for parameterized paths
   static String orderDetailPath(int id) => '/orders/$id';
@@ -70,6 +74,22 @@ class AppRouter {
             child: OrderDetailScreen(orderId: id),
           );
         },
+      ),
+      GoRoute(
+        path: history,
+        name: 'history',
+        pageBuilder: (context, state) => _buildTransitionPage(
+          state: state,
+          child: const OrderHistoryScreen(),
+        ),
+      ),
+      GoRoute(
+        path: settings,
+        name: 'settings',
+        pageBuilder: (context, state) => _buildTransitionPage(
+          state: state,
+          child: const SettingsScreen(),
+        ),
       ),
     ],
 

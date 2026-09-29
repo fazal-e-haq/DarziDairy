@@ -4,24 +4,25 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../../core/theme/responsive_layout.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../shared/widgets/order_card.dart';
+import '../../domain/entities/order_entity.dart';
 import '../providers/order_list_provider.dart';
 
-/// Modern, clean, and simple main orders screen with real-time customer name search,
-/// responsive card grid for unfolded/foldable screens, and quick action FAB.
-class OrdersDashboardScreen extends StatefulWidget {
-  const OrdersDashboardScreen({super.key});
+/// Screen displaying completed orders history with customer search,
+/// responsive grid/list layout, and green-tinted completed cards.
+class OrderHistoryScreen extends StatefulWidget {
+  const OrderHistoryScreen({super.key});
 
   @override
-  State<OrdersDashboardScreen> createState() => _OrdersDashboardScreenState();
+  State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
 }
 
-class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
+class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void dispose() {
@@ -37,33 +38,20 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
-          AppStrings.appName,
+          'Order History',
           style: TextStyle(
             fontFamily: AppFonts.heading,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.2,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history_rounded, size: 24),
-            tooltip: 'Order History',
-            onPressed: () => context.push(AppRouter.history),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, size: 22),
-            tooltip: 'Settings',
-            onPressed: () => context.push(AppRouter.settings),
-          ),
-          const SizedBox(width: 8),
-        ],
       ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1100),
           child: Column(
             children: [
-              // Modern Search Bar (searches by customer name)
+              // Search Bar for Completed Orders
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   isUnfolded ? 24 : 16,
@@ -74,7 +62,9 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                 child: TextField(
                   controller: _searchController,
                   onChanged: (val) {
-                    context.read<OrderListProvider>().setSearchQuery(val);
+                    setState(() {
+                      _searchQuery = val.trim();
+                    });
                   },
                   style: const TextStyle(
                     fontFamily: AppFonts.body,
@@ -83,7 +73,7 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                     color: AppColors.textPrimary,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Search by customer name...',
+                    hintText: 'Search completed orders by customer...',
                     hintStyle: const TextStyle(
                       fontFamily: AppFonts.body,
                       color: AppColors.textMuted,
@@ -92,15 +82,17 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                     ),
                     prefixIcon: const Icon(
                       Icons.search_rounded,
-                      color: AppColors.primary,
+                      color: Color(0xFF16A34A),
                       size: 22,
                     ),
-                    suffixIcon: _searchController.text.isNotEmpty
+                    suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear, size: 18),
                             onPressed: () {
                               _searchController.clear();
-                              context.read<OrderListProvider>().setSearchQuery('');
+                              setState(() {
+                                _searchQuery = '';
+                              });
                             },
                           )
                         : null,
@@ -117,13 +109,13 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-                      borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
+                      borderSide: const BorderSide(color: Color(0xFF16A34A), width: 1.6),
                     ),
                   ),
                 ),
               ),
 
-              // Orders List / Responsive Grid
+              // Completed Orders List / Responsive Grid
               Expanded(
                 child: Consumer<OrderListProvider>(
                   builder: (context, provider, _) {
@@ -133,9 +125,9 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                       );
                     }
 
-                    final orders = provider.activeOrders;
+                    final completedOrders = provider.getCompletedOrders(_searchQuery);
 
-                    if (orders.isEmpty) {
+                    if (completedOrders.isEmpty) {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.all(AppDimensions.space32),
@@ -143,15 +135,15 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.person_search_outlined,
+                                Icons.assignment_turned_in_outlined,
                                 size: 64,
                                 color: AppColors.textMuted.withValues(alpha: 0.4),
                               ),
                               const SizedBox(height: AppDimensions.space16),
                               Text(
-                                _searchController.text.isNotEmpty
-                                    ? 'No customer found matching "${_searchController.text}"'
-                                    : 'No orders added yet',
+                                _searchQuery.isNotEmpty
+                                    ? 'No completed orders matching "$_searchQuery"'
+                                    : 'No completed orders yet',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontFamily: AppFonts.heading,
@@ -161,9 +153,12 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                                 ),
                               ),
                               const SizedBox(height: AppDimensions.space8),
-                              const Text(
-                                'Tap "+ New Order" below to add an order.',
-                                style: TextStyle(
+                              Text(
+                                _searchQuery.isNotEmpty
+                                    ? 'Try searching with a different customer name.'
+                                    : 'When you mark orders as completed, they will appear here.',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
                                   fontFamily: AppFonts.body,
                                   fontSize: 13,
                                   color: AppColors.textMuted,
@@ -176,11 +171,11 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                     }
 
                     return RefreshIndicator(
-                      color: AppColors.primary,
+                      color: const Color(0xFF16A34A),
                       onRefresh: () => provider.loadOrders(),
                       child: isUnfolded
-                          ? _buildUnfoldedGrid(orders, provider)
-                          : _buildMobileList(orders, provider),
+                          ? _buildUnfoldedGrid(completedOrders)
+                          : _buildMobileList(completedOrders),
                     );
                   },
                 ),
@@ -189,29 +184,13 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.secondary,
-        foregroundColor: Colors.white,
-        elevation: 3,
-        onPressed: () => context.push(AppRouter.createOrder),
-        icon: const Icon(Icons.add, size: 22),
-        label: const Text(
-          'New Order',
-          style: TextStyle(
-            fontFamily: AppFonts.body,
-            fontWeight: FontWeight.w700,
-            fontSize: 15,
-            letterSpacing: 0.3,
-          ),
-        ),
-      ),
     );
   }
 
   /// Compact mobile single-column list
-  Widget _buildMobileList(List orders, OrderListProvider provider) {
+  Widget _buildMobileList(List<OrderEntity> orders) {
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final order = orders[index];
@@ -224,9 +203,9 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
   }
 
   /// Unfolded / Tablet dual-column responsive grid
-  Widget _buildUnfoldedGrid(List orders, OrderListProvider provider) {
+  Widget _buildUnfoldedGrid(List<OrderEntity> orders) {
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(24, 4, 24, 96),
+      padding: const EdgeInsets.fromLTRB(24, 4, 24, 32),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 16,

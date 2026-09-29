@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
+import '../../../../core/routing/app_router.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_formatter.dart';
@@ -231,7 +233,36 @@ class OrderDetailScreen extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                onPressed: () => provider.toggleOrderStatus(order.id),
+                onPressed: () async {
+                  final wasCompleted = order.isCompleted;
+                  await provider.toggleOrderStatus(order.id);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          wasCompleted
+                              ? 'Order #${order.orderToken} marked as active'
+                              : 'Order #${order.orderToken} completed and moved to History!',
+                          style: const TextStyle(
+                            fontFamily: AppFonts.body,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        backgroundColor: wasCompleted
+                            ? AppColors.primary
+                            : const Color(0xFF16A34A),
+                        behavior: SnackBarBehavior.floating,
+                        action: !wasCompleted
+                            ? SnackBarAction(
+                                label: 'View History',
+                                textColor: Colors.white,
+                                onPressed: () => context.push(AppRouter.history),
+                              )
+                            : null,
+                      ),
+                    );
+                  }
+                },
               ),
             ),
             const SizedBox(height: AppDimensions.space32),
