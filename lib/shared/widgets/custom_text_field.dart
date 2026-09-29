@@ -3,7 +3,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/theme/text_styles.dart';
 
-/// Reusable text field with support for numeric keypad mode for measurements
+/// Reusable text field with support for text prefix (e.g. "Rs"), icon, or numeric keypad mode
 class CustomTextField extends StatelessWidget {
   final String label;
   final String? hint;
@@ -65,9 +65,33 @@ class CustomTextField extends StatelessWidget {
               color: AppColors.textDisabled,
               fontSize: 14,
             ),
-            prefixText: prefixText,
+            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+            prefixIcon: prefixText != null
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 14, right: 10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          prefixText!,
+                          style: const TextStyle(
+                            fontFamily: AppFonts.heading,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 1,
+                          height: 18,
+                          color: const Color(0xFFE2E8F0),
+                        ),
+                      ],
+                    ),
+                  )
+                : (prefixIcon != null ? Icon(prefixIcon, size: 20) : null),
             suffixText: suffixText,
-            prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20) : null,
           ),
         ),
       ],

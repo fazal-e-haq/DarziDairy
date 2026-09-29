@@ -536,9 +536,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           // 6. Just Payment Price
           CustomTextField(
             controller: _priceController,
-            label: 'Payment Price (Rs)',
-            hint: 'e.g. 1800',
-            prefixIcon: Icons.currency_rupee,
+            label: 'Payment Price',
+            hint: '1800',
+            prefixText: 'Rs',
             keyboardType: TextInputType.number,
             validator: (val) {
               if (val == null || val.trim().isEmpty) {
