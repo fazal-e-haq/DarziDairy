@@ -218,11 +218,18 @@ class AppTheme {
       // --- Floating Action Button Theme ---
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.secondary,
-        foregroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
         elevation: 3,
         focusElevation: 5,
         hoverElevation: 4,
-        shape: CircleBorder(),
+        shape: StadiumBorder(),
+        extendedPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        extendedTextStyle: TextStyle(
+          fontFamily: 'Nunito',
+          fontWeight: FontWeight.w800,
+          fontSize: 15,
+          letterSpacing: 0.2,
+        ),
       ),
 
       // --- Chip Theme ---

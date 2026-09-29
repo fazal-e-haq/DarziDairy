@@ -341,10 +341,5 @@ The visual style is crafted specifically for tailoring workshop clarity:
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License. Feel free to use, modify, and distribute according to the license terms.
-
----
 
 *Crafted with ❤️ for tailors, master craftsmen, and stitching workshops.*

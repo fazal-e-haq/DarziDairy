@@ -189,14 +189,16 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
         backgroundColor: AppColors.secondary,
         foregroundColor: Colors.white,
         elevation: 3,
+        shape: const StadiumBorder(),
         onPressed: () => context.push(AppRouter.createOrder),
         icon: const Icon(Icons.add, size: 22),
         label: const Text(
           'New Order',
           style: TextStyle(
-            fontWeight: FontWeight.w700,
+            fontFamily: 'Nunito',
+            fontWeight: FontWeight.w800,
             fontSize: 15,
-            letterSpacing: 0.3,
+            letterSpacing: 0.2,
           ),
         ),
       ),
