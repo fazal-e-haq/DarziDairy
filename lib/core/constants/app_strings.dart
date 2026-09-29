@@ -13,12 +13,12 @@ class AppStrings {
 
   // Garment Types
   static const List<String> defaultGarments = [
-    'Shalwar Kameez',
-    'Kurta Pajama',
-    'Pant / Shirt',
-    'Two-Piece Suit',
-    'Waistcoat',
-    'Sherwani',
+    'Silai Shalwar Kameez',
+    'Silai Kurta Pajama',
+    'Silai Pant / Shirt',
+    'Silai Waistcoat',
+    'Silai Two-Piece Suit',
+    'Silai Sherwani',
   ];
 
   // Measurement Labels

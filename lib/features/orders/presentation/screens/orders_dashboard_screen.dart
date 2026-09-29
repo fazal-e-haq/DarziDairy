@@ -198,7 +198,6 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
         return OrderCard(
           order: order,
           onTap: () => context.push(AppRouter.orderDetailPath(order.id)),
-          onToggleStatus: () => provider.toggleOrderStatus(order.id),
         );
       },
     );
@@ -220,7 +219,6 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
         return OrderCard(
           order: order,
           onTap: () => context.push(AppRouter.orderDetailPath(order.id)),
-          onToggleStatus: () => provider.toggleOrderStatus(order.id),
         );
       },
     );

@@ -5,18 +5,16 @@ import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_formatter.dart';
 import '../../features/orders/domain/entities/order_entity.dart';
 
-/// Modern, clean, and simple workshop order card displaying customer name in big text,
-/// tailoring job description, booking date & time, delivery date, and price.
+/// Senior-designed, minimalist order card with zero inner buttons.
+/// The entire card is a single clean touch target that navigates to order details.
 class OrderCard extends StatelessWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
-  final VoidCallback? onToggleStatus;
 
   const OrderCard({
     super.key,
     required this.order,
     this.onTap,
-    this.onToggleStatus,
   });
 
   @override
@@ -30,16 +28,14 @@ class OrderCard extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
         border: Border.all(
-          color: order.isCompleted
-              ? AppColors.statusReady.withValues(alpha: 0.3)
-              : order.isUrgent
-                  ? AppColors.statusError.withValues(alpha: 0.4)
-                  : AppColors.border,
-          width: order.isUrgent && !order.isCompleted ? 1.5 : 1.0,
+          color: order.isUrgent
+              ? const Color(0xFFFECACA)
+              : const Color(0xFFE2E8F0),
+          width: order.isUrgent ? 1.5 : 1.0,
         ),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x07000000),
+            color: Color(0x06000000),
             blurRadius: 10,
             offset: Offset(0, 3),
           ),
@@ -51,193 +47,159 @@ class OrderCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
           child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.space16),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. Customer Name (BIG text) & Price
+                // Top Row: Big Customer Name + Urgent Badge (if urgent) + Price
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Big Customer Name
                     Expanded(
-                      child: Text(
-                        order.customerName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: order.isCompleted ? AppColors.textMuted : AppColors.primary,
-                          letterSpacing: -0.3,
-                          decoration: order.isCompleted ? TextDecoration.lineThrough : null,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppDimensions.space8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                      ),
-                      child: Text(
-                        CurrencyFormatter.format(order.stitchingRate),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppDimensions.space10),
-
-                // 2. What Job for Him (e.g. Silai Shalwar Kameez) & Urgent Tag
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: AppColors.secondary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                      ),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.content_cut,
-                            size: 14,
-                            color: AppColors.secondary,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            order.garmentType,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.secondary,
+                          Flexible(
+                            child: Text(
+                              order.customerName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 21,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.primary,
+                                letterSpacing: -0.3,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    if (order.isUrgent && !order.isCompleted) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.statusError,
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.bolt, size: 12, color: Colors.white),
-                            SizedBox(width: 2),
-                            Text(
-                              'URGENT',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.5,
+                          // Urgent Label (Clean pill with icon, no loud text)
+                          if (order.isUrgent) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFEF2F2),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                  color: const Color(0xFFFECACA),
+                                  width: 1,
+                                ),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.flash_on_rounded,
+                                    size: 12,
+                                    color: Color(0xFFDC2626),
+                                  ),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    'Urgent',
+                                    style: TextStyle(
+                                      color: Color(0xFFDC2626),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                    ],
-                    const Spacer(),
-                    if (order.orderToken.isNotEmpty)
-                      Text(
-                        order.orderToken,
-                        style: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textMuted,
-                        ),
-                      ),
-                  ],
-                ),
-
-                const SizedBox(height: AppDimensions.space12),
-                const Divider(height: 1, thickness: 1, color: AppColors.surfaceVariant),
-                const SizedBox(height: AppDimensions.space12),
-
-                // 3. Booking Date & Time + Delivery Date
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Booking Date & Time
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.access_time_rounded,
-                                size: 14,
-                                color: AppColors.textMuted,
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                DateFormatter.formatDateTime(order.bookingDate),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          // Delivery Date
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.event_available_outlined,
-                                size: 14,
-                                color: isOverdue ? AppColors.statusError : AppColors.primary,
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                'Delivery: ${DateFormatter.formatDate(order.targetDeadline)}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: isOverdue ? AppColors.statusError : AppColors.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     ),
+                    const SizedBox(width: 12),
 
-                    // Quick Complete/Active Toggle
-                    if (onToggleStatus != null)
-                      IconButton(
-                        onPressed: onToggleStatus,
-                        style: IconButton.styleFrom(
-                          backgroundColor: order.isCompleted
-                              ? AppColors.statusReady.withValues(alpha: 0.15)
-                              : AppColors.surfaceVariant,
-                          foregroundColor: order.isCompleted
-                              ? AppColors.statusReady
-                              : AppColors.textSecondary,
-                          minimumSize: const Size(40, 40),
-                        ),
-                        icon: Icon(
-                          order.isCompleted
-                              ? Icons.check_circle
-                              : Icons.check_circle_outline,
-                          size: 22,
-                        ),
-                        tooltip: order.isCompleted ? 'Completed' : 'Mark as Done',
+                    // Price (Right-aligned, prominent, elegant)
+                    Text(
+                      CurrencyFormatter.format(order.stitchingRate),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                        letterSpacing: -0.2,
                       ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Middle: Type of Cutting / Job (Neutral, NO COLOR added)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Text(
+                    order.garmentType,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF475569),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 10),
+
+                // Bottom Row: Booking Date & Time + Delivery Date
+                Row(
+                  children: [
+                    // Booking Date & Time
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.schedule_rounded,
+                          size: 13,
+                          color: Color(0xFF94A3B8),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          DateFormatter.formatDateTime(order.bookingDate),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+
+                    // Delivery Date
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.event_available_outlined,
+                          size: 14,
+                          color: isOverdue
+                              ? const Color(0xFFDC2626)
+                              : AppColors.secondary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Delivery: ${DateFormatter.formatDate(order.targetDeadline)}',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            color: isOverdue
+                                ? const Color(0xFFDC2626)
+                                : const Color(0xFF1E293B),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ],

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/theme/responsive_layout.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
@@ -12,7 +12,8 @@ import '../../../../shared/widgets/measurement_grid_input.dart';
 import '../providers/order_list_provider.dart';
 import '../../domain/entities/order_entity.dart';
 
-/// Clean, focused order builder screen with real-time financial balance preview
+/// Clean, simple, and responsive New/Edit Order screen.
+/// Supports both compact mobile screens and unfolded foldables/tablets.
 class CreateOrderScreen extends StatefulWidget {
   final int? orderId;
 
@@ -28,71 +29,69 @@ class CreateOrderScreen extends StatefulWidget {
 class _CreateOrderScreenState extends State<CreateOrderScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  // 1. Customer Name
   final TextEditingController _customerNameController = TextEditingController();
+
+  // 2. Phone Number
   final TextEditingController _customerPhoneController = TextEditingController();
+
+  // 3. Garment Type
   String _selectedGarment = AppStrings.defaultGarments.first;
-  final TextEditingController _tokenController = TextEditingController();
+
+  // 4. Delivery Date
   DateTime _targetDeadline = DateTime.now().add(const Duration(days: 4));
+
+  // 5. Urgent or not
   bool _isUrgent = false;
 
-  // Financial inputs
-  final TextEditingController _stitchingRateController = TextEditingController(text: '1800');
-  final TextEditingController _advancePaidController = TextEditingController(text: '500');
+  // 6. Just Payment Price
+  final TextEditingController _priceController = TextEditingController(text: '1800');
 
-  // Measurements
+  // 7. Measurements
   final Map<String, TextEditingController> _measurementControllers = {};
+
+  String? _existingToken;
+  DateTime? _existingBookingDate;
 
   @override
   void initState() {
     super.initState();
-    _tokenController.text = '#B-${100 + (DateTime.now().millisecondsSinceEpoch % 900)}';
 
     for (final label in AppStrings.standardMeasurementKeys) {
       _measurementControllers[label] = TextEditingController();
     }
 
-    _stitchingRateController.addListener(_onPriceChanged);
-    _advancePaidController.addListener(_onPriceChanged);
-
     if (widget.orderId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final order = context.read<OrderListProvider>().allOrders.firstWhere(
+        final matches = context.read<OrderListProvider>().allOrders.where(
               (o) => o.id == widget.orderId,
-              orElse: () => context.read<OrderListProvider>().allOrders.first,
             );
-        _customerNameController.text = order.customerName;
-        _customerPhoneController.text = order.customerPhone;
-        _tokenController.text = order.orderToken;
-        _selectedGarment = order.garmentType;
-        _stitchingRateController.text = order.stitchingRate.toInt().toString();
-        _advancePaidController.text = order.advancePaid.toInt().toString();
-        _targetDeadline = order.targetDeadline;
-        _isUrgent = order.isUrgent;
-        setState(() {});
+        if (matches.isNotEmpty) {
+          final order = matches.first;
+          _existingToken = order.orderToken;
+          _existingBookingDate = order.bookingDate;
+          _customerNameController.text = order.customerName;
+          _customerPhoneController.text = order.customerPhone;
+          _selectedGarment = order.garmentType;
+          _targetDeadline = order.targetDeadline;
+          _isUrgent = order.isUrgent;
+          _priceController.text = order.stitchingRate.toInt().toString();
+          setState(() {});
+        }
       });
     }
   }
 
-  void _onPriceChanged() {
-    setState(() {});
-  }
-
   @override
   void dispose() {
-    _tokenController.dispose();
     _customerNameController.dispose();
     _customerPhoneController.dispose();
-    _stitchingRateController.dispose();
-    _advancePaidController.dispose();
+    _priceController.dispose();
     for (final controller in _measurementControllers.values) {
       controller.dispose();
     }
     super.dispose();
   }
-
-  double get _stitchingRate => double.tryParse(_stitchingRateController.text.trim()) ?? 0.0;
-  double get _advancePaid => double.tryParse(_advancePaidController.text.trim()) ?? 0.0;
-  double get _balanceDue => _stitchingRate - _advancePaid;
 
   Future<void> _selectDeadlineDate() async {
     final picked = await showDatePicker(
@@ -105,7 +104,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
               primary: AppColors.primary,
-              onPrimary: AppColors.surface,
+              onPrimary: Colors.white,
               surface: AppColors.surface,
               onSurface: AppColors.textPrimary,
             ),
@@ -125,27 +124,23 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
     final customerName = _customerNameController.text.trim();
     final customerPhone = _customerPhoneController.text.trim();
+    final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
 
-    if (customerName.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter customer name.')),
-      );
-      return;
-    }
+    final token = _existingToken ?? '#B-${100 + (DateTime.now().millisecondsSinceEpoch % 900)}';
 
     final newOrder = OrderEntity(
       id: widget.orderId ?? 0,
-      orderToken: _tokenController.text.trim(),
+      orderToken: token,
       customerId: 0,
       customerName: customerName,
       customerPhone: customerPhone,
       garmentType: _selectedGarment,
-      bookingDate: DateTime.now(),
+      bookingDate: _existingBookingDate ?? DateTime.now(),
       targetDeadline: _targetDeadline,
       isUrgent: _isUrgent,
       status: OrderStatus.active,
-      stitchingRate: _stitchingRate,
-      advancePaid: _advancePaid,
+      stitchingRate: price,
+      advancePaid: price,
     );
 
     final orderProvider = context.read<OrderListProvider>();
@@ -155,8 +150,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Order ${newOrder.orderToken} saved successfully!'),
+          content: Text(
+            widget.orderId != null ? 'Order updated successfully!' : 'Order created successfully!',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
           backgroundColor: AppColors.statusReady,
+          behavior: SnackBarBehavior.floating,
         ),
       );
       Navigator.of(context).pop();
@@ -165,299 +164,435 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isUnfolded = context.isUnfolded;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(widget.orderId != null ? 'Edit Order' : 'New Order'),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(AppDimensions.space16),
-          children: [
-            // 1. Token & Customer Details Card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.space16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.confirmation_number_outlined, size: 20, color: AppColors.primary),
-                        const SizedBox(width: AppDimensions.space8),
-                        const Text(
-                          'Order Token',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                          ),
-                          child: Text(
-                            _tokenController.text,
-                            style: const TextStyle(
-                              fontFamily: 'monospace',
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 24),
-
-                    // Customer Inputs
-                    CustomTextField(
-                      controller: _customerNameController,
-                      label: 'Customer Name',
-                      hint: 'Enter customer name',
-                      prefixIcon: Icons.person_outline,
-                      validator: (val) => val == null || val.trim().isEmpty ? 'Required' : null,
-                    ),
-                    const SizedBox(height: AppDimensions.space12),
-                    CustomTextField(
-                      controller: _customerPhoneController,
-                      label: 'Phone Number',
-                      hint: '0300-1234567',
-                      prefixIcon: Icons.phone_outlined,
-                      keyboardType: TextInputType.phone,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppDimensions.space12),
-
-            // 2. Garment & Delivery Card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.space16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Garment / Job Type',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: AppDimensions.space12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: AppStrings.defaultGarments.map((garment) {
-                        final isSelected = _selectedGarment == garment;
-                        return ChoiceChip(
-                          label: Text(garment),
-                          selected: isSelected,
-                          selectedColor: AppColors.primary,
-                          labelStyle: TextStyle(
-                            color: isSelected ? Colors.white : AppColors.textPrimary,
-                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                          ),
-                          onSelected: (val) {
-                            if (val) setState(() => _selectedGarment = garment);
-                          },
-                        );
-                      }).toList(),
-                    ),
-                    const Divider(height: 24),
-
-                    // Delivery Date & Urgent Toggle
-                    Row(
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: _selectDeadlineDate,
-                            borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: AppColors.surfaceVariant,
-                                borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                                border: Border.all(color: AppColors.border),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Delivery Date', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      const Icon(Icons.calendar_today, size: 16, color: AppColors.primary),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        DateFormatter.formatDate(_targetDeadline),
-                                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        InkWell(
-                          onTap: () => setState(() => _isUrgent = !_isUrgent),
-                          borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: _isUrgent
-                                  ? AppColors.statusError.withValues(alpha: 0.12)
-                                  : AppColors.surfaceVariant,
-                              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                              border: Border.all(
-                                color: _isUrgent ? AppColors.statusError : AppColors.border,
-                                width: _isUrgent ? 1.5 : 1.0,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.bolt,
-                                  color: _isUrgent ? AppColors.statusError : AppColors.textMuted,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Urgent',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: _isUrgent ? AppColors.statusError : AppColors.textSecondary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppDimensions.space12),
-
-            // 3. Pricing Card (with Live Balance Due Preview)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.space16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Payment & Rates',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(height: AppDimensions.space12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            controller: _stitchingRateController,
-                            label: 'Total Rate (Rs)',
-                            keyboardType: TextInputType.number,
-                            prefixIcon: Icons.payments_outlined,
-                          ),
-                        ),
-                        const SizedBox(width: AppDimensions.space12),
-                        Expanded(
-                          child: CustomTextField(
-                            controller: _advancePaidController,
-                            label: 'Advance (Rs)',
-                            keyboardType: TextInputType.number,
-                            prefixIcon: Icons.price_check,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppDimensions.space12),
-
-                    // Balance preview banner
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: _balanceDue <= 0
-                            ? AppColors.statusReady.withValues(alpha: 0.1)
-                            : AppColors.secondary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                        border: Border.all(
-                          color: _balanceDue <= 0
-                              ? AppColors.statusReady.withValues(alpha: 0.4)
-                              : AppColors.secondary.withValues(alpha: 0.4),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            _balanceDue <= 0 ? Icons.check_circle_outline : Icons.pending_outlined,
-                            size: 18,
-                            color: _balanceDue <= 0 ? AppColors.statusReady : AppColors.secondary,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            _balanceDue <= 0 ? 'Fully Paid' : 'Remaining Balance:',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                          ),
-                          const Spacer(),
-                          Text(
-                            CurrencyFormatter.format(_balanceDue > 0 ? _balanceDue : 0),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: _balanceDue <= 0 ? AppColors.statusReady : AppColors.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppDimensions.space12),
-
-            // 4. Measurements Grid Card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.space16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.straighten, size: 20, color: AppColors.secondary),
-                        SizedBox(width: 8),
-                        Text(
-                          'Measurements (Inches)',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppDimensions.space12),
-                    MeasurementGridInput(
-                      controllers: _measurementControllers,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppDimensions.space20),
-
-            // Save Order Button
-            CustomButton(
-              text: widget.orderId != null ? 'Update Order' : 'Save Order',
-              icon: Icons.check,
-              onPressed: _saveOrder,
-            ),
-            const SizedBox(height: AppDimensions.space32),
-          ],
+        title: Text(
+          widget.orderId != null ? 'Edit Order' : 'New Order',
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1050),
+            child: Form(
+              key: _formKey,
+              child: isUnfolded ? _buildUnfoldedLayout() : _buildMobileLayout(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Compact single-column layout for standard mobile phones
+  Widget _buildMobileLayout() {
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      children: [
+        _buildCustomerCard(),
+        const SizedBox(height: 12),
+        _buildGarmentAndDeliveryCard(),
+        const SizedBox(height: 12),
+        _buildPriceCard(),
+        const SizedBox(height: 12),
+        _buildMeasurementsCard(),
+        const SizedBox(height: 24),
+        _buildSaveButton(),
+        const SizedBox(height: 32),
+      ],
+    );
+  }
+
+  /// Responsive dual-column layout for unfolded foldables and tablets
+  Widget _buildUnfoldedLayout() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left Column: Customer details, garment & delivery, price
+          Expanded(
+            flex: 5,
+            child: Column(
+              children: [
+                _buildCustomerCard(),
+                const SizedBox(height: 14),
+                _buildGarmentAndDeliveryCard(),
+                const SizedBox(height: 14),
+                _buildPriceCard(),
+              ],
+            ),
+          ),
+          const SizedBox(width: 20),
+
+          // Right Column: Measurements grid + Save Button
+          Expanded(
+            flex: 6,
+            child: Column(
+              children: [
+                _buildMeasurementsCard(),
+                const SizedBox(height: 20),
+                _buildSaveButton(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Card 1: Customer Name and Phone Number
+  Widget _buildCustomerCard() {
+    return Container(
+      padding: const EdgeInsets.all(AppDimensions.space16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x05000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.person_outline_rounded, size: 20, color: AppColors.primary),
+              SizedBox(width: 8),
+              Text(
+                'Customer Details',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 20, color: Color(0xFFF1F5F9)),
+
+          // 1. Customer Name
+          CustomTextField(
+            controller: _customerNameController,
+            label: 'Customer Name',
+            hint: 'e.g. Muhammad Ali',
+            prefixIcon: Icons.badge_outlined,
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) {
+                return 'Customer name is required';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: AppDimensions.space12),
+
+          // 2. Phone Number
+          CustomTextField(
+            controller: _customerPhoneController,
+            label: 'Phone Number',
+            hint: '0300-1234567',
+            prefixIcon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Card 2: Garment Type, Delivery Date & Urgent Toggle
+  Widget _buildGarmentAndDeliveryCard() {
+    return Container(
+      padding: const EdgeInsets.all(AppDimensions.space16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x05000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.content_cut_outlined, size: 20, color: AppColors.primary),
+              SizedBox(width: 8),
+              Text(
+                'Garment & Delivery',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 20, color: Color(0xFFF1F5F9)),
+
+          // 3. Garment Type
+          const Text(
+            'Garment Type',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: AppStrings.defaultGarments.map((garment) {
+              final isSelected = _selectedGarment == garment;
+              return ChoiceChip(
+                label: Text(garment),
+                selected: isSelected,
+                selectedColor: AppColors.primary,
+                backgroundColor: const Color(0xFFF8FAFC),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(
+                    color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                labelStyle: TextStyle(
+                  color: isSelected ? Colors.white : const Color(0xFF334155),
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  fontSize: 13,
+                ),
+                onSelected: (val) {
+                  if (val) setState(() => _selectedGarment = garment);
+                },
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 16),
+
+          // 4. Delivery Date & 5. Urgent Switch
+          Row(
+            children: [
+              // Delivery Date Tile
+              Expanded(
+                child: InkWell(
+                  onTap: _selectDeadlineDate,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF8FAFC),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Delivery Date',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_month_outlined,
+                              size: 16,
+                              color: AppColors.secondary,
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                DateFormatter.formatDate(_targetDeadline),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13.5,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Urgent Switch Tile
+              InkWell(
+                onTap: () => setState(() => _isUrgent = !_isUrgent),
+                borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: _isUrgent ? const Color(0xFFFEF2F2) : const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                    border: Border.all(
+                      color: _isUrgent ? const Color(0xFFFECACA) : const Color(0xFFE2E8F0),
+                      width: _isUrgent ? 1.5 : 1.0,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.flash_on_rounded,
+                        color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF94A3B8),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Urgent',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF64748B),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Switch(
+                        value: _isUrgent,
+                        onChanged: (val) => setState(() => _isUrgent = val),
+                        activeTrackColor: const Color(0xFFDC2626),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Card 3: Just Payment Price (clean single field, no extra complexity)
+  Widget _buildPriceCard() {
+    return Container(
+      padding: const EdgeInsets.all(AppDimensions.space16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x05000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.payments_outlined, size: 20, color: AppColors.primary),
+              SizedBox(width: 8),
+              Text(
+                'Payment',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 20, color: Color(0xFFF1F5F9)),
+
+          // 6. Just Payment Price
+          CustomTextField(
+            controller: _priceController,
+            label: 'Payment Price (Rs)',
+            hint: 'e.g. 1800',
+            prefixIcon: Icons.currency_rupee,
+            keyboardType: TextInputType.number,
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) {
+                return 'Please enter payment price';
+              }
+              if (double.tryParse(val.trim()) == null) {
+                return 'Enter a valid number';
+              }
+              return null;
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Card 4: Measurements Grid
+  Widget _buildMeasurementsCard() {
+    return Container(
+      padding: const EdgeInsets.all(AppDimensions.space16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x05000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.straighten, size: 20, color: AppColors.secondary),
+              SizedBox(width: 8),
+              Text(
+                'Measurements (Inches)',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 20, color: Color(0xFFF1F5F9)),
+
+          // 7. Measurement Grid
+          MeasurementGridInput(
+            controllers: _measurementControllers,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Action button to save order
+  Widget _buildSaveButton() {
+    return CustomButton(
+      text: widget.orderId != null ? 'Update Order' : 'Save Order',
+      icon: Icons.check_circle_outline,
+      onPressed: _saveOrder,
     );
   }
 }
