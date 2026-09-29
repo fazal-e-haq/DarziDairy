@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
-import 'text_styles.dart';
 
-/// Complete Material 3 Craft Theme for Tailor Master.
+/// Complete Material 3 Theme for Tailor Master.
 ///
-/// Uses Nunito for big text and headings, and Poppins for body and small text.
+/// Uses Nunito for headings and Poppins for body and general text.
 class AppTheme {
   AppTheme._();
 
@@ -38,102 +38,56 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: colorScheme,
 
-      // --- Typography: Poppins as base font, Nunito for headings & big text ---
-      fontFamily: AppFonts.body,
+      // --- Base Font: Poppins for body text ---
+      fontFamily: 'Poppins',
+
+      // --- Simple TextTheme: Heading & Body properties ---
       textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          fontFamily: AppFonts.heading,
-          fontSize: 32,
-          fontWeight: FontWeight.w800,
-          color: AppColors.textPrimary,
-          letterSpacing: -0.5,
-        ),
-        displayMedium: TextStyle(
-          fontFamily: AppFonts.heading,
-          fontSize: 26,
-          fontWeight: FontWeight.w800,
-          color: AppColors.textPrimary,
-        ),
-        displaySmall: TextStyle(
-          fontFamily: AppFonts.heading,
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
-        ),
+        // Heading properties (Nunito)
         headlineLarge: TextStyle(
-          fontFamily: AppFonts.heading,
-          fontSize: 22,
+          fontFamily: 'Nunito',
+          fontSize: 24,
           fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
+          letterSpacing: -0.3,
         ),
         headlineMedium: TextStyle(
-          fontFamily: AppFonts.heading,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
+          fontFamily: 'Nunito',
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
+          letterSpacing: -0.2,
         ),
         headlineSmall: TextStyle(
-          fontFamily: AppFonts.heading,
+          fontFamily: 'Nunito',
           fontSize: 16,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
         titleLarge: TextStyle(
-          fontFamily: AppFonts.heading,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
+          fontFamily: 'Nunito',
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
         ),
-        titleMedium: TextStyle(
-          fontFamily: AppFonts.body,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
-        ),
-        titleSmall: TextStyle(
-          fontFamily: AppFonts.body,
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
-        ),
+
+        // Body properties (Poppins)
         bodyLarge: TextStyle(
-          fontFamily: AppFonts.body,
+          fontFamily: 'Poppins',
           fontSize: 15,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
-          height: 1.4,
         ),
         bodyMedium: TextStyle(
-          fontFamily: AppFonts.body,
+          fontFamily: 'Poppins',
           fontSize: 13,
           fontWeight: FontWeight.w400,
           color: AppColors.textSecondary,
-          height: 1.4,
         ),
         bodySmall: TextStyle(
-          fontFamily: AppFonts.body,
+          fontFamily: 'Poppins',
           fontSize: 12,
           fontWeight: FontWeight.w400,
-          color: AppColors.textMuted,
-          height: 1.4,
-        ),
-        labelLarge: TextStyle(
-          fontFamily: AppFonts.body,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-          letterSpacing: 0.2,
-        ),
-        labelMedium: TextStyle(
-          fontFamily: AppFonts.body,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: AppColors.textSecondary,
-        ),
-        labelSmall: TextStyle(
-          fontFamily: AppFonts.body,
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
           color: AppColors.textMuted,
         ),
       ),
@@ -146,7 +100,7 @@ class AppTheme {
         scrolledUnderElevation: 2,
         centerTitle: false,
         titleTextStyle: TextStyle(
-          fontFamily: AppFonts.heading,
+          fontFamily: 'Nunito',
           fontSize: 19,
           fontWeight: FontWeight.w800,
           color: AppColors.surface,
@@ -166,11 +120,11 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
-        margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: AppDimensions.roundedMedium,
+          borderRadius: AppDimensions.roundedLarge,
           side: const BorderSide(color: AppColors.border, width: 1.0),
         ),
+        margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
       ),
 
@@ -184,19 +138,16 @@ class AppTheme {
         ),
         isDense: false,
         hintStyle: const TextStyle(
-          fontFamily: AppFonts.body,
           color: AppColors.textDisabled,
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
         labelStyle: const TextStyle(
-          fontFamily: AppFonts.body,
           color: AppColors.textSecondary,
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
         floatingLabelStyle: const TextStyle(
-          fontFamily: AppFonts.body,
           color: AppColors.primary,
           fontSize: 13,
           fontWeight: FontWeight.w600,
@@ -222,7 +173,6 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.statusError, width: 2.0),
         ),
         suffixStyle: const TextStyle(
-          fontFamily: AppFonts.body,
           color: AppColors.textSecondary,
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -241,7 +191,6 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: AppDimensions.space20),
           textStyle: const TextStyle(
-            fontFamily: AppFonts.body,
             fontSize: 15,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.3,
@@ -260,7 +209,6 @@ class AppTheme {
           side: const BorderSide(color: AppColors.border, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: AppDimensions.space20),
           textStyle: const TextStyle(
-            fontFamily: AppFonts.body,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
@@ -268,35 +216,32 @@ class AppTheme {
       ),
 
       // --- Floating Action Button Theme ---
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.secondary,
-        foregroundColor: AppColors.surface,
+        foregroundColor: AppColors.primary,
         elevation: 3,
         focusElevation: 5,
         hoverElevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        ),
+        shape: CircleBorder(),
       ),
 
-      // --- Chip & Status Badge Theme ---
+      // --- Chip Theme ---
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surfaceVariant,
+        disabledColor: AppColors.border,
         selectedColor: AppColors.primary,
-        disabledColor: AppColors.surfaceVariant.withValues(alpha: 0.5),
+        secondarySelectedColor: AppColors.secondary,
         padding: const EdgeInsets.symmetric(
-          horizontal: AppDimensions.space8,
-          vertical: AppDimensions.space4,
+          horizontal: AppDimensions.space10,
+          vertical: AppDimensions.space8,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-          side: const BorderSide(color: AppColors.border, width: 1.0),
+          borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
+          side: const BorderSide(color: AppColors.border),
         ),
         labelStyle: const TextStyle(
-          fontFamily: AppFonts.body,
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
         ),
       ),
 
@@ -314,9 +259,13 @@ class AppTheme {
         shape: const RoundedRectangleBorder(
           borderRadius: AppDimensions.roundedLarge,
         ),
-        titleTextStyle: AppTextStyles.headlineMedium,
+        titleTextStyle: const TextStyle(
+          fontFamily: 'Nunito',
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textPrimary,
+        ),
         contentTextStyle: const TextStyle(
-          fontFamily: AppFonts.body,
           color: AppColors.textSecondary,
           fontSize: 14,
         ),
@@ -329,16 +278,34 @@ class AppTheme {
         indicatorColor: AppColors.secondary,
         indicatorSize: TabBarIndicatorSize.tab,
         labelStyle: TextStyle(
-          fontFamily: AppFonts.heading,
+          fontFamily: 'Nunito',
           fontSize: 14,
           fontWeight: FontWeight.w700,
         ),
         unselectedLabelStyle: TextStyle(
-          fontFamily: AppFonts.body,
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
       ),
     );
   }
+}
+
+/// Convenience extension providing direct heading and body properties on TextTheme
+extension AppTextThemeProperties on TextTheme {
+  TextStyle get heading =>
+      headlineMedium ??
+      const TextStyle(
+        fontFamily: 'Nunito',
+        fontSize: 20,
+        fontWeight: FontWeight.w800,
+      );
+
+  TextStyle get body =>
+      bodyMedium ??
+      const TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      );
 }

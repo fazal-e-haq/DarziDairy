@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
-import '../../core/theme/text_styles.dart';
 
 /// Clean and responsive grid of measurement input fields for tailoring specifications.
 class MeasurementGridInput extends StatelessWidget {
@@ -49,7 +48,6 @@ class MeasurementGridInput extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontFamily: AppFonts.body,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
@@ -63,7 +61,7 @@ class MeasurementGridInput extends StatelessWidget {
                       controller: controller,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       style: const TextStyle(
-                        fontFamily: AppFonts.heading,
+                        fontFamily: 'Nunito',
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -76,7 +74,7 @@ class MeasurementGridInput extends StatelessWidget {
                         focusedBorder: InputBorder.none,
                         hintText: '0.0',
                         hintStyle: TextStyle(
-                          fontFamily: AppFonts.heading,
+                          fontFamily: 'Nunito',
                           color: AppColors.textDisabled,
                           fontSize: 16,
                         ),
@@ -86,7 +84,6 @@ class MeasurementGridInput extends StatelessWidget {
                   const Text(
                     'in',
                     style: TextStyle(
-                      fontFamily: AppFonts.body,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                       color: AppColors.textMuted,

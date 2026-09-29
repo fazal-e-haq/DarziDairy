@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
-import '../../core/theme/text_styles.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/utils/date_formatter.dart';
 import '../../features/orders/domain/entities/order_entity.dart';
@@ -94,7 +93,7 @@ class OrderCard extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontFamily: AppFonts.heading,
+                          fontFamily: 'Nunito',
                           fontSize: 21,
                           fontWeight: FontWeight.w800,
                           color: AppColors.primary,
@@ -108,7 +107,7 @@ class OrderCard extends StatelessWidget {
                     Text(
                       CurrencyFormatter.format(order.stitchingRate),
                       style: const TextStyle(
-                        fontFamily: AppFonts.heading,
+                        fontFamily: 'Nunito',
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: AppColors.primary,
@@ -132,7 +131,6 @@ class OrderCard extends StatelessWidget {
                   child: Text(
                     order.garmentType,
                     style: const TextStyle(
-                      fontFamily: AppFonts.body,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF475569),
@@ -169,7 +167,6 @@ class OrderCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontFamily: AppFonts.body,
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xFF64748B),
@@ -207,7 +204,6 @@ class OrderCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontFamily: AppFonts.body,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: isCompleted

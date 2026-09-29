@@ -7,7 +7,6 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../../core/theme/responsive_layout.dart';
-import '../../../../core/theme/text_styles.dart';
 import '../../../../shared/widgets/order_card.dart';
 import '../providers/order_list_provider.dart';
 
@@ -39,7 +38,7 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
         title: const Text(
           AppStrings.appName,
           style: TextStyle(
-            fontFamily: AppFonts.heading,
+            fontFamily: 'Nunito',
             fontWeight: FontWeight.w800,
             letterSpacing: -0.2,
           ),
@@ -77,7 +76,6 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                     context.read<OrderListProvider>().setSearchQuery(val);
                   },
                   style: const TextStyle(
-                    fontFamily: AppFonts.body,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -85,7 +83,6 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search by customer name...',
                     hintStyle: const TextStyle(
-                      fontFamily: AppFonts.body,
                       color: AppColors.textMuted,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -154,7 +151,7 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                                     : 'No orders added yet',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
-                                  fontFamily: AppFonts.heading,
+                                  fontFamily: 'Nunito',
                                   fontSize: 17,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.textSecondary,
@@ -164,7 +161,6 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                               const Text(
                                 'Tap "+ New Order" below to add an order.',
                                 style: TextStyle(
-                                  fontFamily: AppFonts.body,
                                   fontSize: 13,
                                   color: AppColors.textMuted,
                                 ),
@@ -198,7 +194,6 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
         label: const Text(
           'New Order',
           style: TextStyle(
-            fontFamily: AppFonts.body,
             fontWeight: FontWeight.w700,
             fontSize: 15,
             letterSpacing: 0.3,

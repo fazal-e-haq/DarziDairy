@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
-import '../../core/theme/text_styles.dart';
 
 /// Reusable text field with support for text prefix (e.g. "Rs"), icon, or numeric keypad mode
 class CustomTextField extends StatelessWidget {
@@ -38,7 +37,6 @@ class CustomTextField extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontFamily: AppFonts.body,
             fontSize: 13,
             fontWeight: FontWeight.w600,
             color: AppColors.textSecondary,
@@ -51,7 +49,6 @@ class CustomTextField extends StatelessWidget {
               ? const TextInputType.numberWithOptions(decimal: true)
               : keyboardType,
           style: const TextStyle(
-            fontFamily: AppFonts.body,
             fontSize: 15,
             fontWeight: FontWeight.w500,
             color: AppColors.textPrimary,
@@ -61,7 +58,6 @@ class CustomTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: const TextStyle(
-              fontFamily: AppFonts.body,
               color: AppColors.textDisabled,
               fontSize: 14,
             ),
@@ -75,7 +71,7 @@ class CustomTextField extends StatelessWidget {
                         Text(
                           prefixText!,
                           style: const TextStyle(
-                            fontFamily: AppFonts.heading,
+                            fontFamily: 'Nunito',
                             fontWeight: FontWeight.w800,
                             fontSize: 15,
                             color: AppColors.primary,

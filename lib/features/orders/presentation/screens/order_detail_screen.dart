@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/routing/app_router.dart';
-import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/confirmation_dialog.dart';
@@ -78,7 +77,7 @@ class OrderDetailScreen extends StatelessWidget {
                           child: Text(
                             order.orderToken,
                             style: const TextStyle(
-                              fontFamily: AppFonts.heading,
+                              fontFamily: 'Nunito',
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -97,7 +96,6 @@ class OrderDetailScreen extends StatelessWidget {
                           child: Text(
                             order.status.displayName,
                             style: TextStyle(
-                              fontFamily: AppFonts.body,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: order.isCompleted ? AppColors.statusReady : AppColors.secondary,
@@ -123,7 +121,7 @@ class OrderDetailScreen extends StatelessWidget {
                               Text(
                                 order.customerName,
                                 style: const TextStyle(
-                                  fontFamily: AppFonts.heading,
+                                  fontFamily: 'Nunito',
                                   fontSize: 19,
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -132,7 +130,6 @@ class OrderDetailScreen extends StatelessWidget {
                               Text(
                                 order.customerPhone,
                                 style: const TextStyle(
-                                  fontFamily: AppFonts.body,
                                   fontSize: 14,
                                   color: AppColors.textSecondary,
                                 ),
@@ -190,7 +187,7 @@ class OrderDetailScreen extends StatelessWidget {
                     const Text(
                       'Payment Summary',
                       style: TextStyle(
-                        fontFamily: AppFonts.heading,
+                        fontFamily: 'Nunito',
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                       ),
@@ -228,7 +225,6 @@ class OrderDetailScreen extends StatelessWidget {
                 label: Text(
                   order.isCompleted ? 'Mark as Active' : 'Mark as Completed',
                   style: const TextStyle(
-                    fontFamily: AppFonts.body,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -244,7 +240,6 @@ class OrderDetailScreen extends StatelessWidget {
                               ? 'Order ${order.orderToken} marked as active'
                               : 'Order ${order.orderToken} completed and moved to History!',
                           style: const TextStyle(
-                            fontFamily: AppFonts.body,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -295,7 +290,6 @@ class _DetailRow extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontFamily: AppFonts.body,
             color: AppColors.textSecondary,
             fontSize: 14,
           ),
@@ -304,7 +298,6 @@ class _DetailRow extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontFamily: AppFonts.body,
             fontWeight: FontWeight.w700,
             fontSize: 14,
             color: valueColor ?? AppColors.textPrimary,
@@ -335,7 +328,6 @@ class _PriceRow extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontFamily: AppFonts.body,
             fontSize: isTotal ? 15 : 14,
             fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
             color: isTotal ? AppColors.textPrimary : AppColors.textSecondary,
@@ -345,7 +337,7 @@ class _PriceRow extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontFamily: AppFonts.heading,
+            fontFamily: 'Nunito',
             fontSize: isTotal ? 18 : 15,
             fontWeight: FontWeight.w800,
             color: color ?? AppColors.textPrimary,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/theme/text_styles.dart';
 
 /// Clean, minimal settings screen ready for future configuration.
 class SettingsScreen extends StatelessWidget {
@@ -15,7 +14,7 @@ class SettingsScreen extends StatelessWidget {
         title: const Text(
           'Settings',
           style: TextStyle(
-            fontFamily: AppFonts.heading,
+            fontFamily: 'Nunito',
             fontWeight: FontWeight.w800,
             letterSpacing: -0.2,
           ),
@@ -30,7 +29,7 @@ class SettingsScreen extends StatelessWidget {
               Container(
                 width: 72,
                 height: 72,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.surfaceVariant,
                   shape: BoxShape.circle,
                 ),
@@ -44,7 +43,7 @@ class SettingsScreen extends StatelessWidget {
               const Text(
                 'Workshop Settings',
                 style: TextStyle(
-                  fontFamily: AppFonts.heading,
+                  fontFamily: 'Nunito',
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
@@ -55,7 +54,6 @@ class SettingsScreen extends StatelessWidget {
                 'Settings options will be added here.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: AppFonts.body,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color: AppColors.textMuted,

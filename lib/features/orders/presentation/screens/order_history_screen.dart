@@ -6,7 +6,6 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../../core/theme/responsive_layout.dart';
-import '../../../../core/theme/text_styles.dart';
 import '../../../../shared/widgets/order_card.dart';
 import '../../domain/entities/order_entity.dart';
 import '../providers/order_list_provider.dart';
@@ -40,7 +39,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         title: const Text(
           'Order History',
           style: TextStyle(
-            fontFamily: AppFonts.heading,
+            fontFamily: 'Nunito',
             fontWeight: FontWeight.w800,
             letterSpacing: -0.2,
           ),
@@ -67,7 +66,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                     });
                   },
                   style: const TextStyle(
-                    fontFamily: AppFonts.body,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -75,7 +73,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search completed orders by customer...',
                     hintStyle: const TextStyle(
-                      fontFamily: AppFonts.body,
                       color: AppColors.textMuted,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -146,7 +143,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                     : 'No completed orders yet',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
-                                  fontFamily: AppFonts.heading,
+                                  fontFamily: 'Nunito',
                                   fontSize: 17,
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.textSecondary,
@@ -159,7 +156,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                     : 'When you mark orders as completed, they will appear here.',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
-                                  fontFamily: AppFonts.body,
                                   fontSize: 13,
                                   color: AppColors.textMuted,
                                 ),
