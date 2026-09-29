@@ -23,22 +23,26 @@ class OrderCard extends StatelessWidget {
     final deadlineText = DateFormatter.formatDeadline(order.targetDeadline);
     final isOverdue = deadlineText.contains('Overdue') && !order.isCompleted;
 
+    final isUrgent = order.isUrgent;
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppDimensions.space12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: isUrgent ? const Color(0xFFFFF1F1) : AppColors.surface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
         border: Border.all(
-          color: order.isUrgent
-              ? const Color(0xFFFECACA)
+          color: isUrgent
+              ? const Color(0xFFFCA5A5)
               : const Color(0xFFE2E8F0),
-          width: order.isUrgent ? 1.5 : 1.0,
+          width: isUrgent ? 1.5 : 1.0,
         ),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x06000000),
-            blurRadius: 10,
-            offset: Offset(0, 3),
+            color: isUrgent
+                ? const Color(0x18DC2626)
+                : const Color(0x06000000),
+            blurRadius: isUrgent ? 12 : 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -137,9 +141,11 @@ class OrderCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: isUrgent ? Colors.white : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(
+                      color: isUrgent ? const Color(0xFFFECACA) : const Color(0xFFE2E8F0),
+                    ),
                   ),
                   child: Text(
                     order.garmentType,
@@ -153,7 +159,11 @@ class OrderCard extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 12),
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: isUrgent ? const Color(0xFFFEE2E2) : const Color(0xFFF1F5F9),
+                ),
                 const SizedBox(height: 10),
 
                 // Bottom Row: Booking Date & Time + Delivery Date
