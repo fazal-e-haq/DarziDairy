@@ -165,4 +165,44 @@ void main() {
       expect(find.byIcon(Icons.check_circle_rounded), findsWidgets);
     });
   });
+
+  group('CreateOrderScreen Validation & UI Tests', () {
+    testWidgets('Customer Name and Phone Number are required fields',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const TailorMasterApp());
+      await tester.pumpAndSettle();
+
+      // Navigate to create order
+      AppRouter.router.push(AppRouter.createOrder);
+      await tester.pumpAndSettle();
+
+      expect(find.text('New Order'), findsOneWidget);
+
+      // Tap Save Order without entering name or phone
+      final saveBtn = find.text('Save Order');
+      await tester.ensureVisible(saveBtn);
+      await tester.tap(saveBtn);
+      await tester.pumpAndSettle();
+
+      // Verify validation error messages are displayed
+      expect(find.text('Customer name is required'), findsOneWidget);
+      expect(find.text('Phone number is required'), findsOneWidget);
+    });
+
+    testWidgets('Fraction toolbar and fraction chips are completely removed',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const TailorMasterApp());
+      await tester.pumpAndSettle();
+
+      // Navigate to create order
+      AppRouter.router.push(AppRouter.createOrder);
+      await tester.pumpAndSettle();
+
+      // Verify fraction texts and chips are not present anywhere
+      expect(find.textContaining('fraction'), findsNothing);
+      expect(find.text('.25'), findsNothing);
+      expect(find.text('.50'), findsNothing);
+      expect(find.text('.75'), findsNothing);
+    });
+  });
 }

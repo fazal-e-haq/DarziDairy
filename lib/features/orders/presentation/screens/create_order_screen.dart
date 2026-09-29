@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/theme/responsive_layout.dart';
 import '../../../../core/theme/text_styles.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/custom_button.dart';
@@ -165,7 +164,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isUnfolded = context.isUnfolded;
+    final isUnfolded = MediaQuery.sizeOf(context).width >= 720;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -268,27 +267,31 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.person_outline_rounded, size: 20, color: AppColors.primary),
-              SizedBox(width: 8),
-              Text(
-                'Customer Details',
-                style: TextStyle(
-                  fontFamily: AppFonts.heading,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+              const Icon(Icons.person_outline_rounded, size: 20, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Customer Details',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: AppFonts.heading,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ],
           ),
           const Divider(height: 20, color: Color(0xFFF1F5F9)),
 
-          // 1. Customer Name
+          // 1. Customer Name (Required)
           CustomTextField(
             controller: _customerNameController,
-            label: 'Customer Name',
+            label: 'Customer Name *',
             hint: 'e.g. Muhammad Ali',
             prefixIcon: Icons.badge_outlined,
             validator: (val) {
@@ -300,13 +303,22 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           ),
           const SizedBox(height: AppDimensions.space12),
 
-          // 2. Phone Number
+          // 2. Phone Number (Required)
           CustomTextField(
             controller: _customerPhoneController,
-            label: 'Phone Number',
+            label: 'Phone Number *',
             hint: '0300-1234567',
             prefixIcon: Icons.phone_outlined,
             keyboardType: TextInputType.phone,
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) {
+                return 'Phone number is required';
+              }
+              if (val.trim().length < 7) {
+                return 'Please enter a valid phone number';
+              }
+              return null;
+            },
           ),
         ],
       ),
@@ -332,17 +344,21 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.content_cut_outlined, size: 20, color: AppColors.primary),
-              SizedBox(width: 8),
-              Text(
-                'Garment & Delivery',
-                style: TextStyle(
-                  fontFamily: AppFonts.heading,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+              const Icon(Icons.content_cut_outlined, size: 20, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Garment & Delivery',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: AppFonts.heading,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ],
@@ -524,17 +540,21 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.payments_outlined, size: 20, color: AppColors.primary),
-              SizedBox(width: 8),
-              Text(
-                'Payment',
-                style: TextStyle(
-                  fontFamily: AppFonts.heading,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+              const Icon(Icons.payments_outlined, size: 20, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Payment',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: AppFonts.heading,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ],
@@ -582,17 +602,21 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.straighten, size: 20, color: AppColors.secondary),
-              SizedBox(width: 8),
-              Text(
-                'Measurements (Inches)',
-                style: TextStyle(
-                  fontFamily: AppFonts.heading,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+              const Icon(Icons.straighten, size: 20, color: AppColors.secondary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Measurements (Inches)',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: AppFonts.heading,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ],
