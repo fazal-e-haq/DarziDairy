@@ -241,8 +241,8 @@ class OrderDetailScreen extends StatelessWidget {
                       SnackBar(
                         content: Text(
                           wasCompleted
-                              ? 'Order #${order.orderToken} marked as active'
-                              : 'Order #${order.orderToken} completed and moved to History!',
+                              ? 'Order ${order.orderToken} marked as active'
+                              : 'Order ${order.orderToken} completed and moved to History!',
                           style: const TextStyle(
                             fontFamily: AppFonts.body,
                             fontWeight: FontWeight.w600,

@@ -126,7 +126,20 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     final customerPhone = _customerPhoneController.text.trim();
     final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
 
-    final token = _existingToken ?? '#B-${100 + (DateTime.now().millisecondsSinceEpoch % 900)}';
+    final orderProvider = context.read<OrderListProvider>();
+    String token = _existingToken ?? '';
+    if (token.isEmpty) {
+      int maxNum = 0;
+      for (final order in orderProvider.allOrders) {
+        final match = RegExp(r'\d+').firstMatch(order.orderToken);
+        if (match != null) {
+          final n = int.tryParse(match.group(0)!) ?? 0;
+          if (n > maxNum) maxNum = n;
+        }
+      }
+      final nextNum = maxNum > 0 ? maxNum + 1 : (orderProvider.allOrders.length + 1);
+      token = '#$nextNum';
+    }
 
     final newOrder = OrderEntity(
       id: widget.orderId ?? 0,
@@ -143,7 +156,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       advancePaid: price,
     );
 
-    final orderProvider = context.read<OrderListProvider>();
     await orderProvider.repository.saveOrder(newOrder);
     await orderProvider.loadOrders();
 

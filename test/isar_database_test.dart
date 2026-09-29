@@ -39,7 +39,7 @@ void main() {
     test('Saving and retrieving orders persists data correctly', () async {
       final newOrder = OrderEntity(
         id: 0,
-        orderToken: '#B-901',
+        orderToken: '#10',
         customerId: 10,
         customerName: 'Muhammad Akram',
         customerPhone: '0301-7654321',
@@ -57,7 +57,7 @@ void main() {
 
       final fetchedOrder = await repository.getOrderById(savedId);
       expect(fetchedOrder, isNotNull);
-      expect(fetchedOrder!.orderToken, '#B-901');
+      expect(fetchedOrder!.orderToken, '#10');
       expect(fetchedOrder.customerName, 'Muhammad Akram');
       expect(fetchedOrder.customerPhone, '0301-7654321');
       expect(fetchedOrder.stitchingRate, 2400.0);
@@ -67,7 +67,7 @@ void main() {
     test('Updating order status persists between active and completed', () async {
       final newOrder = OrderEntity(
         id: 0,
-        orderToken: '#B-902',
+        orderToken: '#11',
         customerId: 11,
         customerName: 'Tahir Mehmood',
         customerPhone: '0322-9876543',
@@ -98,7 +98,7 @@ void main() {
     test('Soft deleting and restoring orders functions properly', () async {
       final newOrder = OrderEntity(
         id: 0,
-        orderToken: '#B-903',
+        orderToken: '#12',
         customerId: 12,
         customerName: 'Kamran Ashraf',
         customerPhone: '0334-5556677',

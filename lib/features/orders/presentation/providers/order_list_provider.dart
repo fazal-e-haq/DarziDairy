@@ -139,7 +139,7 @@ class OrderListProvider extends ChangeNotifier {
     return [
       OrderEntity(
         id: 1,
-        orderToken: '#B-101',
+        orderToken: '#1',
         customerId: 0,
         customerName: 'Chaudhry Nadeem',
         customerPhone: '0300-8452199',
@@ -153,7 +153,7 @@ class OrderListProvider extends ChangeNotifier {
       ),
       OrderEntity(
         id: 2,
-        orderToken: '#B-102',
+        orderToken: '#2',
         customerId: 0,
         customerName: 'Sheikh Tariq',
         customerPhone: '0321-4567890',
@@ -167,7 +167,7 @@ class OrderListProvider extends ChangeNotifier {
       ),
       OrderEntity(
         id: 3,
-        orderToken: '#B-103',
+        orderToken: '#3',
         customerId: 0,
         customerName: 'Bilal Farooq',
         customerPhone: '0333-9876543',
@@ -181,7 +181,7 @@ class OrderListProvider extends ChangeNotifier {
       ),
       OrderEntity(
         id: 4,
-        orderToken: '#B-104',
+        orderToken: '#4',
         customerId: 0,
         customerName: 'Malik Zeeshan',
         customerPhone: '0312-3456789',
@@ -195,7 +195,7 @@ class OrderListProvider extends ChangeNotifier {
       ),
       OrderEntity(
         id: 5,
-        orderToken: '#B-105',
+        orderToken: '#5',
         customerId: 0,
         customerName: 'Haji Abdul Rehman',
         customerPhone: '0345-1234567',

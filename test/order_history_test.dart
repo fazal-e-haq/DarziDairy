@@ -49,8 +49,8 @@ void main() {
 
       // Verify Settings page is displayed
       expect(find.text('Settings'), findsOneWidget);
-      expect(find.text('WORKSHOP PROFILE'), findsOneWidget);
-      expect(find.text('PREFERENCES'), findsOneWidget);
+      expect(find.text('Workshop Settings'), findsOneWidget);
+      expect(find.text('Settings options will be added here.'), findsOneWidget);
     });
   });
 
@@ -59,7 +59,7 @@ void main() {
         (WidgetTester tester) async {
       final completedOrder = OrderEntity(
         id: 99,
-        orderToken: '#B-99',
+        orderToken: '#99',
         customerId: 1,
         customerName: 'Test Completed Customer',
         customerPhone: '0300-1111111',
@@ -101,7 +101,7 @@ void main() {
         (WidgetTester tester) async {
       final urgentOrder = OrderEntity(
         id: 98,
-        orderToken: '#B-98',
+        orderToken: '#98',
         customerId: 2,
         customerName: 'Test Urgent Customer',
         customerPhone: '0300-2222222',

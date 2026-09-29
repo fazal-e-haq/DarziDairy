@@ -61,7 +61,7 @@ class AppColors {
   static const Color divider = Color(0xFFCBD5E1);
 
   // --- High-Contrast Typography Hierarchy ---
-  /// Highest contrast text for Customer Names, Token IDs (#B-104), and primary numbers.
+  /// Highest contrast text for Customer Names, Order Numbers (#1), and primary numbers.
   static const Color textPrimary = Color(0xFF0F172A);
 
   /// Medium contrast text for phone numbers, garment specifications, and measurement labels.
