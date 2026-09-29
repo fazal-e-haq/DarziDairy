@@ -2,7 +2,7 @@
 class AppStrings {
   AppStrings._();
 
-  static const String appName = 'Tailor Master';
+  static const String appName = 'DarziDairy';
   static const String appTagline = 'Offline Khata & Workshop';
 
   // Common Navigation

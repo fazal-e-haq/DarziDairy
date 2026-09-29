@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_dimensions.dart';
 
-/// Complete Material 3 Theme for Tailor Master.
+/// Complete Material 3 Theme for DarziDairy.
 ///
 /// Uses Nunito for headings and Poppins for body and general text.
 class AppTheme {

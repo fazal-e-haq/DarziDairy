@@ -1,11 +1,11 @@
 import 'dart:async';
+
 import 'package:isar/isar.dart';
+
 import '../../../../core/database/isar_service.dart';
 import '../models/order_collection.dart';
 
-/// Production-ready datasource for workshop orders.
 /// Saves directly to persistent Isar database when available,
-/// maintaining data across device/phone restarts.
 class OrderLocalDataSource {
   static final List<OrderCollection> _store = [];
   static int _nextId = 1;
@@ -64,7 +64,9 @@ class OrderLocalDataSource {
           .sortByBookingDateDesc()
           .findAll();
     }
-    return _store.where((o) => o.customerId == customerId && !o.isDeleted).toList()
+    return _store
+        .where((o) => o.customerId == customerId && !o.isDeleted)
+        .toList()
       ..sort((a, b) => b.bookingDate.compareTo(a.bookingDate));
   }
 

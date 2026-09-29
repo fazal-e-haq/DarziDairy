@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Production color tokens for Tailor Master Craft & Workshop Theme.
+/// Production color tokens for DarziDairy Craft & Workshop Theme.
 ///
 /// Designed with high contrast for busy workshop environments and fabric chalk legibility.
 class AppColors {
