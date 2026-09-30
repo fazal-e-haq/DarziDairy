@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -62,95 +63,114 @@ class OrderDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppDimensions.space16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Order Header Card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.space16),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: order.isUrgent ? AppColors.statusError : AppColors.primary,
-                            borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                          ),
-                          child: Text(
-                            order.orderToken,
-                            style: const TextStyle(
-                              fontFamily: 'Nunito',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: order.isCompleted
-                                ? AppColors.statusReady.withValues(alpha: 0.12)
-                                : AppColors.secondary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
-                          ),
-                          child: Text(
-                            order.status.displayName,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: order.isCompleted ? AppColors.statusReady : AppColors.secondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 24),
-
-                    // Customer info
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          backgroundColor: AppColors.surfaceVariant,
-                          child: Icon(Icons.person, color: AppColors.primary),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 850),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppDimensions.space16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Order Header Card
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppDimensions.space16),
+                      child: Column(
+                        children: [
+                          Row(
                             children: [
-                              Text(
-                                order.customerName,
-                                style: const TextStyle(
-                                  fontFamily: 'Nunito',
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w800,
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: order.isUrgent ? AppColors.statusError : AppColors.primary,
+                                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                                ),
+                                child: Text(
+                                  order.orderToken,
+                                  style: const TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                order.customerPhone,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
+                              const Spacer(),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: order.isCompleted
+                                      ? AppColors.statusReady.withValues(alpha: 0.12)
+                                      : AppColors.secondary.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(AppDimensions.radiusSmall),
+                                ),
+                                child: Text(
+                                  order.status.displayName,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: order.isCompleted ? AppColors.statusReady : AppColors.secondary,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          const Divider(height: 24),
+
+                          // Customer info
+                          Row(
+                            children: [
+                              const CircleAvatar(
+                                backgroundColor: AppColors.surfaceVariant,
+                                child: Icon(Icons.person, color: AppColors.primary),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      order.customerName,
+                                      style: const TextStyle(
+                                        fontFamily: 'Nunito',
+                                        fontSize: 19,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      order.customerPhone,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (order.customerPhone.isNotEmpty)
+                                IconButton(
+                                  icon: const Icon(Icons.copy_rounded, size: 20, color: AppColors.textMuted),
+                                  tooltip: 'Copy Phone',
+                                  onPressed: () {
+                                    Clipboard.setData(ClipboardData(text: order.customerPhone));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Phone number copied to clipboard'),
+                                        behavior: SnackBarBehavior.floating,
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  },
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: AppDimensions.space12),
+                  ),
+                  const SizedBox(height: AppDimensions.space12),
 
             // 2. Garment & Dates Card
             Card(
@@ -349,6 +369,9 @@ class OrderDetailScreen extends StatelessWidget {
           ],
         ),
       ),
+    ),
+  ),
+),
     );
   }
 }
