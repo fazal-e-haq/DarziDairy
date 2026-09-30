@@ -56,7 +56,7 @@ class OrderCard extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppDimensions.space12),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: cardBgColor,
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
@@ -78,37 +78,88 @@ class OrderCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Row: Big Customer Name + Price
+                // Top Row: Token Badge + Customer Name & Phone + Price
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Big Customer Name
-                    Expanded(
+                    // Order Token Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: isUrgent
+                            ? const Color(0xFFDC2626)
+                            : (isCompleted ? const Color(0xFF16A34A) : AppColors.primary),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
                       child: Text(
-                        order.customerName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        order.orderToken,
                         style: const TextStyle(
                           fontFamily: 'Nunito',
-                          fontSize: 21,
+                          fontSize: 13,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
-                          letterSpacing: -0.3,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
 
-                    // Price (Right-aligned, prominent, elegant)
+                    // Customer Name and Phone Number
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            order.customerName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontFamily: 'Nunito',
+                              fontSize: 19,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primary,
+                              letterSpacing: -0.2,
+                            ),
+                          ),
+                          if (order.customerPhone.isNotEmpty) ...[
+                            const SizedBox(height: 3),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.phone_outlined,
+                                  size: 13,
+                                  color: Color(0xFF64748B),
+                                ),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    order.customerPhone,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+
+                    // Price (Right-aligned, prominent)
                     Text(
                       CurrencyFormatter.format(order.stitchingRate),
                       style: const TextStyle(
                         fontFamily: 'Nunito',
-                        fontSize: 18,
+                        fontSize: 17,
                         fontWeight: FontWeight.w800,
                         color: AppColors.primary,
                         letterSpacing: -0.2,
@@ -118,33 +169,64 @@ class OrderCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-                // Middle: Type of Cutting / Job (Neutral, NO COLOR added)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: tagBgColor,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: tagBorderColor,
+                // Middle: Type of Cutting / Garment & Urgent Badge
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: tagBgColor,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: tagBorderColor,
+                        ),
+                      ),
+                      child: Text(
+                        order.garmentType,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF475569),
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    order.garmentType,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF475569),
-                    ),
-                  ),
+                    if (isUrgent)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEF2F2),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: const Color(0xFFFECACA)),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.bolt, size: 13, color: Color(0xFFDC2626)),
+                            SizedBox(width: 2),
+                            Text(
+                              'URGENT',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFFDC2626),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Divider(
                   height: 1,
                   thickness: 1,
                   color: dividerColor,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
 
                 // Bottom Row: Booking Date & Time + Delivery / Completed Date
                 Row(

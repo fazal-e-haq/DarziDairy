@@ -206,7 +206,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         crossAxisCount: 2,
         crossAxisSpacing: 16,
         mainAxisSpacing: 12,
-        mainAxisExtent: 180,
+        mainAxisExtent: 225,
       ),
       itemCount: orders.length,
       itemBuilder: (context, index) {

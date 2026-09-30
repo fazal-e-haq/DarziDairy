@@ -276,17 +276,23 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left Column: Customer details, garment & delivery, price
+          // Left Column: Customer details, garment & delivery, price (in SafeArea for foldables)
           Expanded(
             flex: 5,
-            child: Column(
-              children: [
-                _buildCustomerCard(),
-                const SizedBox(height: 14),
-                _buildGarmentAndDeliveryCard(),
-                const SizedBox(height: 14),
-                _buildPriceCard(),
-              ],
+            child: SafeArea(
+              left: true,
+              top: false,
+              right: false,
+              bottom: false,
+              child: Column(
+                children: [
+                  _buildCustomerCard(),
+                  const SizedBox(height: 14),
+                  _buildGarmentAndDeliveryCard(),
+                  const SizedBox(height: 14),
+                  _buildPriceCard(),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 20),

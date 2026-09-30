@@ -65,65 +65,76 @@ class _MainShellScreenState extends State<MainShellScreen> {
 
     if (isUnfolded) {
       // Responsive layout with NavigationRail for tablets & foldables (≥ 600dp)
+      // Wrapped in SafeArea so left navigation tiles and hinge are protected
       return Scaffold(
         backgroundColor: AppColors.background,
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: _currentIndex,
-              onDestinationSelected: _onTabChanged,
-              labelType: NavigationRailLabelType.all,
-              backgroundColor: AppColors.surface,
-              indicatorColor: AppColors.primary.withValues(alpha: 0.12),
-              selectedIconTheme: const IconThemeData(color: AppColors.primary, size: 26),
-              unselectedIconTheme: const IconThemeData(color: AppColors.textMuted, size: 24),
-              selectedLabelTextStyle: const TextStyle(
-                fontFamily: 'Nunito',
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                color: AppColors.primary,
+        body: SafeArea(
+          left: true,
+          top: true,
+          right: true,
+          bottom: true,
+          child: Row(
+            children: [
+              NavigationRail(
+                selectedIndex: _currentIndex,
+                onDestinationSelected: _onTabChanged,
+                labelType: NavigationRailLabelType.all,
+                backgroundColor: AppColors.surface,
+                indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+                indicatorShape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                selectedIconTheme: const IconThemeData(color: AppColors.primary, size: 26),
+                unselectedIconTheme: const IconThemeData(color: Color(0xFF64748B), size: 24),
+                selectedLabelTextStyle: const TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primary,
+                ),
+                unselectedLabelTextStyle: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF64748B),
+                ),
+                destinations: const [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.content_cut_outlined),
+                    selectedIcon: Icon(Icons.content_cut_rounded),
+                    label: Text('Orders'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.add_box_outlined),
+                    selectedIcon: Icon(Icons.add_box_rounded),
+                    label: Text('New Order'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.history_outlined),
+                    selectedIcon: Icon(Icons.history_rounded),
+                    label: Text('History'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.account_balance_wallet_outlined),
+                    selectedIcon: Icon(Icons.account_balance_wallet_rounded),
+                    label: Text('Expenses'),
+                  ),
+                ],
               ),
-              unselectedLabelTextStyle: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textMuted,
+              const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE2E8F0)),
+              Expanded(
+                child: IndexedStack(
+                  index: _currentIndex,
+                  children: tabs,
+                ),
               ),
-              destinations: const [
-                NavigationRailDestination(
-                  icon: Icon(Icons.content_cut_outlined),
-                  selectedIcon: Icon(Icons.content_cut_rounded),
-                  label: Text('Orders'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.add_box_outlined),
-                  selectedIcon: Icon(Icons.add_box_rounded),
-                  label: Text('New Order'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.history_outlined),
-                  selectedIcon: Icon(Icons.history_rounded),
-                  label: Text('History'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.account_balance_wallet_outlined),
-                  selectedIcon: Icon(Icons.account_balance_wallet_rounded),
-                  label: Text('Expenses'),
-                ),
-              ],
-            ),
-            const VerticalDivider(width: 1, thickness: 1, color: Color(0xFFE2E8F0)),
-            Expanded(
-              child: IndexedStack(
-                index: _currentIndex,
-                children: tabs,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }
 
-    // Standard mobile layout with Material 3 NavigationBar (< 600dp)
+    // Standard mobile layout with polished Material 3 NavigationBar (< 600dp)
     return Scaffold(
       backgroundColor: AppColors.background,
       body: IndexedStack(
@@ -131,41 +142,75 @@ class _MainShellScreenState extends State<MainShellScreen> {
         children: tabs,
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, -3),
+            ),
+          ],
+          border: const Border(
             top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
           ),
         ),
-        child: NavigationBar(
-          selectedIndex: _currentIndex,
-          onDestinationSelected: _onTabChanged,
-          backgroundColor: AppColors.surface,
-          indicatorColor: AppColors.primary.withValues(alpha: 0.12),
-          elevation: 0,
-          height: 66,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.content_cut_outlined, size: 22),
-              selectedIcon: Icon(Icons.content_cut_rounded, color: AppColors.primary, size: 24),
-              label: 'Orders',
+        child: SafeArea(
+          top: false,
+          child: NavigationBarTheme(
+            data: NavigationBarThemeData(
+              indicatorColor: AppColors.primary.withValues(alpha: 0.12),
+              indicatorShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.selected)) {
+                  return const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  );
+                }
+                return const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF64748B),
+                );
+              }),
             ),
-            NavigationDestination(
-              icon: Icon(Icons.add_box_outlined, size: 22),
-              selectedIcon: Icon(Icons.add_box_rounded, color: AppColors.primary, size: 24),
-              label: 'New Order',
+            child: NavigationBar(
+              selectedIndex: _currentIndex,
+              onDestinationSelected: _onTabChanged,
+              backgroundColor: AppColors.surface,
+              elevation: 0,
+              height: 68,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.content_cut_outlined, size: 22, color: Color(0xFF64748B)),
+                  selectedIcon: Icon(Icons.content_cut_rounded, color: AppColors.primary, size: 24),
+                  label: 'Orders',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.add_box_outlined, size: 22, color: Color(0xFF64748B)),
+                  selectedIcon: Icon(Icons.add_box_rounded, color: AppColors.primary, size: 24),
+                  label: 'New Order',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.history_outlined, size: 22, color: Color(0xFF64748B)),
+                  selectedIcon: Icon(Icons.history_rounded, color: AppColors.primary, size: 24),
+                  label: 'History',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.account_balance_wallet_outlined, size: 22, color: Color(0xFF64748B)),
+                  selectedIcon: Icon(Icons.account_balance_wallet_rounded, color: AppColors.primary, size: 24),
+                  label: 'Expenses',
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(Icons.history_outlined, size: 22),
-              selectedIcon: Icon(Icons.history_rounded, color: AppColors.primary, size: 24),
-              label: 'History',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.account_balance_wallet_outlined, size: 22),
-              selectedIcon: Icon(Icons.account_balance_wallet_rounded, color: AppColors.primary, size: 24),
-              label: 'Expenses',
-            ),
-          ],
+          ),
         ),
       ),
     );
