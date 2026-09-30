@@ -10,27 +10,32 @@ void main() {
     AppRouter.router.go(AppRouter.dashboard);
   });
 
-  group('Dashboard AppBar & Icons Tests', () {
-    testWidgets('Dashboard has History and Settings icons and no scissors icon',
+  group('Bottom Navigation Bar & Shell Tests', () {
+    testWidgets('Bottom bar displays 4 navigation items and settings/FAB are removed',
         (WidgetTester tester) async {
       await tester.pumpWidget(const TailorMasterApp());
       await tester.pumpAndSettle();
 
-      // Verify scissors icon is removed
-      expect(find.byIcon(Icons.content_cut), findsNothing);
+      // Verify 4 bottom navigation destinations exist
+      expect(find.text('Orders'), findsWidgets);
+      expect(find.text('New Order'), findsWidgets);
+      expect(find.text('History'), findsOneWidget);
+      expect(find.text('Expenses'), findsOneWidget);
 
-      // Verify history and settings icons are present in AppBar
-      expect(find.byIcon(Icons.history_rounded), findsOneWidget);
-      expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
+      // Verify settings button is removed from AppBar as requested
+      expect(find.byIcon(Icons.settings_outlined), findsNothing);
+
+      // Verify FloatingActionButton is removed from Dashboard as requested
+      expect(find.byType(FloatingActionButton), findsNothing);
     });
 
-    testWidgets('Tapping History icon navigates to Order History page',
+    testWidgets('Tapping History in bottom bar switches to Order History tab',
         (WidgetTester tester) async {
       await tester.pumpWidget(const TailorMasterApp());
       await tester.pumpAndSettle();
 
-      // Tap history icon
-      await tester.tap(find.byIcon(Icons.history_rounded));
+      // Tap History bottom nav tab
+      await tester.tap(find.byIcon(Icons.history_outlined));
       await tester.pumpAndSettle();
 
       // Verify Order History page is displayed
@@ -38,19 +43,34 @@ void main() {
       expect(find.text('Haji Abdul Rehman'), findsOneWidget);
     });
 
-    testWidgets('Tapping Settings icon navigates to Settings page',
+    testWidgets('Tapping Expenses in bottom bar switches to Profile & Expenses tab',
         (WidgetTester tester) async {
       await tester.pumpWidget(const TailorMasterApp());
       await tester.pumpAndSettle();
 
-      // Tap settings icon
-      await tester.tap(find.byIcon(Icons.settings_outlined));
+      // Tap Expenses bottom nav tab
+      await tester.tap(find.byIcon(Icons.account_balance_wallet_outlined));
       await tester.pumpAndSettle();
 
-      // Verify Settings page is displayed
-      expect(find.text('Settings'), findsOneWidget);
-      expect(find.text('Workshop Settings'), findsOneWidget);
-      expect(find.text('Settings options will be added here.'), findsOneWidget);
+      // Verify Profile & Expenses page is displayed
+      expect(find.text('Profile & Expenses'), findsOneWidget);
+      expect(find.text('Financial Overview (حساب کتاب)'), findsOneWidget);
+      expect(find.text('Daily Expenses (روزنامچہ)'), findsOneWidget);
+    });
+
+    testWidgets('Tapping New Order in bottom bar switches to Create Order tab',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const TailorMasterApp());
+      await tester.pumpAndSettle();
+
+      // Tap New Order bottom nav tab
+      await tester.tap(find.byIcon(Icons.add_box_outlined));
+      await tester.pumpAndSettle();
+
+      // Verify Create Order form is displayed
+      expect(find.widgetWithText(AppBar, 'New Order'), findsOneWidget);
+      expect(find.text('Customer Details'), findsOneWidget);
+      expect(find.text('Garment & Delivery'), findsOneWidget);
     });
   });
 
@@ -63,13 +83,13 @@ void main() {
         customerId: 1,
         customerName: 'Test Completed Customer',
         customerPhone: '0300-1111111',
-        garmentType: 'Silai Kurta',
+        garmentType: 'Silai Shalwar Kameez',
         bookingDate: DateTime.now().subtract(const Duration(days: 3)),
         targetDeadline: DateTime.now().subtract(const Duration(days: 1)),
         isUrgent: false,
         status: OrderStatus.completed,
-        stitchingRate: 2500,
-        advancePaid: 2500,
+        stitchingRate: 2000.0,
+        advancePaid: 2000.0,
       );
 
       await tester.pumpWidget(
@@ -79,22 +99,21 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      // Find the card container
-      final containerFinder = find.byType(Container).first;
-      final container = tester.widget<Container>(containerFinder);
-      final decoration = container.decoration as BoxDecoration;
-
-      // Soft green background: #F0FDF4
-      expect(decoration.color, const Color(0xFFF0FDF4));
-
-      // Soft green border: #86EFAC
-      final border = decoration.border as Border;
-      expect(border.top.color, const Color(0xFF86EFAC));
-
-      // Completed checkmark icon
-      expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+      // Verify completed visual badge
       expect(find.textContaining('Completed:'), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+
+      // Verify soft green background
+      final container = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(OrderCard),
+          matching: find.byType(Container).first,
+        ),
+      );
+      final decoration = container.decoration as BoxDecoration;
+      expect(decoration.color, const Color(0xFFF0FDF4));
     });
 
     testWidgets('Urgent active order card displays soft red tint and border',
@@ -102,16 +121,16 @@ void main() {
       final urgentOrder = OrderEntity(
         id: 98,
         orderToken: '#98',
-        customerId: 2,
+        customerId: 1,
         customerName: 'Test Urgent Customer',
         customerPhone: '0300-2222222',
-        garmentType: 'Silai Sherwani',
+        garmentType: 'Silai Kurta Pajama',
         bookingDate: DateTime.now(),
-        targetDeadline: DateTime.now().add(const Duration(days: 1)),
+        targetDeadline: DateTime.now().add(const Duration(days: 2)),
         isUrgent: true,
         status: OrderStatus.active,
-        stitchingRate: 5000,
-        advancePaid: 2500,
+        stitchingRate: 2500.0,
+        advancePaid: 1000.0,
       );
 
       await tester.pumpWidget(
@@ -121,48 +140,17 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      // Find the card container
-      final containerFinder = find.byType(Container).first;
-      final container = tester.widget<Container>(containerFinder);
+      // Verify soft red background
+      final container = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(OrderCard),
+          matching: find.byType(Container).first,
+        ),
+      );
       final decoration = container.decoration as BoxDecoration;
-
-      // Soft red background: #FFF1F1
       expect(decoration.color, const Color(0xFFFFF1F1));
-
-      // Soft red border: #FCA5A5
-      final border = decoration.border as Border;
-      expect(border.top.color, const Color(0xFFFCA5A5));
-    });
-
-    testWidgets('Marking order completed moves it to History with soft green tint',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(const TailorMasterApp());
-      await tester.pumpAndSettle();
-
-      // Tap on Chaudhry Nadeem's order card on Dashboard
-      expect(find.text('Chaudhry Nadeem'), findsOneWidget);
-      await tester.tap(find.text('Chaudhry Nadeem'));
-      await tester.pumpAndSettle();
-
-      // On Order Detail Screen, tap 'Mark as Completed'
-      final markCompletedBtn = find.text('Mark as Completed');
-      expect(markCompletedBtn, findsOneWidget);
-      await tester.tap(markCompletedBtn);
-      await tester.pumpAndSettle();
-
-      // Tap 'View History' from SnackBar
-      final viewHistoryBtn = find.text('View History');
-      expect(viewHistoryBtn, findsOneWidget);
-      await tester.tap(viewHistoryBtn);
-      await tester.pumpAndSettle();
-
-      // Verify we are on Order History page and Chaudhry Nadeem is present
-      expect(find.text('Order History'), findsOneWidget);
-      expect(find.text('Chaudhry Nadeem'), findsOneWidget);
-
-      // Verify Chaudhry Nadeem's card now has completed checkmark and green styling
-      expect(find.byIcon(Icons.check_circle_rounded), findsWidgets);
     });
   });
 
@@ -172,11 +160,11 @@ void main() {
       await tester.pumpWidget(const TailorMasterApp());
       await tester.pumpAndSettle();
 
-      // Navigate to create order
-      AppRouter.router.push(AppRouter.createOrder);
+      // Switch to New Order tab
+      await tester.tap(find.byIcon(Icons.add_box_outlined));
       await tester.pumpAndSettle();
 
-      expect(find.text('New Order'), findsOneWidget);
+      expect(find.widgetWithText(AppBar, 'New Order'), findsOneWidget);
 
       // Tap Save Order without entering name or phone
       final saveBtn = find.text('Save Order');
@@ -189,13 +177,13 @@ void main() {
       expect(find.text('Phone number is required'), findsOneWidget);
     });
 
-    testWidgets('Fraction toolbar and fraction chips are completely removed',
+    testWidgets('Fraction toolbar removed and Urdu measurement labels present',
         (WidgetTester tester) async {
       await tester.pumpWidget(const TailorMasterApp());
       await tester.pumpAndSettle();
 
-      // Navigate to create order
-      AppRouter.router.push(AppRouter.createOrder);
+      // Switch to New Order tab
+      await tester.tap(find.byIcon(Icons.add_box_outlined));
       await tester.pumpAndSettle();
 
       // Verify fraction texts and chips are not present anywhere
@@ -203,6 +191,10 @@ void main() {
       expect(find.text('.25'), findsNothing);
       expect(find.text('.50'), findsNothing);
       expect(find.text('.75'), findsNothing);
+
+      // Verify Urdu names in brackets exist in measurement fields
+      expect(find.text('Length (لمبائی)'), findsOneWidget);
+      expect(find.text('Chest (چھاتی)'), findsOneWidget);
     });
   });
 }

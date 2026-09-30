@@ -8,6 +8,8 @@ import 'features/orders/data/datasources/order_local_datasource.dart';
 import 'features/orders/data/repositories/order_repository_impl.dart';
 import 'features/orders/presentation/providers/order_list_provider.dart';
 import 'features/orders/presentation/providers/order_form_provider.dart';
+import 'features/expenses/data/repositories/expense_repository.dart';
+import 'features/expenses/presentation/providers/expense_provider.dart';
 
 /// MaterialApp entry configuring theme, declarative GoRouter, and MultiProvider injection
 class TailorMasterApp extends StatelessWidget {
@@ -25,6 +27,11 @@ class TailorMasterApp extends StatelessWidget {
         ChangeNotifierProvider<OrderFormProvider>(
           create: (_) => OrderFormProvider(
             repository: OrderRepositoryImpl(localDataSource: OrderLocalDataSource()),
+          ),
+        ),
+        ChangeNotifierProvider<ExpenseProvider>(
+          create: (_) => ExpenseProvider(
+            repository: ExpenseRepository(),
           ),
         ),
       ],

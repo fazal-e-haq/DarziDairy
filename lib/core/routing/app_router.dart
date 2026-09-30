@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../constants/app_colors.dart';
-import '../../features/orders/presentation/screens/orders_dashboard_screen.dart';
 import '../../features/orders/presentation/screens/order_detail_screen.dart';
 import '../../features/orders/presentation/screens/create_order_screen.dart';
-import '../../features/orders/presentation/screens/order_history_screen.dart';
-import '../../features/settings/presentation/screens/settings_screen.dart';
+import '../../shared/widgets/main_shell_screen.dart';
 
 /// Centralized declarative routing architecture using GoRouter.
 class AppRouter {
@@ -18,6 +16,7 @@ class AppRouter {
   static const String createOrder = '/orders/create';
   static const String editOrder = '/orders/edit/:id';
   static const String history = '/history';
+  static const String expenses = '/expenses';
   static const String settings = '/settings';
 
   // Helper generators for parameterized paths
@@ -34,25 +33,55 @@ class AppRouter {
     initialLocation: dashboard,
     debugLogDiagnostics: false,
     routes: [
-      // 1. Dashboard (Orders Main Screen)
+      // 1. Dashboard Tab (Orders Main Screen)
       GoRoute(
         path: dashboard,
         name: 'dashboard',
         pageBuilder: (context, state) => _buildTransitionPage(
           state: state,
-          child: const OrdersDashboardScreen(),
+          child: const MainShellScreen(initialIndex: 0),
         ),
       ),
 
-      // 2. Orders Module Routes
+      // 2. New Order Tab
       GoRoute(
         path: createOrder,
         name: 'createOrder',
         pageBuilder: (context, state) => _buildTransitionPage(
           state: state,
-          child: const CreateOrderScreen(),
+          child: const MainShellScreen(initialIndex: 1),
         ),
       ),
+
+      // 3. History Tab
+      GoRoute(
+        path: history,
+        name: 'history',
+        pageBuilder: (context, state) => _buildTransitionPage(
+          state: state,
+          child: const MainShellScreen(initialIndex: 2),
+        ),
+      ),
+
+      // 4. Expenses & Profile Tab
+      GoRoute(
+        path: expenses,
+        name: 'expenses',
+        pageBuilder: (context, state) => _buildTransitionPage(
+          state: state,
+          child: const MainShellScreen(initialIndex: 3),
+        ),
+      ),
+      GoRoute(
+        path: settings,
+        name: 'settings',
+        pageBuilder: (context, state) => _buildTransitionPage(
+          state: state,
+          child: const MainShellScreen(initialIndex: 3),
+        ),
+      ),
+
+      // Edit Order (Pushed on top with back arrow)
       GoRoute(
         path: editOrder,
         name: 'editOrder',
@@ -64,6 +93,8 @@ class AppRouter {
           );
         },
       ),
+
+      // Order Detail (Pushed on top with back arrow)
       GoRoute(
         path: orderDetail,
         name: 'orderDetail',
@@ -74,22 +105,6 @@ class AppRouter {
             child: OrderDetailScreen(orderId: id),
           );
         },
-      ),
-      GoRoute(
-        path: history,
-        name: 'history',
-        pageBuilder: (context, state) => _buildTransitionPage(
-          state: state,
-          child: const OrderHistoryScreen(),
-        ),
-      ),
-      GoRoute(
-        path: settings,
-        name: 'settings',
-        pageBuilder: (context, state) => _buildTransitionPage(
-          state: state,
-          child: const SettingsScreen(),
-        ),
       ),
     ],
 

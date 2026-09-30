@@ -21,17 +21,18 @@ class AppStrings {
     'Silai Sherwani',
   ];
 
-  // Measurement Labels
+  // Measurement Labels with Urdu translations in brackets
   static const List<String> standardMeasurementKeys = [
-    'Length',
-    'Chest',
-    'Waist',
-    'Hip',
-    'Shoulder (Teera)',
-    'Sleeve (Bazu)',
-    'Neck (Gala)',
-    'Inseam',
-    'Bottom (Pancha)',
+    'Length (لمبائی)',
+    'Chest (چھاتی)',
+    'Waist (کمر)',
+    'Hip (ہپ)',
+    'Shoulder (تیرا)',
+    'Sleeve (بازو)',
+    'Collar (کالر / گلا)',
+    'Inseam (شلوار لمبائی)',
+    'Daman (دامن)',
+    'Pancha (پانچہ)',
   ];
 
   // Expense Categories

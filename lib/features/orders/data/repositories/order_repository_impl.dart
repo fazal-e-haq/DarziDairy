@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../domain/entities/order_entity.dart';
 import '../../domain/repositories/i_order_repository.dart';
 import '../datasources/order_local_datasource.dart';
@@ -74,6 +76,16 @@ class OrderRepositoryImpl implements IOrderRepository {
   }
 
   static OrderEntity _toEntity(OrderCollection m) {
+    Map<String, String> measurements = {};
+    if (m.measurementsJson.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(m.measurementsJson);
+        if (decoded is Map) {
+          measurements = decoded.map((k, v) => MapEntry(k.toString(), v.toString()));
+        }
+      } catch (_) {}
+    }
+
     return OrderEntity(
       id: m.id,
       orderToken: m.orderToken,
@@ -89,6 +101,7 @@ class OrderRepositoryImpl implements IOrderRepository {
       fabricCharges: m.fabricCharges,
       urgentSurcharge: m.urgentSurcharge,
       advancePaid: m.advancePaid,
+      measurements: measurements,
       isDeleted: m.isDeleted,
       deletedAt: m.deletedAt,
     );
@@ -110,6 +123,7 @@ class OrderRepositoryImpl implements IOrderRepository {
       ..urgentSurcharge = e.urgentSurcharge
       ..advancePaid = e.advancePaid
       ..balanceDue = e.balanceDue
+      ..measurementsJson = jsonEncode(e.measurements)
       ..isDeleted = e.isDeleted
       ..deletedAt = e.deletedAt;
     if (e.id > 0) {

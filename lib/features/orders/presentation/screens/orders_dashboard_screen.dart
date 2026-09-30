@@ -43,19 +43,6 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
             letterSpacing: -0.2,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history_rounded, size: 24),
-            tooltip: 'Order History',
-            onPressed: () => context.push(AppRouter.history),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, size: 22),
-            tooltip: 'Settings',
-            onPressed: () => context.push(AppRouter.settings),
-          ),
-          const SizedBox(width: 8),
-        ],
       ),
       body: Center(
         child: ConstrainedBox(
@@ -185,30 +172,13 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: AppColors.secondary,
-        foregroundColor: Colors.white,
-        elevation: 3,
-        shape: const StadiumBorder(),
-        onPressed: () => context.push(AppRouter.createOrder),
-        icon: const Icon(Icons.add, size: 22),
-        label: const Text(
-          'New Order',
-          style: TextStyle(
-            fontFamily: 'Nunito',
-            fontWeight: FontWeight.w800,
-            fontSize: 15,
-            letterSpacing: 0.2,
-          ),
-        ),
-      ),
     );
   }
 
   /// Compact mobile single-column list
   Widget _buildMobileList(List orders, OrderListProvider provider) {
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 96),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final order = orders[index];
@@ -223,7 +193,7 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
   /// Unfolded / Tablet dual-column responsive grid
   Widget _buildUnfoldedGrid(List orders, OrderListProvider provider) {
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(24, 4, 24, 96),
+      padding: const EdgeInsets.fromLTRB(24, 4, 24, 24),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 16,

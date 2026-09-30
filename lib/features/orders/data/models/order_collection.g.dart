@@ -72,28 +72,33 @@ const OrderCollectionSchema = CollectionSchema(
       name: r'isUrgent',
       type: IsarType.bool,
     ),
-    r'orderToken': PropertySchema(
+    r'measurementsJson': PropertySchema(
       id: 11,
+      name: r'measurementsJson',
+      type: IsarType.string,
+    ),
+    r'orderToken': PropertySchema(
+      id: 12,
       name: r'orderToken',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'status',
       type: IsarType.long,
     ),
     r'stitchingRate': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'stitchingRate',
       type: IsarType.double,
     ),
     r'targetDeadline': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'targetDeadline',
       type: IsarType.dateTime,
     ),
     r'urgentSurcharge': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'urgentSurcharge',
       type: IsarType.double,
     )
@@ -174,6 +179,7 @@ int _orderCollectionEstimateSize(
   bytesCount += 3 + object.customerName.length * 3;
   bytesCount += 3 + object.customerPhone.length * 3;
   bytesCount += 3 + object.garmentType.length * 3;
+  bytesCount += 3 + object.measurementsJson.length * 3;
   bytesCount += 3 + object.orderToken.length * 3;
   return bytesCount;
 }
@@ -195,11 +201,12 @@ void _orderCollectionSerialize(
   writer.writeString(offsets[8], object.garmentType);
   writer.writeBool(offsets[9], object.isDeleted);
   writer.writeBool(offsets[10], object.isUrgent);
-  writer.writeString(offsets[11], object.orderToken);
-  writer.writeLong(offsets[12], object.status);
-  writer.writeDouble(offsets[13], object.stitchingRate);
-  writer.writeDateTime(offsets[14], object.targetDeadline);
-  writer.writeDouble(offsets[15], object.urgentSurcharge);
+  writer.writeString(offsets[11], object.measurementsJson);
+  writer.writeString(offsets[12], object.orderToken);
+  writer.writeLong(offsets[13], object.status);
+  writer.writeDouble(offsets[14], object.stitchingRate);
+  writer.writeDateTime(offsets[15], object.targetDeadline);
+  writer.writeDouble(offsets[16], object.urgentSurcharge);
 }
 
 OrderCollection _orderCollectionDeserialize(
@@ -221,11 +228,12 @@ OrderCollection _orderCollectionDeserialize(
   object.id = id;
   object.isDeleted = reader.readBool(offsets[9]);
   object.isUrgent = reader.readBool(offsets[10]);
-  object.orderToken = reader.readString(offsets[11]);
-  object.status = reader.readLong(offsets[12]);
-  object.stitchingRate = reader.readDouble(offsets[13]);
-  object.targetDeadline = reader.readDateTime(offsets[14]);
-  object.urgentSurcharge = reader.readDouble(offsets[15]);
+  object.measurementsJson = reader.readString(offsets[11]);
+  object.orderToken = reader.readString(offsets[12]);
+  object.status = reader.readLong(offsets[13]);
+  object.stitchingRate = reader.readDouble(offsets[14]);
+  object.targetDeadline = reader.readDateTime(offsets[15]);
+  object.urgentSurcharge = reader.readDouble(offsets[16]);
   return object;
 }
 
@@ -261,12 +269,14 @@ P _orderCollectionDeserializeProp<P>(
     case 11:
       return (reader.readString(offset)) as P;
     case 12:
-      return (reader.readLong(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 13:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 14:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readDouble(offset)) as P;
     case 15:
+      return (reader.readDateTime(offset)) as P;
+    case 16:
       return (reader.readDouble(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1538,6 +1548,142 @@ extension OrderCollectionQueryFilter
   }
 
   QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'measurementsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'measurementsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'measurementsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'measurementsJson',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'measurementsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'measurementsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'measurementsJson',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'measurementsJson',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'measurementsJson',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
+      measurementsJsonIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'measurementsJson',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterFilterCondition>
       orderTokenEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -2081,6 +2227,20 @@ extension OrderCollectionQuerySortBy
   }
 
   QueryBuilder<OrderCollection, OrderCollection, QAfterSortBy>
+      sortByMeasurementsJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'measurementsJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterSortBy>
+      sortByMeasurementsJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'measurementsJson', Sort.desc);
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterSortBy>
       sortByOrderToken() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'orderToken', Sort.asc);
@@ -2319,6 +2479,20 @@ extension OrderCollectionQuerySortThenBy
   }
 
   QueryBuilder<OrderCollection, OrderCollection, QAfterSortBy>
+      thenByMeasurementsJson() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'measurementsJson', Sort.asc);
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterSortBy>
+      thenByMeasurementsJsonDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'measurementsJson', Sort.desc);
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QAfterSortBy>
       thenByOrderToken() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'orderToken', Sort.asc);
@@ -2469,6 +2643,14 @@ extension OrderCollectionQueryWhereDistinct
   }
 
   QueryBuilder<OrderCollection, OrderCollection, QDistinct>
+      distinctByMeasurementsJson({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'measurementsJson',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<OrderCollection, OrderCollection, QDistinct>
       distinctByOrderToken({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'orderToken', caseSensitive: caseSensitive);
@@ -2581,6 +2763,13 @@ extension OrderCollectionQueryProperty
   QueryBuilder<OrderCollection, bool, QQueryOperations> isUrgentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isUrgent');
+    });
+  }
+
+  QueryBuilder<OrderCollection, String, QQueryOperations>
+      measurementsJsonProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'measurementsJson');
     });
   }
 

@@ -5,6 +5,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../features/orders/data/models/order_collection.dart';
+import '../../features/expenses/data/models/expense_collection.dart';
 
 /// Production Isar database singleton managing thread-safe initialization,
 /// persistent storage across app/phone restarts, and safe fallback for test runners.
@@ -56,7 +57,7 @@ class IsarService {
       final documentsDirectory = await getApplicationDocumentsDirectory();
 
       _isar = await Isar.open(
-        [OrderCollectionSchema],
+        [OrderCollectionSchema, ExpenseCollectionSchema],
         directory: documentsDirectory.path,
         name: name,
         inspector: kDebugMode,

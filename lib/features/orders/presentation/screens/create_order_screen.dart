@@ -15,10 +15,14 @@ import '../../domain/entities/order_entity.dart';
 /// Supports both compact mobile screens and unfolded foldables/tablets.
 class CreateOrderScreen extends StatefulWidget {
   final int? orderId;
+  final VoidCallback? onOrderSaved;
+  final bool isTab;
 
   const CreateOrderScreen({
     super.key,
     this.orderId,
+    this.onOrderSaved,
+    this.isTab = false,
   });
 
   @override
@@ -75,6 +79,24 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           _targetDeadline = order.targetDeadline;
           _isUrgent = order.isUrgent;
           _priceController.text = order.stitchingRate.toInt().toString();
+
+          // Populate existing measurements if available
+          for (final entry in order.measurements.entries) {
+            if (_measurementControllers.containsKey(entry.key)) {
+              _measurementControllers[entry.key]!.text = entry.value;
+            } else {
+              // Try prefix match for flexibility
+              final prefix = entry.key.split(' ').first.toLowerCase();
+              final matchingKey = _measurementControllers.keys.firstWhere(
+                (k) => k.toLowerCase().contains(prefix),
+                orElse: () => '',
+              );
+              if (matchingKey.isNotEmpty) {
+                _measurementControllers[matchingKey]!.text = entry.value;
+              }
+            }
+          }
+
           setState(() {});
         }
       });
@@ -125,6 +147,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     final customerPhone = _customerPhoneController.text.trim();
     final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
 
+    // Collect entered measurements
+    final Map<String, String> measurements = {};
+    for (final entry in _measurementControllers.entries) {
+      final val = entry.value.text.trim();
+      if (val.isNotEmpty) {
+        measurements[entry.key] = val;
+      }
+    }
+
     final orderProvider = context.read<OrderListProvider>();
     String token = _existingToken ?? '';
     if (token.isEmpty) {
@@ -153,6 +184,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       status: OrderStatus.active,
       stitchingRate: price,
       advancePaid: price,
+      measurements: measurements,
     );
 
     await orderProvider.repository.saveOrder(newOrder);
@@ -169,7 +201,22 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      Navigator.of(context).pop();
+
+      if (widget.onOrderSaved != null) {
+        // Reset form for clean next order
+        _customerNameController.clear();
+        _customerPhoneController.clear();
+        _priceController.text = '1800';
+        _isUrgent = false;
+        _targetDeadline = DateTime.now().add(const Duration(days: 4));
+        for (final c in _measurementControllers.values) {
+          c.clear();
+        }
+        setState(() {});
+        widget.onOrderSaved!();
+      } else if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -180,6 +227,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        automaticallyImplyLeading: !widget.isTab,
         title: Text(
           widget.orderId != null ? 'Edit Order' : 'New Order',
           style: const TextStyle(

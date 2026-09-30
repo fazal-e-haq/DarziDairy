@@ -22,6 +22,7 @@ class OrderEntity {
   final double fabricCharges;
   final double urgentSurcharge;
   final double advancePaid;
+  final Map<String, String> measurements;
   final bool isDeleted;
   final DateTime? deletedAt;
 
@@ -40,6 +41,7 @@ class OrderEntity {
     this.fabricCharges = 0.0,
     this.urgentSurcharge = 0.0,
     this.advancePaid = 0.0,
+    this.measurements = const {},
     this.isDeleted = false,
     this.deletedAt,
   });

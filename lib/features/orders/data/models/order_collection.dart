@@ -31,6 +31,9 @@ class OrderCollection {
   double advancePaid = 0.0;
   double balanceDue = 0.0;
 
+  /// Serialized measurements JSON (e.g. {"Length (لمبائی)": "38", ...})
+  String measurementsJson = '{}';
+
   @Index()
   bool isDeleted = false;
 

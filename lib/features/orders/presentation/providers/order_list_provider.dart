@@ -65,6 +65,9 @@ class OrderListProvider extends ChangeNotifier {
   }
 
   /// Returns completed orders, optionally filtered by customer query
+  List<OrderEntity> get completedOrders =>
+      _allOrders.where((o) => o.status == OrderStatus.completed).toList();
+
   List<OrderEntity> getCompletedOrders([String? query]) {
     var list = _allOrders.where((o) => o.status == OrderStatus.completed).toList();
     if (query != null && query.trim().isNotEmpty) {

@@ -39,6 +39,11 @@ class OrderDetailScreen extends StatelessWidget {
         title: Text('Order ${order.orderToken}'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Edit Order',
+            onPressed: () => context.push(AppRouter.editOrderPath(order.id)),
+          ),
+          IconButton(
             icon: const Icon(Icons.delete_outline),
             tooltip: 'Delete Order',
             onPressed: () async {
@@ -49,7 +54,9 @@ class OrderDetailScreen extends StatelessWidget {
               );
               if (confirm == true && context.mounted) {
                 await provider.deleteOrder(order.id);
-                if (context.mounted) Navigator.pop(context);
+                if (context.mounted && context.canPop()) {
+                  context.pop();
+                }
               }
             },
           ),
@@ -177,7 +184,85 @@ class OrderDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppDimensions.space12),
 
-            // 3. Payment Breakdown Card
+            // 3. Measurements Card (پیمائش)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppDimensions.space16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Icon(Icons.straighten, size: 20, color: AppColors.secondary),
+                        SizedBox(width: 8),
+                        Text(
+                          'Measurements (پیمائش)',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(height: 20),
+                    if (order.measurements.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          'No specific measurements recorded.',
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 13,
+                          ),
+                        ),
+                      )
+                    else
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: order.measurements.entries.map((m) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  m.key,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${m.value}"',
+                                  style: const TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: AppDimensions.space12),
+
+            // 4. Payment Breakdown Card
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(AppDimensions.space16),
