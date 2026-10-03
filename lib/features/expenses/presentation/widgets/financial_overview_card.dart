@@ -4,8 +4,9 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/utils/currency_formatter.dart';
 
-/// Financial summary ledger card displaying total revenue, expenses, and net profit.
-/// Enhanced with zero-overflow typography, responsive scaling, and Urdu captions.
+/// Handcrafted Financial Bahi-Khata (حساب کتاب) ledger overview.
+/// Replaces generic card templates with a tailored workshop ledger layout,
+/// showcasing hero net profit savings and distinct inflow/outflow balances.
 class FinancialOverviewCard extends StatelessWidget {
   final double totalRevenue;
   final double totalExpenses;
@@ -20,122 +21,199 @@ class FinancialOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isProfitable = netProfit >= 0;
+
     return Container(
-      padding: const EdgeInsets.all(AppDimensions.space16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x04000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            color: Color(0x060F172A),
+            blurRadius: 12,
+            offset: Offset(0, 4),
           ),
         ],
       ),
+      padding: const EdgeInsets.all(AppDimensions.space16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(Icons.account_balance_wallet_outlined, size: 20, color: AppColors.primary),
-              SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Financial Overview (حساب کتاب)',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: 20, color: Color(0xFFF1F5F9)),
-
+          // Section Title Row with Ledger Emblem
           Row(
             children: [
-              Expanded(
-                child: _buildMoneyBlock(
-                  label: 'Stitching Revenue',
-                  amount: CurrencyFormatter.format(totalRevenue),
-                  color: const Color(0xFF16A34A),
-                  icon: Icons.trending_up,
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFDBEAFE)),
+                ),
+                child: const Icon(
+                  Icons.menu_book_rounded,
+                  size: 19,
+                  color: AppColors.primary,
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildMoneyBlock(
-                  label: 'Workshop Expenses',
-                  amount: CurrencyFormatter.format(totalExpenses),
-                  color: const Color(0xFFDC2626),
-                  icon: Icons.trending_down,
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Financial Overview (حساب کتاب)',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    SizedBox(height: 1),
+                    Text(
+                      'Workshop Bahi-Khata balance summary',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
 
-          // Net Balance pill
+          const SizedBox(height: 14),
+
+          // Hero Net Profit Ledger Display
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: netProfit >= 0 ? const Color(0xFFF0FDF4) : const Color(0xFFFEF2F2),
+              gradient: LinearGradient(
+                colors: isProfitable
+                    ? [const Color(0xFFF0FDF4), const Color(0xFFDCFCE7)]
+                    : [const Color(0xFFFEF2F2), const Color(0xFFFEE2E2)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
               border: Border.all(
-                color: netProfit >= 0 ? const Color(0xFFBBF7D0) : const Color(0xFFFECACA),
+                color: isProfitable ? const Color(0xFF86EFAC) : const Color(0xFFFCA5A5),
+                width: 1.2,
               ),
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(
-                    'Net Profit / Balance',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                      color: netProfit >= 0 ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            isProfitable ? Icons.verified_rounded : Icons.warning_amber_rounded,
+                            size: 16,
+                            color: isProfitable ? const Color(0xFF16A34A) : const Color(0xFFDC2626),
+                          ),
+                          const SizedBox(width: 6),
+                          const Flexible(
+                            child: Text(
+                              'Net Profit / Balance',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF334155),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        isProfitable ? 'خالص منافع / بچت' : 'اضافی خرچہ / خسارہ',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isProfitable ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
                     CurrencyFormatter.format(netProfit),
                     style: TextStyle(
                       fontFamily: 'Nunito',
-                      fontWeight: FontWeight.w800,
-                      fontSize: 17,
-                      color: netProfit >= 0 ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                      fontWeight: FontWeight.w900,
+                      fontSize: 22,
+                      letterSpacing: -0.5,
+                      color: isProfitable ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
                     ),
                   ),
                 ),
               ],
             ),
           ),
+
+          const SizedBox(height: 12),
+
+          // Inflow & Outflow Split Cards
+          Row(
+            children: [
+              Expanded(
+                child: _buildLedgerTile(
+                  label: 'Stitching Revenue',
+                  urduSubtitle: 'آمدنی وصولی',
+                  amount: CurrencyFormatter.format(totalRevenue),
+                  accentColor: const Color(0xFF16A34A),
+                  tileBg: const Color(0xFFF8FCF9),
+                  icon: Icons.south_west_rounded,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildLedgerTile(
+                  label: 'Workshop Expenses',
+                  urduSubtitle: 'خرچہ ادائی',
+                  amount: CurrencyFormatter.format(totalExpenses),
+                  accentColor: const Color(0xFFDC2626),
+                  tileBg: const Color(0xFFFFFBFB),
+                  icon: Icons.north_east_rounded,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMoneyBlock({
+  Widget _buildLedgerTile({
     required String label,
+    required String urduSubtitle,
     required String amount,
-    required Color color,
+    required Color accentColor,
+    required Color tileBg,
     required IconData icon,
   }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: tileBg,
         borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
         border: Border.all(color: const Color(0xFFE2E8F0)),
       ),
@@ -144,23 +222,46 @@ class FinancialOverviewCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: color),
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 14, color: accentColor),
+              ),
               const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
-                  ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF334155),
+                      ),
+                    ),
+                    Text(
+                      urduSubtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w500,
+                        color: accentColor.withValues(alpha: 0.9),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
@@ -170,7 +271,8 @@ class FinancialOverviewCard extends StatelessWidget {
                 fontFamily: 'Nunito',
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: color,
+                color: accentColor,
+                letterSpacing: -0.2,
               ),
             ),
           ),

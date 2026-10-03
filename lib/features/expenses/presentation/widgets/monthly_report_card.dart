@@ -119,9 +119,9 @@ class _MonthlyReportCardState extends State<MonthlyReportCard> {
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x04000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            color: Color(0x060F172A),
+            blurRadius: 12,
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -131,37 +131,48 @@ class _MonthlyReportCardState extends State<MonthlyReportCard> {
           Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFF6FF),
-                  borderRadius: BorderRadius.circular(8),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFEFF6FF), Color(0xFFDBEAFE)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFBFDBFE)),
                 ),
                 child: const Icon(
                   Icons.picture_as_pdf_rounded,
-                  color: AppColors.primary,
-                  size: 22,
+                  color: Color(0xFF1D4ED8),
+                  size: 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Monthly PDF Report (ماہانہ رپورٹ)',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.2,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    SizedBox(height: 1),
                     Text(
                       'Export & download full monthly ledger report',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.textSecondary,
                       ),
                     ),
@@ -170,61 +181,79 @@ class _MonthlyReportCardState extends State<MonthlyReportCard> {
               ),
             ],
           ),
-          const Divider(height: 20, color: Color(0xFFF1F5F9)),
+
+          const SizedBox(height: 14),
 
           // Month Selection Dropdown & Info Row
           Row(
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<DateTime>(
-                      value: _selectedMonth,
-                      isExpanded: true,
-                      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.primary),
-                      items: availableMonths.map((m) {
-                        final label = DateFormat('MMMM yyyy').format(m);
-                        return DropdownMenuItem<DateTime>(
-                          value: m,
-                          child: Text(
-                            label,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_month_rounded,
+                        size: 18,
+                        color: Color(0xFFD97706),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<DateTime>(
+                            value: _selectedMonth,
+                            isExpanded: true,
+                            icon: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: AppColors.primary,
                             ),
+                            items: availableMonths.map((m) {
+                              final label = DateFormat('MMMM yyyy').format(m);
+                              return DropdownMenuItem<DateTime>(
+                                value: m,
+                                child: Text(
+                                  label,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (newMonth) {
+                              if (newMonth != null) {
+                                setState(() => _selectedMonth = newMonth);
+                              }
+                            },
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (newMonth) {
-                        if (newMonth != null) {
-                          setState(() => _selectedMonth = newMonth);
-                        }
-                      },
-                    ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       '$monthOrdersCount Orders • $monthExpensesCount Exp',
                       style: const TextStyle(
                         fontSize: 11,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: Color(0xFF475569),
                       ),
                     ),
@@ -246,6 +275,8 @@ class _MonthlyReportCardState extends State<MonthlyReportCard> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
+                    elevation: 1,
+                    shadowColor: AppColors.primary.withValues(alpha: 0.25),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
                     ),
@@ -272,7 +303,7 @@ class _MonthlyReportCardState extends State<MonthlyReportCard> {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  side: const BorderSide(color: Color(0xFFCBD5E1)),
+                  side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
                   ),

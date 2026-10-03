@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../orders/presentation/providers/order_list_provider.dart';
 
-/// Workshop profile identity and workload metrics card.
+/// Artisanal Workshop Atelier Identity Banner.
+/// Replaces generic card templates with a handcrafted Master Tailor Atelier aesthetic,
+/// featuring custom embroidered seal, status indicator, and frosted KPI ribbon.
 class WorkshopProfileCard extends StatelessWidget {
   final OrderListProvider orderProvider;
 
@@ -15,81 +16,215 @@ class WorkshopProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF0F172A), // Deep Slate Navy
+            Color(0xFF1E293B), // Midnight Tailor Indigo
+          ],
+        ),
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        side: const BorderSide(color: Color(0xFFE2E8F0)),
+        border: Border.all(color: const Color(0xFF334155), width: 1.2),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x1F0F172A),
+            blurRadius: 16,
+            offset: Offset(0, 6),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.space16),
-        child: Column(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
+        child: Stack(
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                  ),
+            // Decorative background tailor watermark (faint shears)
+            Positioned(
+              right: -15,
+              top: -15,
+              child: Opacity(
+                opacity: 0.04,
+                child: Transform.rotate(
+                  angle: -0.25,
                   child: const Icon(
-                    Icons.store_rounded,
+                    Icons.content_cut_rounded,
+                    size: 150,
                     color: Colors.white,
-                    size: 30,
                   ),
                 ),
-                const SizedBox(width: 14),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(AppDimensions.space16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Workshop Brand & Status Row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'DarziDairy Tailors',
-                        style: TextStyle(
-                          fontFamily: 'Nunito',
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
+                      // Handcrafted Artisan Monogram Seal
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x3DF59E0B),
+                              blurRadius: 10,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                          border: Border.all(
+                            color: const Color(0xFFFEF3C7),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.content_cut_rounded,
+                            color: Colors.white,
+                            size: 26,
+                          ),
                         ),
                       ),
-                      SizedBox(height: 2),
-                      Text(
-                        'Master Tailoring & Stitching Workshop',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textSecondary,
+                      const SizedBox(width: 14),
+
+                      // Workshop Title and Subtitle
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Expanded(
+                                  child: Text(
+                                    'DarziDairy Tailors',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontFamily: 'Nunito',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      letterSpacing: -0.3,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                // Live Status Badge
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0x2610B981),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: const Color(0x4010B981),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.circle,
+                                        size: 6,
+                                        color: Color(0xFF34D399),
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        'Active',
+                                        style: TextStyle(
+                                          fontSize: 10.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF34D399),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            const Text(
+                              'Master Tailoring & Khata • درزی ماسٹر',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF94A3B8),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            const Divider(height: 24, color: Color(0xFFF1F5F9)),
 
-            // Stats row
-            Row(
-              children: [
-                _buildStatItem(
-                  label: 'Total Orders',
-                  value: '${orderProvider.allOrders.length}',
-                  color: AppColors.primary,
-                ),
-                Container(width: 1, height: 32, color: const Color(0xFFE2E8F0)),
-                _buildStatItem(
-                  label: 'Active Jobs',
-                  value: '${orderProvider.activeOrders.length}',
-                  color: AppColors.secondary,
-                ),
-                Container(width: 1, height: 32, color: const Color(0xFFE2E8F0)),
-                _buildStatItem(
-                  label: 'Completed',
-                  value: '${orderProvider.completedOrders.length}',
-                  color: const Color(0xFF16A34A),
-                ),
-              ],
+                  const SizedBox(height: 16),
+
+                  // Translucent Artisan KPI Ribbon
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0x1AFFFFFF),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                      border: Border.all(
+                        color: const Color(0x1F64748B),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        _buildHeroStat(
+                          label: 'Total Orders',
+                          value: '${orderProvider.allOrders.length}',
+                          valueColor: const Color(0xFFFBBF24), // Warm Amber
+                          icon: Icons.assignment_outlined,
+                        ),
+                        Container(
+                          width: 1,
+                          height: 30,
+                          color: const Color(0x2694A3B8),
+                        ),
+                        _buildHeroStat(
+                          label: 'Active Jobs',
+                          value: '${orderProvider.activeOrders.length}',
+                          valueColor: const Color(0xFF38BDF8), // Cyan Blue
+                          icon: Icons.timelapse_rounded,
+                        ),
+                        Container(
+                          width: 1,
+                          height: 30,
+                          color: const Color(0x2694A3B8),
+                        ),
+                        _buildHeroStat(
+                          label: 'Completed',
+                          value: '${orderProvider.completedOrders.length}',
+                          valueColor: const Color(0xFF34D399), // Emerald
+                          icon: Icons.check_circle_outline_rounded,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -97,25 +232,36 @@ class WorkshopProfileCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem({
+  Widget _buildHeroStat({
     required String label,
     required String value,
-    required Color color,
+    required Color valueColor,
+    required IconData icon,
   }) {
     return Expanded(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              value,
-              style: TextStyle(
-                fontFamily: 'Nunito',
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: color,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 13, color: valueColor.withValues(alpha: 0.8)),
+              const SizedBox(width: 4),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: valueColor,
+                    letterSpacing: -0.2,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
           const SizedBox(height: 2),
           Text(
@@ -124,8 +270,8 @@ class WorkshopProfileCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: AppColors.textMuted,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFFCBD5E1),
             ),
           ),
         ],
