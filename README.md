@@ -90,7 +90,16 @@ Darzi Dairy is a lightweight, responsive Flutter application tailored to the dai
   3. **History (تاریخ):** Filterable archive of completed jobs.
   4. **Expenses (خرچہ / روزنامچہ):** Workshop stats, revenue, and daily expense ledger.
 
-### 5. 📱 Foldable & Tablet Responsive Design
+### 5. 📊 Interactive Financial Charts (`fl_chart`)
+- **Revenue vs Expenses Bar Chart:** 4-month comparative bar chart with interactive tooltips showing exact rupee amounts.
+- **Expense Category Pie Chart:** Interactive distribution showing proportional expenditure on threads, rent, wages, etc., with touch highlighting and color-coded badges.
+
+### 6. 📄 Monthly PDF Report & Download
+- Instant monthly statement generation for any of the past 12 months.
+- Formatted with workshop branding, KPI summary, orders ledger, expenses table, and category breakdowns.
+- Native **Download / Print PDF** and **Share PDF** support across all devices.
+
+### 7. 📱 Foldable & Tablet Responsive Design
 - Automatic adaptation to screen widths:
   - **Mobile (< 600dp):** Polished bottom navigation bar and single-column cards.
   - **Foldables & Tablets (≥ 600dp):** Side `NavigationRail` and balanced dual-column layouts.
@@ -239,7 +248,8 @@ Run the comprehensive automated test suite with:
 flutter test
 ```
 
-### Test Suite Highlights (17 Tests):
+### Test Suite Highlights (22 Tests):
+- **`monthly_report_and_chart_test.dart`:** Tests monthly PDF bytes generation, empty-state resilience, bar & pie chart switching, and report card actions.
 - **`expense_tracker_test.dart`:** Tests expense creation, total sums, and deletion.
 - **`isar_database_test.dart`:** Tests singleton safety, persistence, and state transitions.
 - **`order_history_test.dart`:** Tests 4-destination shell, history navigation, card styling (red/green), customer validation, and Urdu measurement labels.

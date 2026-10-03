@@ -7,7 +7,9 @@ import '../../../orders/presentation/providers/order_list_provider.dart';
 import '../providers/expense_provider.dart';
 import '../widgets/add_expense_modal.dart';
 import '../widgets/expense_list_item.dart';
+import '../widgets/financial_chart_card.dart';
 import '../widgets/financial_overview_card.dart';
+import '../widgets/monthly_report_card.dart';
 import '../widgets/workshop_profile_card.dart';
 
 /// Screen combining Workshop Profile overview and the Daily Expense Tracker (Roznamcha).
@@ -57,11 +59,22 @@ class ProfileExpenseScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // 3. Expense Register Header with Add Button
+              // 3. Financial Analytics Chart (fl_chart)
+              FinancialChartCard(
+                allOrders: orderProvider.allOrders,
+                allExpenses: expenseProvider.expenses,
+              ),
+              const SizedBox(height: 16),
+
+              // 4. Monthly PDF Report & Download Card
+              const MonthlyReportCard(),
+              const SizedBox(height: 16),
+
+              // 5. Expense Register Header with Add Button
               _buildExpenseRegisterHeader(context),
               const SizedBox(height: 12),
 
-              // 4. Expenses List
+              // 6. Expenses List
               _buildExpensesList(context, expenseProvider),
               const SizedBox(height: 32),
             ],

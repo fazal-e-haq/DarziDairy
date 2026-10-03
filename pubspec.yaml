@@ -30,6 +30,9 @@ dependencies:
   # Formatting, Locales & UUIDs
   intl: ^0.19.0
   uuid: ^4.4.0
+  fl_chart: ^1.2.0
+  pdf: ^3.13.1
+  printing: ^5.15.1
 
 dev_dependencies:
   flutter_test:
