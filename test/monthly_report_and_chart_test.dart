@@ -8,6 +8,7 @@ import 'package:darzi_dairy/features/expenses/domain/entities/expense_entity.dar
 import 'package:darzi_dairy/features/expenses/presentation/providers/expense_provider.dart';
 import 'package:darzi_dairy/features/expenses/presentation/widgets/financial_chart_card.dart';
 import 'package:darzi_dairy/features/expenses/presentation/widgets/monthly_report_card.dart';
+import 'package:darzi_dairy/features/expenses/presentation/widgets/workshop_profile_card.dart';
 import 'package:darzi_dairy/features/expenses/utils/monthly_report_pdf_generator.dart';
 import 'package:darzi_dairy/features/orders/data/datasources/order_local_datasource.dart';
 import 'package:darzi_dairy/features/orders/data/repositories/order_repository_impl.dart';
@@ -151,7 +152,7 @@ void main() {
   });
 
   group('MonthlyReportCard Widget Tests', () {
-    testWidgets('renders month selector and download/share buttons', (WidgetTester tester) async {
+    testWidgets('renders month selector and download button without share button', (WidgetTester tester) async {
       final expenseRepo = ExpenseRepository();
       final orderRepo = OrderRepositoryImpl(localDataSource: OrderLocalDataSource());
 
@@ -178,7 +179,38 @@ void main() {
 
       expect(find.text('Monthly PDF Report (ماہانہ رپورٹ)'), findsOneWidget);
       expect(find.text('Download / Print PDF'), findsOneWidget);
-      expect(find.text('Share'), findsOneWidget);
+      expect(find.text('Share'), findsNothing);
+    });
+  });
+
+  group('WorkshopProfileCard Expense-Only Widget Tests', () {
+    testWidgets('renders expense ledger header and metrics without shop name or online elements',
+        (WidgetTester tester) async {
+      final expenseRepo = ExpenseRepository();
+      final provider = ExpenseProvider(repository: expenseRepo);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WorkshopProfileCard(expenseProvider: provider),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify Expense Header & Offline Badge
+      expect(find.text('Expense Ledger (روزنامچہ کھاتہ)'), findsOneWidget);
+      expect(find.text('100% Offline'), findsOneWidget);
+      expect(find.text('Daily Workshop Outflows & Petty Cash (اخراجات کا ریکارڈ)'), findsOneWidget);
+
+      // Verify Expense Metric Labels
+      expect(find.text("Today's Expense (آج)"), findsOneWidget);
+      expect(find.text('This Month (اس ماہ)'), findsOneWidget);
+      expect(find.text('Total Entries (اندراج)'), findsOneWidget);
+
+      // Verify previous shop name and subtitle are completely removed
+      expect(find.text('DarziDairy Tailors'), findsNothing);
+      expect(find.text('Master Tailoring & Stitching Workshop'), findsNothing);
     });
   });
 }

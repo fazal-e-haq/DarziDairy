@@ -355,26 +355,6 @@ class MonthlyReportPdfGenerator {
     );
   }
 
-  /// Shares the PDF file directly via share sheet
-  static Future<void> shareReport({
-    required int year,
-    required int month,
-    required List<OrderEntity> allOrders,
-    required List<ExpenseEntity> allExpenses,
-  }) async {
-    final monthName = DateFormat('MMMM_yyyy').format(DateTime(year, month));
-    final pdfBytes = await generateMonthlyReportBytes(
-      year: year,
-      month: month,
-      allOrders: allOrders,
-      allExpenses: allExpenses,
-    );
-
-    await Printing.sharePdf(
-      bytes: pdfBytes,
-      filename: 'DarziDairy_Report_$monthName.pdf',
-    );
-  }
 
   /// Cleans strings for standard PDF rendering (removes Urdu text in brackets and replaces bullet points)
   static String _cleanTextForPdf(String text) {

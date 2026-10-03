@@ -53,9 +53,9 @@ class _FinancialChartCardState extends State<FinancialChartCard> {
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x060F172A),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+            color: Color(0x04000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -70,47 +70,19 @@ class _FinancialChartCardState extends State<FinancialChartCard> {
             spacing: 8,
             runSpacing: 8,
             children: [
-              Row(
+              const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F3FF),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: const Color(0xFFDDD6FE)),
+                  Icon(Icons.bar_chart_rounded, size: 22, color: AppColors.primary),
+                  SizedBox(width: 8),
+                  Text(
+                    'Financial Analytics (چارٹ گراف)',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
                     ),
-                    child: const Icon(
-                      Icons.insert_chart_outlined_rounded,
-                      size: 19,
-                      color: Color(0xFF7C3AED),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Financial Analytics (چارٹ گراف)',
-                        style: TextStyle(
-                          fontFamily: 'Nunito',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textPrimary,
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                      SizedBox(height: 1),
-                      Text(
-                        'Cash flow & category breakdown',
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -142,7 +114,7 @@ class _FinancialChartCardState extends State<FinancialChartCard> {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const Divider(height: 20, color: Color(0xFFF1F5F9)),
 
           if (!hasData)
             _buildEmptyState()

@@ -1,230 +1,126 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
-import '../../../orders/presentation/providers/order_list_provider.dart';
+import '../../../../core/utils/currency_formatter.dart';
+import '../providers/expense_provider.dart';
 
-/// Artisanal Workshop Atelier Identity Banner.
-/// Replaces generic card templates with a handcrafted Master Tailor Atelier aesthetic,
-/// featuring custom embroidered seal, status indicator, and frosted KPI ribbon.
+/// Workshop expense overview card displaying daily and monthly expense metrics.
+/// Strictly 100% offline with zero online dependencies.
 class WorkshopProfileCard extends StatelessWidget {
-  final OrderListProvider orderProvider;
+  final ExpenseProvider expenseProvider;
 
   const WorkshopProfileCard({
     super.key,
-    required this.orderProvider,
+    required this.expenseProvider,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0F172A), // Deep Slate Navy
-            Color(0xFF1E293B), // Midnight Tailor Indigo
-          ],
-        ),
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        border: Border.all(color: const Color(0xFF334155), width: 1.2),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x1F0F172A),
-            blurRadius: 16,
-            offset: Offset(0, 6),
-          ),
-        ],
+        side: const BorderSide(color: Color(0xFFE2E8F0)),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        child: Stack(
+      child: Padding(
+        padding: const EdgeInsets.all(AppDimensions.space16),
+        child: Column(
           children: [
-            // Decorative background tailor watermark (faint shears)
-            Positioned(
-              right: -15,
-              top: -15,
-              child: Opacity(
-                opacity: 0.04,
-                child: Transform.rotate(
-                  angle: -0.25,
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF6FF),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                  ),
                   child: const Icon(
-                    Icons.content_cut_rounded,
-                    size: 150,
-                    color: Colors.white,
+                    Icons.receipt_long_rounded,
+                    color: AppColors.primary,
+                    size: 26,
                   ),
                 ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(AppDimensions.space16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Workshop Brand & Status Row
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Handcrafted Artisan Monogram Seal
-                      Container(
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          shape: BoxShape.circle,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x3DF59E0B),
-                              blurRadius: 10,
-                              offset: Offset(0, 3),
+                      Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'Expense Ledger (روزنامچہ کھاتہ)',
+                              style: TextStyle(
+                                fontFamily: 'Nunito',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textPrimary,
+                              ),
                             ),
-                          ],
-                          border: Border.all(
-                            color: const Color(0xFFFEF3C7),
-                            width: 1.5,
                           ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.content_cut_rounded,
-                            color: Colors.white,
-                            size: 26,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-
-                      // Workshop Title and Subtitle
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFECFDF5),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFA7F3D0)),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Expanded(
-                                  child: Text(
-                                    'DarziDairy Tailors',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontFamily: 'Nunito',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                      letterSpacing: -0.3,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                // Live Status Badge
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 3,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0x2610B981),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0x4010B981),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.circle,
-                                        size: 6,
-                                        color: Color(0xFF34D399),
-                                      ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        'Active',
-                                        style: TextStyle(
-                                          fontSize: 10.5,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFF34D399),
-                                        ),
-                                      ),
-                                    ],
+                                Icon(Icons.shield_outlined, size: 11, color: Color(0xFF059669)),
+                                SizedBox(width: 3),
+                                Text(
+                                  '100% Offline',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF059669),
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 2),
-                            const Text(
-                              'Master Tailoring & Khata • درزی ماسٹر',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF94A3B8),
-                              ),
-                            ),
-                          ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      const Text(
+                        'Daily Workshop Outflows & Petty Cash (اخراجات کا ریکارڈ)',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
                   ),
+                ),
+              ],
+            ),
+            const Divider(height: 22, color: Color(0xFFF1F5F9)),
 
-                  const SizedBox(height: 16),
-
-                  // Translucent Artisan KPI Ribbon
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0x1AFFFFFF),
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                      border: Border.all(
-                        color: const Color(0x1F64748B),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        _buildHeroStat(
-                          label: 'Total Orders',
-                          value: '${orderProvider.allOrders.length}',
-                          valueColor: const Color(0xFFFBBF24), // Warm Amber
-                          icon: Icons.assignment_outlined,
-                        ),
-                        Container(
-                          width: 1,
-                          height: 30,
-                          color: const Color(0x2694A3B8),
-                        ),
-                        _buildHeroStat(
-                          label: 'Active Jobs',
-                          value: '${orderProvider.activeOrders.length}',
-                          valueColor: const Color(0xFF38BDF8), // Cyan Blue
-                          icon: Icons.timelapse_rounded,
-                        ),
-                        Container(
-                          width: 1,
-                          height: 30,
-                          color: const Color(0x2694A3B8),
-                        ),
-                        _buildHeroStat(
-                          label: 'Completed',
-                          value: '${orderProvider.completedOrders.length}',
-                          valueColor: const Color(0xFF34D399), // Emerald
-                          icon: Icons.check_circle_outline_rounded,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            // Expense metrics row: Today's Expense, This Month's Expense, Total Entries
+            Row(
+              children: [
+                _buildStatItem(
+                  label: "Today's Expense (آج)",
+                  value: CurrencyFormatter.format(expenseProvider.todayExpenses),
+                  color: AppColors.primary,
+                ),
+                Container(width: 1, height: 32, color: const Color(0xFFE2E8F0)),
+                _buildStatItem(
+                  label: 'This Month (اس ماہ)',
+                  value: CurrencyFormatter.format(expenseProvider.thisMonthExpenses),
+                  color: const Color(0xFFD97706),
+                ),
+                Container(width: 1, height: 32, color: const Color(0xFFE2E8F0)),
+                _buildStatItem(
+                  label: 'Total Entries (اندراج)',
+                  value: '${expenseProvider.expenses.length}',
+                  color: const Color(0xFF16A34A),
+                ),
+              ],
             ),
           ],
         ),
@@ -232,46 +128,36 @@ class WorkshopProfileCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeroStat({
+  Widget _buildStatItem({
     required String label,
     required String value,
-    required Color valueColor,
-    required IconData icon,
+    required Color color,
   }) {
     return Expanded(
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 13, color: valueColor.withValues(alpha: 0.8)),
-              const SizedBox(width: 4),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  value,
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: valueColor,
-                    letterSpacing: -0.2,
-                  ),
-                ),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: color,
               ),
-            ],
+            ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: Color(0xFFCBD5E1),
+              color: AppColors.textMuted,
             ),
           ),
         ],
