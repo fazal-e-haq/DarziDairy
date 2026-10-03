@@ -6,7 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../../core/theme/responsive_layout.dart';
-import '../../../../shared/widgets/order_card.dart';
+import '../widgets/order_card.dart';
 import '../../domain/entities/order_entity.dart';
 import '../providers/order_list_provider.dart';
 

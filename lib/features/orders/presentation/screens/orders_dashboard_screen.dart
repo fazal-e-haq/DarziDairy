@@ -7,7 +7,7 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../../core/theme/responsive_layout.dart';
-import '../../../../shared/widgets/order_card.dart';
+import '../widgets/order_card.dart';
 import '../providers/order_list_provider.dart';
 
 /// Modern, clean, and simple main orders screen with real-time customer name search,

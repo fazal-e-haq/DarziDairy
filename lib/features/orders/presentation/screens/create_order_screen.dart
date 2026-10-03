@@ -7,7 +7,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
-import '../../../../shared/widgets/measurement_grid_input.dart';
+import '../widgets/measurement_grid_input.dart';
 import '../providers/order_list_provider.dart';
 import '../../domain/entities/order_entity.dart';
 

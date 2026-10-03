@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:darzi_dairy/app.dart';
 import 'package:darzi_dairy/core/routing/app_router.dart';
 import 'package:darzi_dairy/features/orders/domain/entities/order_entity.dart';
-import 'package:darzi_dairy/shared/widgets/order_card.dart';
+import 'package:darzi_dairy/features/orders/presentation/widgets/order_card.dart';
 
 void main() {
   setUp(() {
