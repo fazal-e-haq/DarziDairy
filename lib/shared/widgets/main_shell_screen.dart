@@ -185,7 +185,7 @@ class _MainShellScreenState extends State<MainShellScreen> {
               onDestinationSelected: _onTabChanged,
               backgroundColor: AppColors.surface,
               elevation: 0,
-              height: 68,
+              height: 72,
               labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
               destinations: const [
                 NavigationDestination(

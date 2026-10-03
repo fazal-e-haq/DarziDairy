@@ -257,9 +257,12 @@ class _MonthlyReportCardState extends State<MonthlyReportCard> {
                           child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
                       : const Icon(Icons.download_rounded, size: 18),
-                  label: Text(
-                    _isGenerating ? 'Generating...' : 'Download / Print PDF',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                  label: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      _isGenerating ? 'Generating...' : 'Download / Print PDF',
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ),

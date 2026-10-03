@@ -562,12 +562,16 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                             : null,
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        'Urgent',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13.5,
-                          color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF475569),
+                      Flexible(
+                        child: Text(
+                          'Urgent',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13.5,
+                            color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF475569),
+                          ),
                         ),
                       ),
                     ],

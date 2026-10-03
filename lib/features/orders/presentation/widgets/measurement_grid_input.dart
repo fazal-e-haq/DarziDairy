@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 
 /// Clean and responsive grid of measurement input fields for tailoring specifications.
+/// Designed with zero-overflow vertical bounds, prominent numeric style, and clear Urdu-English labels.
 class MeasurementGridInput extends StatelessWidget {
   final Map<String, TextEditingController> controllers;
 
@@ -21,7 +22,7 @@ class MeasurementGridInput extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 240,
-        mainAxisExtent: 84,
+        mainAxisExtent: 94,
         crossAxisSpacing: AppDimensions.space12,
         mainAxisSpacing: AppDimensions.space12,
       ),
@@ -31,7 +32,7 @@ class MeasurementGridInput extends StatelessWidget {
         final controller = controllers[key]!;
 
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: AppDimensions.roundedMedium,
@@ -86,7 +87,7 @@ class MeasurementGridInput extends StatelessWidget {
                     'in',
                     style: TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       color: AppColors.textMuted,
                     ),
                   ),

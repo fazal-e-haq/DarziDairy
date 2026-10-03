@@ -57,12 +57,16 @@ class ExpenseListItem extends StatelessWidget {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    Text(
-                      item.category,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.secondary,
+                    Flexible(
+                      child: Text(
+                        item.category,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.secondary,
+                        ),
                       ),
                     ),
                     const Text(' • ', style: TextStyle(color: AppColors.textMuted)),

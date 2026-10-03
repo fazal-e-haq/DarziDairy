@@ -89,15 +89,20 @@ class ProfileExpenseScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'Daily Expenses (روزنامچہ)',
-          style: TextStyle(
-            fontFamily: 'Nunito',
-            fontSize: 17,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+        const Expanded(
+          child: Text(
+            'Daily Expenses (روزنامچہ)',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontFamily: 'Nunito',
+              fontSize: 16.5,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
           ),
         ),
+        const SizedBox(width: 8),
         ElevatedButton.icon(
           onPressed: () => AddExpenseModal.show(context),
           style: ElevatedButton.styleFrom(

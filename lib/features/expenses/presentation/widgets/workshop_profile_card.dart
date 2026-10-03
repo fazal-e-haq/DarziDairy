@@ -105,18 +105,23 @@ class WorkshopProfileCard extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontFamily: 'Nunito',
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: color,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
             ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w500,

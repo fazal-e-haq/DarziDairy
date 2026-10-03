@@ -8,14 +8,17 @@ import '../../domain/entities/order_entity.dart';
 
 /// Senior-designed, minimalist order card with zero inner buttons.
 /// The entire card is a single clean touch target that navigates to order details.
+/// Features responsive badge scaling, zero-overflow typography, and subtle status tinting.
 class OrderCard extends StatelessWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
+  final EdgeInsetsGeometry? margin;
 
   const OrderCard({
     super.key,
     required this.order,
     this.onTap,
+    this.margin,
   });
 
   @override
@@ -31,7 +34,7 @@ class OrderCard extends StatelessWidget {
     Color borderColor = const Color(0xFFE2E8F0);
     double borderWidth = 1.0;
     Color shadowColor = const Color(0x06000000);
-    double shadowBlur = 10;
+    double shadowBlur = 8;
     Color tagBgColor = const Color(0xFFF8FAFC);
     Color tagBorderColor = const Color(0xFFE2E8F0);
     Color dividerColor = const Color(0xFFF1F5F9);
@@ -40,8 +43,8 @@ class OrderCard extends StatelessWidget {
       cardBgColor = const Color(0xFFF0FDF4); // Soft subtle green tint
       borderColor = const Color(0xFF86EFAC); // Soft green border
       borderWidth = 1.5;
-      shadowColor = const Color(0x1816A34A); // Soft green shadow
-      shadowBlur = 12;
+      shadowColor = const Color(0x1416A34A); // Soft green shadow
+      shadowBlur = 10;
       tagBgColor = Colors.white;
       tagBorderColor = const Color(0xFFBBF7D0);
       dividerColor = const Color(0xFFDCFCE7);
@@ -49,15 +52,15 @@ class OrderCard extends StatelessWidget {
       cardBgColor = const Color(0xFFFFF1F1); // Soft subtle red tint
       borderColor = const Color(0xFFFCA5A5); // Soft red border
       borderWidth = 1.5;
-      shadowColor = const Color(0x18DC2626); // Soft red shadow
-      shadowBlur = 12;
+      shadowColor = const Color(0x14DC2626); // Soft red shadow
+      shadowBlur = 10;
       tagBgColor = Colors.white;
       tagBorderColor = const Color(0xFFFECACA);
       dividerColor = const Color(0xFFFEE2E2);
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: margin ?? const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: cardBgColor,
         borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
@@ -69,7 +72,7 @@ class OrderCard extends StatelessWidget {
           BoxShadow(
             color: shadowColor,
             blurRadius: shadowBlur,
-            offset: const Offset(0, 3),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -82,6 +85,7 @@ class OrderCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Top Row: Token Badge + Customer Name & Phone + Price
                 Row(
@@ -89,7 +93,7 @@ class OrderCard extends StatelessWidget {
                   children: [
                     // Order Token Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: isUrgent
                             ? const Color(0xFFDC2626)
@@ -108,7 +112,7 @@ class OrderCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
 
-                    // Customer Name and Phone Number
+                    // Customer Name and Phone Number (Expands safely)
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,14 +123,14 @@ class OrderCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontFamily: 'Nunito',
-                              fontSize: 19,
+                              fontSize: 18,
                               fontWeight: FontWeight.w800,
                               color: AppColors.primary,
                               letterSpacing: -0.2,
                             ),
                           ),
                           if (order.customerPhone.isNotEmpty) ...[
-                            const SizedBox(height: 3),
+                            const SizedBox(height: 2),
                             Row(
                               children: [
                                 const Icon(
@@ -141,7 +145,7 @@ class OrderCard extends StatelessWidget {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
-                                      fontSize: 13,
+                                      fontSize: 12.5,
                                       fontWeight: FontWeight.w600,
                                       color: Color(0xFF64748B),
                                     ),
@@ -160,7 +164,7 @@ class OrderCard extends StatelessWidget {
                       CurrencyFormatter.format(order.stitchingRate),
                       style: const TextStyle(
                         fontFamily: 'Nunito',
-                        fontSize: 17,
+                        fontSize: 16.5,
                         fontWeight: FontWeight.w800,
                         color: AppColors.primary,
                         letterSpacing: -0.2,
@@ -177,7 +181,7 @@ class OrderCard extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
                       decoration: BoxDecoration(
                         color: tagBgColor,
                         borderRadius: BorderRadius.circular(6),
@@ -188,7 +192,7 @@ class OrderCard extends StatelessWidget {
                       child: Text(
                         order.garmentType,
                         style: const TextStyle(
-                          fontSize: 12.5,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF475569),
                         ),
@@ -210,7 +214,7 @@ class OrderCard extends StatelessWidget {
                             Text(
                               'URGENT',
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 10.5,
                                 fontWeight: FontWeight.w800,
                                 color: Color(0xFFDC2626),
                               ),
@@ -235,6 +239,7 @@ class OrderCard extends StatelessWidget {
                   children: [
                     // Booking Date & Time
                     Flexible(
+                      flex: 5,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -250,7 +255,7 @@ class OrderCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
-                                fontSize: 11.5,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w500,
                                 color: Color(0xFF64748B),
                               ),
@@ -263,6 +268,7 @@ class OrderCard extends StatelessWidget {
 
                     // Delivery Date / Completed Status
                     Flexible(
+                      flex: 6,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -271,7 +277,7 @@ class OrderCard extends StatelessWidget {
                             isCompleted
                                 ? Icons.check_circle_rounded
                                 : Icons.event_available_outlined,
-                            size: 14,
+                            size: 13.5,
                             color: isCompleted
                                 ? const Color(0xFF16A34A)
                                 : (isOverdue
@@ -287,7 +293,7 @@ class OrderCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 11.5,
                                 fontWeight: FontWeight.w700,
                                 color: isCompleted
                                     ? const Color(0xFF15803D)

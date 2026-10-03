@@ -5,6 +5,7 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/utils/currency_formatter.dart';
 
 /// Financial summary ledger card displaying total revenue, expenses, and net profit.
+/// Enhanced with zero-overflow typography, responsive scaling, and Urdu captions.
 class FinancialOverviewCard extends StatelessWidget {
   final double totalRevenue;
   final double totalExpenses;
@@ -40,13 +41,17 @@ class FinancialOverviewCard extends StatelessWidget {
             children: [
               Icon(Icons.account_balance_wallet_outlined, size: 20, color: AppColors.primary),
               SizedBox(width: 8),
-              Text(
-                'Financial Overview (حساب کتاب)',
-                style: TextStyle(
-                  fontFamily: 'Nunito',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+              Expanded(
+                child: Text(
+                  'Financial Overview (حساب کتاب)',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             ],
@@ -87,23 +92,30 @@ class FinancialOverviewCard extends StatelessWidget {
               ),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Net Profit / Balance',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    color: netProfit >= 0 ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                Expanded(
+                  child: Text(
+                    'Net Profit / Balance',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: netProfit >= 0 ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                    ),
                   ),
                 ),
-                Text(
-                  CurrencyFormatter.format(netProfit),
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontWeight: FontWeight.w800,
-                    fontSize: 17,
-                    color: netProfit >= 0 ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                const SizedBox(width: 8),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    CurrencyFormatter.format(netProfit),
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w800,
+                      fontSize: 17,
+                      color: netProfit >= 0 ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                    ),
                   ),
                 ),
               ],
@@ -149,13 +161,17 @@ class FinancialOverviewCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
-            amount,
-            style: TextStyle(
-              fontFamily: 'Nunito',
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: color,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              amount,
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
             ),
           ),
         ],

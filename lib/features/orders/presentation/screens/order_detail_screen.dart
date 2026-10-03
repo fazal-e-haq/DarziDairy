@@ -395,16 +395,19 @@ class _DetailRow extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: AppColors.textSecondary),
         const SizedBox(width: 10),
-        Text(
-          label,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 14,
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 14,
+            ),
           ),
         ),
-        const Spacer(),
+        const SizedBox(width: 8),
         Text(
           value,
+          textAlign: TextAlign.end,
           style: TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 14,
@@ -433,17 +436,20 @@ class _PriceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isTotal ? 15 : 14,
-            fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
-            color: isTotal ? AppColors.textPrimary : AppColors.textSecondary,
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: isTotal ? 15 : 14,
+              fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
+              color: isTotal ? AppColors.textPrimary : AppColors.textSecondary,
+            ),
           ),
         ),
-        const Spacer(),
+        const SizedBox(width: 8),
         Text(
           value,
+          textAlign: TextAlign.end,
           style: TextStyle(
             fontFamily: 'Nunito',
             fontSize: isTotal ? 18 : 15,

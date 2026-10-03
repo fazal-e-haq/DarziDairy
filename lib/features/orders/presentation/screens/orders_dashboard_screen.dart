@@ -198,13 +198,14 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
         crossAxisCount: 2,
         crossAxisSpacing: 16,
         mainAxisSpacing: 12,
-        mainAxisExtent: 225,
+        mainAxisExtent: 210,
       ),
       itemCount: orders.length,
       itemBuilder: (context, index) {
         final order = orders[index];
         return OrderCard(
           order: order,
+          margin: EdgeInsets.zero,
           onTap: () => context.push(AppRouter.orderDetailPath(order.id)),
         );
       },
