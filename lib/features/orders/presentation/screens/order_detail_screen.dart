@@ -54,9 +54,20 @@ class OrderDetailScreen extends StatelessWidget {
                 message: 'Are you sure you want to remove this order from your workshop?',
               );
               if (confirm == true && context.mounted) {
+                final token = order.orderToken;
                 await provider.deleteOrder(order.id);
-                if (context.mounted && context.canPop()) {
-                  context.pop();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Order $token deleted'),
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                  if (context.canPop()) {
+                    context.pop();
+                  }
                 }
               }
             },
@@ -155,6 +166,7 @@ class OrderDetailScreen extends StatelessWidget {
                                   tooltip: 'Copy Phone',
                                   onPressed: () {
                                     Clipboard.setData(ClipboardData(text: order.customerPhone));
+                                    ScaffoldMessenger.of(context).clearSnackBars();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Phone number copied to clipboard'),
@@ -338,6 +350,7 @@ class OrderDetailScreen extends StatelessWidget {
                   final wasCompleted = order.isCompleted;
                   await provider.toggleOrderStatus(order.id);
                   if (context.mounted) {
+                    ScaffoldMessenger.of(context).clearSnackBars();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -352,11 +365,15 @@ class OrderDetailScreen extends StatelessWidget {
                             ? AppColors.primary
                             : const Color(0xFF16A34A),
                         behavior: SnackBarBehavior.floating,
+                        duration: const Duration(seconds: 2),
                         action: !wasCompleted
                             ? SnackBarAction(
                                 label: 'View History',
                                 textColor: Colors.white,
-                                onPressed: () => context.push(AppRouter.history),
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                  context.push(AppRouter.history);
+                                },
                               )
                             : null,
                       ),
@@ -405,13 +422,17 @@ class _DetailRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          value,
-          textAlign: TextAlign.end,
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-            color: valueColor ?? AppColors.textPrimary,
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              color: valueColor ?? AppColors.textPrimary,
+            ),
           ),
         ),
       ],
@@ -447,14 +468,18 @@ class _PriceRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          value,
-          textAlign: TextAlign.end,
-          style: TextStyle(
-            fontFamily: 'Nunito',
-            fontSize: isTotal ? 18 : 15,
-            fontWeight: FontWeight.w800,
-            color: color ?? AppColors.textPrimary,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerRight,
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: TextStyle(
+              fontFamily: 'Nunito',
+              fontSize: isTotal ? 18 : 15,
+              fontWeight: FontWeight.w800,
+              color: color ?? AppColors.textPrimary,
+            ),
           ),
         ),
       ],

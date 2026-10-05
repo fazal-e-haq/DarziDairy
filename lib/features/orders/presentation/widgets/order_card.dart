@@ -159,15 +159,19 @@ class OrderCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
 
-                    // Price (Right-aligned, prominent)
-                    Text(
-                      CurrencyFormatter.format(order.stitchingRate),
-                      style: const TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 16.5,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.primary,
-                        letterSpacing: -0.2,
+                    // Price (Right-aligned, prominent, scaled safely)
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        CurrencyFormatter.format(order.stitchingRate),
+                        style: const TextStyle(
+                          fontFamily: 'Nunito',
+                          fontSize: 16.5,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                          letterSpacing: -0.2,
+                        ),
                       ),
                     ),
                   ],
@@ -235,10 +239,9 @@ class OrderCard extends StatelessWidget {
 
                 // Bottom Row: Booking Date & Time + Delivery / Completed Date
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Booking Date & Time
-                    Flexible(
+                    // Booking Date
+                    Expanded(
                       flex: 5,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -249,9 +252,9 @@ class OrderCard extends StatelessWidget {
                             color: Color(0xFF94A3B8),
                           ),
                           const SizedBox(width: 4),
-                          Flexible(
+                          Expanded(
                             child: Text(
-                              DateFormatter.formatDateTime(order.bookingDate),
+                              DateFormatter.formatDate(order.bookingDate),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -267,7 +270,7 @@ class OrderCard extends StatelessWidget {
                     const SizedBox(width: 8),
 
                     // Delivery Date / Completed Status
-                    Flexible(
+                    Expanded(
                       flex: 6,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -286,20 +289,23 @@ class OrderCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Flexible(
-                            child: Text(
-                              isCompleted
-                                  ? 'Completed: ${DateFormatter.formatDate(order.targetDeadline)}'
-                                  : 'Delivery: ${DateFormatter.formatDate(order.targetDeadline)}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w700,
-                                color: isCompleted
-                                    ? const Color(0xFF15803D)
-                                    : (isOverdue
-                                        ? const Color(0xFFDC2626)
-                                        : const Color(0xFF1E293B)),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                isCompleted
+                                    ? 'Done: ${DateFormatter.formatDate(order.targetDeadline)}'
+                                    : 'Due: ${DateFormatter.formatDate(order.targetDeadline)}',
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: isCompleted
+                                      ? const Color(0xFF15803D)
+                                      : (isOverdue
+                                          ? const Color(0xFFDC2626)
+                                          : const Color(0xFF1E293B)),
+                                ),
                               ),
                             ),
                           ),

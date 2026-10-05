@@ -40,7 +40,7 @@ void main() {
 
       // Verify Order History page is displayed
       expect(find.text('Order History'), findsOneWidget);
-      expect(find.text('Haji Abdul Rehman'), findsOneWidget);
+      expect(find.text('No completed orders yet'), findsOneWidget);
     });
 
     testWidgets('Tapping Expenses in bottom bar switches to Profile & Expenses tab',
@@ -105,7 +105,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify completed visual badge
-      expect(find.textContaining('Completed:'), findsOneWidget);
+      expect(find.textContaining('Done:'), findsOneWidget);
       expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
 
       // Verify soft green background

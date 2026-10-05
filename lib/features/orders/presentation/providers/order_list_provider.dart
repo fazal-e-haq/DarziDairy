@@ -83,16 +83,29 @@ class OrderListProvider extends ChangeNotifier {
 
     _allOrders = await repository.getActiveOrders();
 
-    if (_allOrders.isEmpty) {
-      await _seedSampleOrders();
-      _allOrders = await repository.getActiveOrders();
-      if (_allOrders.isEmpty) {
-        _allOrders = _getSampleOrdersList();
+    // Automatically purge legacy pre-made sample orders so user starts with a clean ledger
+    const dummyNames = {
+      'Chaudhry Nadeem',
+      'Sheikh Tariq',
+      'Bilal Farooq',
+      'Malik Zeeshan',
+      'Haji Abdul Rehman'
+    };
+    final dummyOrders = _allOrders.where((o) => dummyNames.contains(o.customerName)).toList();
+    if (dummyOrders.isNotEmpty) {
+      for (final d in dummyOrders) {
+        await repository.softDeleteOrder(d.id);
       }
+      _allOrders = await repository.getActiveOrders();
     }
 
-    if (_selectedOrder == null && _allOrders.isNotEmpty) {
+    if (_selectedOrder != null) {
+      final updated = _allOrders.where((o) => o.id == _selectedOrder!.id).firstOrNull;
+      _selectedOrder = updated;
+    } else if (_allOrders.isNotEmpty) {
       _selectedOrder = _allOrders.first;
+    } else {
+      _selectedOrder = null;
     }
 
     _isLoading = false;
@@ -135,87 +148,5 @@ class OrderListProvider extends ChangeNotifier {
   Future<void> deleteOrder(int orderId) async {
     await repository.softDeleteOrder(orderId);
     await loadOrders();
-  }
-
-  List<OrderEntity> _getSampleOrdersList() {
-    final now = DateTime.now();
-    return [
-      OrderEntity(
-        id: 1,
-        orderToken: '#1',
-        customerId: 0,
-        customerName: 'Chaudhry Nadeem',
-        customerPhone: '0300-8452199',
-        garmentType: 'Silai Kurta Pajama',
-        bookingDate: DateTime(now.year, now.month, now.day - 2, 14, 30),
-        targetDeadline: DateTime(now.year, now.month, now.day + 2),
-        isUrgent: true,
-        status: OrderStatus.active,
-        stitchingRate: 1800.0,
-        advancePaid: 1000.0,
-      ),
-      OrderEntity(
-        id: 2,
-        orderToken: '#2',
-        customerId: 0,
-        customerName: 'Sheikh Tariq',
-        customerPhone: '0321-4567890',
-        garmentType: 'Silai Two-Piece Suit',
-        bookingDate: DateTime(now.year, now.month, now.day - 3, 11, 15),
-        targetDeadline: DateTime(now.year, now.month, now.day + 1),
-        isUrgent: true,
-        status: OrderStatus.active,
-        stitchingRate: 6500.0,
-        advancePaid: 4000.0,
-      ),
-      OrderEntity(
-        id: 3,
-        orderToken: '#3',
-        customerId: 0,
-        customerName: 'Bilal Farooq',
-        customerPhone: '0333-9876543',
-        garmentType: 'Silai Shalwar Kameez',
-        bookingDate: DateTime(now.year, now.month, now.day - 1, 16, 45),
-        targetDeadline: DateTime(now.year, now.month, now.day + 4),
-        isUrgent: false,
-        status: OrderStatus.active,
-        stitchingRate: 1600.0,
-        advancePaid: 1600.0,
-      ),
-      OrderEntity(
-        id: 4,
-        orderToken: '#4',
-        customerId: 0,
-        customerName: 'Malik Zeeshan',
-        customerPhone: '0312-3456789',
-        garmentType: 'Silai Waistcoat',
-        bookingDate: DateTime(now.year, now.month, now.day, 10, 20),
-        targetDeadline: DateTime(now.year, now.month, now.day + 5),
-        isUrgent: false,
-        status: OrderStatus.active,
-        stitchingRate: 2200.0,
-        advancePaid: 800.0,
-      ),
-      OrderEntity(
-        id: 5,
-        orderToken: '#5',
-        customerId: 0,
-        customerName: 'Haji Abdul Rehman',
-        customerPhone: '0345-1234567',
-        garmentType: 'Silai Kurta Shalwar',
-        bookingDate: DateTime(now.year, now.month, now.day - 6, 12, 0),
-        targetDeadline: DateTime(now.year, now.month, now.day - 1),
-        isUrgent: false,
-        status: OrderStatus.completed,
-        stitchingRate: 2000.0,
-        advancePaid: 2000.0,
-      ),
-    ];
-  }
-
-  Future<void> _seedSampleOrders() async {
-    for (final order in _getSampleOrdersList()) {
-      await repository.saveOrder(order);
-    }
   }
 }

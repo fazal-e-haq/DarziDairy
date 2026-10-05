@@ -191,6 +191,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     await orderProvider.loadOrders();
 
     if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -199,6 +200,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           ),
           backgroundColor: AppColors.statusReady,
           behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
         ),
       );
 

@@ -10,11 +10,13 @@ extension ContextExtensions on BuildContext {
   double get screenHeight => MediaQuery.of(this).size.height;
 
   void showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(this).clearSnackBars();
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: isError ? Colors.red.shade700 : Colors.grey.shade900,
         behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
       ),
     );
   }

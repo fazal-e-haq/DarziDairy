@@ -10,7 +10,6 @@ import '../widgets/expense_list_item.dart';
 import '../widgets/financial_chart_card.dart';
 import '../widgets/financial_overview_card.dart';
 import '../widgets/monthly_report_card.dart';
-import '../widgets/workshop_profile_card.dart';
 
 /// Screen combining Workshop Profile overview and the Daily Expense Tracker (Roznamcha).
 /// Displays live workshop stats, net financial balance, and daily expense logging.
@@ -47,11 +46,7 @@ class ProfileExpenseScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             children: [
-              // 1. Expense Ledger Summary Card
-              WorkshopProfileCard(expenseProvider: expenseProvider),
-              const SizedBox(height: 16),
-
-              // 2. Financial Summary Card (حساب کتاب)
+              // 1. Financial Summary Card (حساب کتاب)
               FinancialOverviewCard(
                 totalRevenue: totalRevenue,
                 totalExpenses: totalExpenses,
@@ -182,6 +177,7 @@ class ProfileExpenseScreen extends StatelessWidget {
           onDelete: () async {
             await expenseProvider.deleteExpense(item.id);
             if (context.mounted) {
+              ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Expense removed'),
