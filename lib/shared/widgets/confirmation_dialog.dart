@@ -15,8 +15,8 @@ class ConfirmationDialog extends StatelessWidget {
     super.key,
     required this.title,
     required this.message,
-    this.confirmLabel = 'Confirm',
-    this.cancelLabel = 'Cancel',
+    this.confirmLabel = 'تصدیق (Confirm)',
+    this.cancelLabel = 'منسوخ (Cancel)',
     this.isDestructive = true,
   });
 
@@ -24,8 +24,8 @@ class ConfirmationDialog extends StatelessWidget {
     BuildContext context, {
     required String title,
     required String message,
-    String confirmLabel = 'Confirm',
-    String cancelLabel = 'Cancel',
+    String confirmLabel = 'تصدیق (Confirm)',
+    String cancelLabel = 'منسوخ (Cancel)',
     bool isDestructive = true,
   }) {
     return showDialog<bool>(

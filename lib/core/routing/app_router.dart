@@ -131,7 +131,7 @@ class AppRouter {
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.home),
-                label: const Text('Return to Dashboard'),
+                label: const Text('مین اسکرین پر واپس جائیں (Go Home)'),
                 onPressed: () => context.go(dashboard),
               ),
             ],

@@ -138,7 +138,7 @@ class ProfileExpenseScreen extends StatelessWidget {
                 ),
                 icon: const Icon(Icons.add_rounded, size: 18),
                 label: const Text(
-                  'Add Expense',
+                  '+ نیا خرچہ (Add Expense)',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -249,10 +249,10 @@ class ProfileExpenseScreen extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              'Tap "+ Add Expense" to track threads, buttons, rent, etc.',
+              'خرچہ درج کرنے کے لیے اوپر "+ نیا خرچہ" دبائیں',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 12.5,
                 color: AppColors.textMuted,
               ),
             ),
@@ -276,7 +276,7 @@ class ProfileExpenseScreen extends StatelessWidget {
               ScaffoldMessenger.of(context).clearSnackBars();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Expense removed'),
+                  content: Text('خرچہ حذف ہو گیا (Expense removed)'),
                   behavior: SnackBarBehavior.floating,
                   duration: Duration(seconds: 2),
                 ),

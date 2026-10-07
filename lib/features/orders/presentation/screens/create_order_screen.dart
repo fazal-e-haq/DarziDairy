@@ -547,7 +547,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 onTap: () => setState(() => _isUrgent = !_isUrgent),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   decoration: BoxDecoration(
                     color: _isUrgent ? const Color(0xFFFEF2F2) : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
@@ -709,7 +709,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               const Text(
-                'Quick:',
+                'فوری انتخاب (Quick):',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -717,7 +717,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 ),
               ),
               ActionChip(
-                label: const Text('Full (مکمل)'),
+                label: const Text('پوری رقم (Full)'),
                 labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
                 backgroundColor: const Color(0xFFF1F5F9),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -727,7 +727,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 },
               ),
               ActionChip(
-                label: const Text('Half (نصف)'),
+                label: const Text('آدھی رقم (Half)'),
                 labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
                 backgroundColor: const Color(0xFFF1F5F9),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -737,7 +737,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 },
               ),
               ActionChip(
-                label: const Text('Zero (صفر)'),
+                label: const Text('باقی بعد میں (Later)'),
                 labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
                 backgroundColor: const Color(0xFFF1F5F9),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -848,7 +848,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   /// Action button to save order
   Widget _buildSaveButton() {
     return CustomButton(
-      text: widget.orderId != null ? 'Update Order' : 'Save Order',
+      text: widget.orderId != null
+          ? 'تبدیلی محفوظ کریں (Update)'
+          : 'آرڈر بک کریں (Save Order)',
       icon: Icons.check_circle_outline,
       onPressed: _saveOrder,
     );

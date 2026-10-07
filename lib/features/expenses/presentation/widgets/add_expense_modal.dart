@@ -92,10 +92,10 @@ class _AddExpenseModalState extends State<AddExpenseModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Add Workshop Expense',
+                    'نیا خرچہ درج کریں (Add Expense)',
                     style: TextStyle(
                       fontFamily: 'Nunito',
-                      fontSize: 18,
+                      fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: AppColors.primary,
                     ),
@@ -197,7 +197,7 @@ class _AddExpenseModalState extends State<AddExpenseModal> {
                   ),
                   onPressed: _submitExpense,
                   child: const Text(
-                    'Save Expense',
+                    'خرچہ محفوظ کریں (Save)',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,

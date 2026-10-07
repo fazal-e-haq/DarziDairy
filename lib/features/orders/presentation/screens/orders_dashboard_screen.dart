@@ -185,7 +185,7 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                                     provider.setSearchQuery('');
                                   },
                                   icon: const Icon(Icons.clear_rounded, size: 18),
-                                  label: const Text('Clear Search'),
+                                  label: const Text('تلاش ختم کریں (Clear)'),
                                 )
                               else
                                 ElevatedButton.icon(
@@ -201,7 +201,7 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                                   ),
                                   icon: const Icon(Icons.add_rounded, size: 20),
                                   label: const Text(
-                                    'Create New Order',
+                                    '+ نیا آرڈر لکھیں (New Order)',
                                     style: TextStyle(
                                       fontFamily: 'Nunito',
                                       fontSize: 15,

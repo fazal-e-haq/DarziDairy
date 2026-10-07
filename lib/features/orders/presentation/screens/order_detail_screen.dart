@@ -51,8 +51,10 @@ class OrderDetailScreen extends StatelessWidget {
             onPressed: () async {
               final confirm = await ConfirmationDialog.show(
                 context,
-                title: 'Delete Order ${order.orderToken}?',
-                message: 'Are you sure you want to remove this order from your workshop?',
+                title: 'آرڈر ختم کریں؟ (${order.orderToken})',
+                message: 'کیا آپ واقعی اس آرڈر کو ریکارڈ سے ہٹانا چاہتے ہیں؟',
+                confirmLabel: 'ہاں، ختم کریں (Delete)',
+                cancelLabel: 'واپس (Cancel)',
               );
               if (confirm == true && context.mounted) {
                 final token = order.orderToken;
@@ -61,7 +63,7 @@ class OrderDetailScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).clearSnackBars();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Order $token deleted'),
+                      content: Text('آرڈر $token ریکارڈ سے ہٹا دیا گیا'),
                       behavior: SnackBarBehavior.floating,
                       duration: const Duration(seconds: 2),
                     ),
@@ -317,7 +319,7 @@ class OrderDetailScreen extends StatelessWidget {
                           onPressed: () => _showUpdateAdvanceDialog(context, order, provider),
                           icon: const Icon(Icons.edit_note_rounded, size: 18),
                           label: const Text(
-                            'Update Advance',
+                            'وصولی درج کریں (Payment)',
                             style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
                           ),
                           style: TextButton.styleFrom(
@@ -359,7 +361,9 @@ class OrderDetailScreen extends StatelessWidget {
                 ),
                 icon: Icon(order.isCompleted ? Icons.undo : Icons.check_circle, size: 22),
                 label: Text(
-                  order.isCompleted ? 'Mark as Active' : 'Mark as Completed',
+                  order.isCompleted
+                      ? 'دوبارہ جاری کریں (Mark Active)'
+                      : 'سوٹ تیار ہے (Order Ready)',
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -374,8 +378,8 @@ class OrderDetailScreen extends StatelessWidget {
                       SnackBar(
                         content: Text(
                           wasCompleted
-                              ? 'Order ${order.orderToken} marked as active'
-                              : 'Order ${order.orderToken} completed and moved to History!',
+                              ? 'آرڈر ${order.orderToken} دوبارہ جاری کر دیا گیا'
+                              : 'آرڈر ${order.orderToken} تیار ہو گیا! ہسٹری میں محفوظ',
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                           ),
@@ -387,7 +391,7 @@ class OrderDetailScreen extends StatelessWidget {
                         duration: const Duration(seconds: 2),
                         action: !wasCompleted
                             ? SnackBarAction(
-                                label: 'View History',
+                                label: 'ہسٹری دیکھیں (History)',
                                 textColor: Colors.white,
                                 onPressed: () {
                                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -446,10 +450,10 @@ class OrderDetailScreen extends StatelessWidget {
                   const SizedBox(width: 10),
                   const Expanded(
                     child: Text(
-                      'Update Advance Payment',
+                      'وصولی / پیشگی درج کریں (Payment)',
                       style: TextStyle(
                         fontFamily: 'Nunito',
-                        fontSize: 17,
+                        fontSize: 16.5,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -485,7 +489,7 @@ class OrderDetailScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ActionChip(
-                        label: const Text('Mark Fully Paid'),
+                        label: const Text('پورا حساب صاف (Full Paid)'),
                         labelStyle: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -512,7 +516,7 @@ class OrderDetailScreen extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx),
-                  child: const Text('Cancel'),
+                  child: const Text('منسوخ (Cancel)'),
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -523,14 +527,14 @@ class OrderDetailScreen extends StatelessWidget {
                       ScaffoldMessenger.of(context).clearSnackBars();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Advance payment updated successfully!'),
+                          content: Text('پیشگی رقم محفوظ ہو گئی! (Payment Saved)'),
                           behavior: SnackBarBehavior.floating,
                           duration: Duration(seconds: 2),
                         ),
                       );
                     }
                   },
-                  child: const Text('Save Payment'),
+                  child: const Text('رقم جمع کریں (Save)'),
                 ),
               ],
             );

@@ -110,7 +110,7 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
                       notificationProvider.markAllAsRead();
                     },
                     child: const Text(
-                      'Mark all read',
+                      'سب دیکھ لیے (Mark Read)',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -126,11 +126,11 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  _buildFilterChip('All (${allNotifications.length})', null),
+                  _buildFilterChip('تمام (${allNotifications.length})', null),
                   const SizedBox(width: 8),
                   if (notificationProvider.overdueCount > 0) ...[
                     _buildFilterChip(
-                      'Overdue (${notificationProvider.overdueCount})',
+                      'تاخیر (${notificationProvider.overdueCount})',
                       AppNotificationType.overdue,
                       badgeColor: const Color(0xFFDC2626),
                     ),
@@ -138,7 +138,7 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
                   ],
                   if (notificationProvider.dueTodayCount > 0) ...[
                     _buildFilterChip(
-                      'Due Today (${notificationProvider.dueTodayCount})',
+                      'آج (${notificationProvider.dueTodayCount})',
                       AppNotificationType.dueToday,
                       badgeColor: const Color(0xFFEA580C),
                     ),
@@ -146,7 +146,7 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
                   ],
                   if (notificationProvider.urgentCount > 0)
                     _buildFilterChip(
-                      'Urgent (${notificationProvider.urgentCount})',
+                      'ارجنٹ (${notificationProvider.urgentCount})',
                       AppNotificationType.urgent,
                       badgeColor: const Color(0xFFD97706),
                     ),
@@ -361,7 +361,7 @@ class _NotificationsSheetState extends State<NotificationsSheet> {
                       const Row(
                         children: [
                           Text(
-                            'View Order',
+                            'آرڈر کھولیں (Open)',
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w700,

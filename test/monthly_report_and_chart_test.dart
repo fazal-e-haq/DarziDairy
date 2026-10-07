@@ -101,7 +101,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Monthly PDF Report (ماہانہ رپورٹ)'), findsOneWidget);
-      expect(find.text('Download / Print PDF'), findsOneWidget);
+      expect(find.textContaining('Download PDF'), findsOneWidget);
       expect(find.text('Share'), findsNothing);
     });
   });

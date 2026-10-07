@@ -229,7 +229,7 @@ class _MonthlyReportCardState extends State<MonthlyReportCard> {
               label: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  _isGenerating ? 'Generating...' : 'Download / Print PDF',
+                  _isGenerating ? 'تیار ہو رہا ہے...' : 'رپورٹ ڈاؤن لوڈ کریں (Download PDF)',
                   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                 ),
               ),

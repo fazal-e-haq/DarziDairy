@@ -167,7 +167,7 @@ void main() {
       expect(find.widgetWithText(AppBar, 'New Order'), findsOneWidget);
 
       // Tap Save Order without entering name or phone
-      final saveBtn = find.text('Save Order');
+      final saveBtn = find.textContaining('Save Order');
       await tester.ensureVisible(saveBtn);
       await tester.tap(saveBtn);
       await tester.pumpAndSettle();

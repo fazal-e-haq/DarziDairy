@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:darzi_dairy/app.dart';
 import 'package:darzi_dairy/core/routing/app_router.dart';
-import 'package:darzi_dairy/features/notifications/domain/entities/app_notification_entity.dart';
 import 'package:darzi_dairy/features/notifications/presentation/providers/notification_provider.dart';
 import 'package:darzi_dairy/features/orders/domain/entities/order_entity.dart';
 import 'package:darzi_dairy/features/orders/data/datasources/order_local_datasource.dart';
@@ -139,11 +138,11 @@ void main() {
       await tester.pumpWidget(const TailorMasterApp());
       await tester.pumpAndSettle();
 
-      // Dashboard should display "Create New Order" button
-      expect(find.text('Create New Order'), findsOneWidget);
+      // Dashboard should display "+ نیا آرڈر لکھیں (New Order)" button
+      expect(find.textContaining('New Order'), findsWidgets);
 
-      // Tap Create New Order button
-      await tester.tap(find.text('Create New Order'));
+      // Tap New Order button
+      await tester.tap(find.textContaining('New Order').first);
       await tester.pumpAndSettle();
 
       // Should navigate to New Order form
@@ -163,7 +162,7 @@ void main() {
 
       // Daily Expenses card must be present
       expect(find.text('Daily Expenses (روزنامچہ)'), findsOneWidget);
-      expect(find.text('Add Expense'), findsOneWidget);
+      expect(find.textContaining('Add Expense'), findsOneWidget);
 
       // Verify graph/chart is completely absent
       expect(find.text('Financial Analytics (چارٹ گراف)'), findsNothing);
