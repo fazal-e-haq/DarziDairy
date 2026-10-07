@@ -47,8 +47,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   // 5. Urgent or not
   bool _isUrgent = false;
 
-  // 6. Just Payment Price
+  // 6. Payment & Advance Controllers
   final TextEditingController _priceController = TextEditingController(text: '1800');
+  final TextEditingController _advanceController = TextEditingController(text: '0');
 
   // 7. Measurements
   final Map<String, TextEditingController> _measurementControllers = {};
@@ -59,6 +60,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   @override
   void initState() {
     super.initState();
+
+    _priceController.addListener(_onPriceOrAdvanceChanged);
+    _advanceController.addListener(_onPriceOrAdvanceChanged);
 
     for (final label in AppStrings.standardMeasurementKeys) {
       _measurementControllers[label] = TextEditingController();
@@ -79,6 +83,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           _targetDeadline = order.targetDeadline;
           _isUrgent = order.isUrgent;
           _priceController.text = order.stitchingRate.toInt().toString();
+          _advanceController.text = order.advancePaid.toInt().toString();
 
           // Populate existing measurements if available
           for (final entry in order.measurements.entries) {
@@ -103,11 +108,18 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     }
   }
 
+  void _onPriceOrAdvanceChanged() {
+    setState(() {});
+  }
+
   @override
   void dispose() {
+    _priceController.removeListener(_onPriceOrAdvanceChanged);
+    _advanceController.removeListener(_onPriceOrAdvanceChanged);
     _customerNameController.dispose();
     _customerPhoneController.dispose();
     _priceController.dispose();
+    _advanceController.dispose();
     for (final controller in _measurementControllers.values) {
       controller.dispose();
     }
@@ -146,6 +158,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     final customerName = _customerNameController.text.trim();
     final customerPhone = _customerPhoneController.text.trim();
     final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
+    final advance = double.tryParse(_advanceController.text.trim()) ?? 0.0;
 
     // Collect entered measurements
     final Map<String, String> measurements = {};
@@ -183,7 +196,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       isUrgent: _isUrgent,
       status: OrderStatus.active,
       stitchingRate: price,
-      advancePaid: price,
+      advancePaid: advance,
       measurements: measurements,
     );
 
@@ -209,6 +222,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         _customerNameController.clear();
         _customerPhoneController.clear();
         _priceController.text = '1800';
+        _advanceController.text = '0';
         _isUrgent = false;
         _targetDeadline = DateTime.now().add(const Duration(days: 4));
         for (final c in _measurementControllers.values) {
@@ -229,6 +243,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        centerTitle: true,
         automaticallyImplyLeading: !widget.isTab,
         title: Text(
           widget.orderId != null ? 'Edit Order' : 'New Order',
@@ -587,8 +602,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     );
   }
 
-  /// Card 3: Just Payment Price (clean single field, no extra complexity)
+  /// Card 3: Payment & Advance Payment
   Widget _buildPriceCard() {
+    final totalPrice = double.tryParse(_priceController.text.trim()) ?? 0.0;
+    final advancePaid = double.tryParse(_advanceController.text.trim()) ?? 0.0;
+    final balance = (totalPrice - advancePaid).clamp(0.0, double.infinity);
+    final isFullyPaid = totalPrice > 0 && advancePaid >= totalPrice;
+
     return Container(
       padding: const EdgeInsets.all(AppDimensions.space16),
       decoration: BoxDecoration(
@@ -610,12 +630,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
             children: [
               const Icon(Icons.payments_outlined, size: 20, color: AppColors.primary),
               const SizedBox(width: 8),
-              Expanded(
+              const Expanded(
                 child: Text(
-                  'Payment',
+                  'Payment & Advance (ادائیگی اور پیشگی)',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Nunito',
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -623,26 +643,153 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   ),
                 ),
               ),
+              if (isFullyPaid)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDCFCE7),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: const Color(0xFF86EFAC)),
+                  ),
+                  child: const Text(
+                    'FULLY PAID',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF15803D),
+                    ),
+                  ),
+                ),
             ],
           ),
           const Divider(height: 20, color: Color(0xFFF1F5F9)),
 
-          // 6. Just Payment Price
+          // 1. Total Stitching Rate
           CustomTextField(
             controller: _priceController,
-            label: 'Payment Price',
+            label: 'Total Rate *',
             hint: '1800',
             prefixText: 'Rs',
             keyboardType: TextInputType.number,
             validator: (val) {
               if (val == null || val.trim().isEmpty) {
-                return 'Please enter payment price';
+                return 'Rate required';
               }
               if (double.tryParse(val.trim()) == null) {
-                return 'Enter a valid number';
+                return 'Invalid rate';
               }
               return null;
             },
+          ),
+          const SizedBox(height: 12),
+
+          // 2. Advance Paid
+          CustomTextField(
+            controller: _advanceController,
+            label: 'Advance Paid',
+            hint: '0',
+            prefixText: 'Rs',
+            keyboardType: TextInputType.number,
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) {
+                return 'Advance required';
+              }
+              if (double.tryParse(val.trim()) == null) {
+                return 'Invalid advance';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 10),
+
+          // Quick Advance Chips
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const Text(
+                'Quick:',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textMuted,
+                ),
+              ),
+              ActionChip(
+                label: const Text('Full (مکمل)'),
+                labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                backgroundColor: const Color(0xFFF1F5F9),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                onPressed: () {
+                  _advanceController.text = totalPrice.toInt().toString();
+                },
+              ),
+              ActionChip(
+                label: const Text('Half (نصف)'),
+                labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                backgroundColor: const Color(0xFFF1F5F9),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                onPressed: () {
+                  _advanceController.text = (totalPrice / 2).round().toString();
+                },
+              ),
+              ActionChip(
+                label: const Text('Zero (صفر)'),
+                labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                backgroundColor: const Color(0xFFF1F5F9),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                onPressed: () {
+                  _advanceController.text = '0';
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Balance Due calculation bar
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: isFullyPaid ? const Color(0xFFF0FDF4) : const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+              border: Border.all(
+                color: isFullyPaid ? const Color(0xFFBBF7D0) : const Color(0xFFE2E8F0),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Expanded(
+                  child: Text(
+                    'Balance Due (بقیہ رقم):',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    isFullyPaid ? 'Rs 0 (PAID)' : 'Rs ${balance.toInt()}',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: isFullyPaid ? const Color(0xFF16A34A) : AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

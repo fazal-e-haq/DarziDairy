@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:darzi_dairy/features/expenses/data/repositories/expense_repository.dart';
 import 'package:darzi_dairy/features/expenses/domain/entities/expense_entity.dart';
 import 'package:darzi_dairy/features/expenses/presentation/providers/expense_provider.dart';
-import 'package:darzi_dairy/features/expenses/presentation/widgets/financial_chart_card.dart';
 import 'package:darzi_dairy/features/expenses/presentation/widgets/monthly_report_card.dart';
 import 'package:darzi_dairy/features/expenses/presentation/widgets/workshop_profile_card.dart';
 import 'package:darzi_dairy/features/expenses/utils/monthly_report_pdf_generator.dart';
@@ -72,82 +71,6 @@ void main() {
       expect(bytes, isNotEmpty);
       final header = ascii.decode(bytes.sublist(0, 4));
       expect(header, '%PDF');
-    });
-  });
-
-  group('FinancialChartCard Widget Tests', () {
-    testWidgets('renders empty state when no orders or expenses exist', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: FinancialChartCard(
-              allOrders: [],
-              allExpenses: [],
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Financial Analytics (چارٹ گراف)'), findsOneWidget);
-      expect(find.text('No financial records to display'), findsOneWidget);
-    });
-
-    testWidgets('renders bar chart and switches to pie chart on category tap', (WidgetTester tester) async {
-      final now = DateTime.now();
-      final orders = [
-        OrderEntity(
-          id: 1,
-          orderToken: '#1',
-          customerId: 1,
-          customerName: 'Ahmed Raza',
-          customerPhone: '0301-7654321',
-          garmentType: 'Kurta Pajama',
-          bookingDate: now,
-          targetDeadline: now.add(const Duration(days: 2)),
-          isUrgent: true,
-          status: OrderStatus.active,
-          stitchingRate: 2500.0,
-          advancePaid: 1500.0,
-        ),
-      ];
-
-      final expenses = [
-        ExpenseEntity(
-          id: 1,
-          title: 'Suit Buttons Box',
-          category: 'Buttons (بٹن)',
-          amount: 600.0,
-          date: now,
-          createdAt: now,
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SingleChildScrollView(
-              child: FinancialChartCard(
-                allOrders: orders,
-                allExpenses: expenses,
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Verify header and default Comparison view
-      expect(find.text('Financial Analytics (چارٹ گراف)'), findsOneWidget);
-      expect(find.text('Revenue (آمدنی)'), findsOneWidget);
-      expect(find.text('Expenses (خرچہ)'), findsOneWidget);
-
-      // Switch to Categories Pie Chart
-      await tester.tap(find.text('Categories'));
-      await tester.pumpAndSettle();
-
-      // Verify category legend appears
-      expect(find.textContaining('Buttons (بٹن)'), findsOneWidget);
     });
   });
 

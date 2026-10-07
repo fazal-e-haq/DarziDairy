@@ -149,4 +149,33 @@ class OrderListProvider extends ChangeNotifier {
     await repository.softDeleteOrder(orderId);
     await loadOrders();
   }
+
+  /// Update advance payment amount for an existing order
+  Future<void> updateAdvancePayment(int orderId, double newAdvancePaid) async {
+    final index = _allOrders.indexWhere((o) => o.id == orderId);
+    if (index >= 0) {
+      final current = _allOrders[index];
+      final updated = OrderEntity(
+        id: current.id,
+        orderToken: current.orderToken,
+        customerId: current.customerId,
+        customerName: current.customerName,
+        customerPhone: current.customerPhone,
+        garmentType: current.garmentType,
+        bookingDate: current.bookingDate,
+        targetDeadline: current.targetDeadline,
+        isUrgent: current.isUrgent,
+        status: current.status,
+        stitchingRate: current.stitchingRate,
+        fabricCharges: current.fabricCharges,
+        urgentSurcharge: current.urgentSurcharge,
+        advancePaid: newAdvancePaid,
+        measurements: current.measurements,
+        isDeleted: current.isDeleted,
+        deletedAt: current.deletedAt,
+      );
+      await repository.saveOrder(updated);
+      await loadOrders();
+    }
+  }
 }

@@ -98,7 +98,7 @@ class AppTheme {
         foregroundColor: AppColors.surface,
         elevation: 0,
         scrolledUnderElevation: 2,
-        centerTitle: false,
+        centerTitle: true,
         titleTextStyle: TextStyle(
           fontFamily: 'Nunito',
           fontSize: 19,

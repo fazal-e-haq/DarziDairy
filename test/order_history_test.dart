@@ -54,11 +54,8 @@ void main() {
 
       // Verify Profile & Expenses page is displayed
       expect(find.text('Profile & Expenses'), findsOneWidget);
-      expect(find.text('Financial Overview (حساب کتاب)'), findsOneWidget);
-      expect(find.text('Financial Analytics (چارٹ گراف)'), findsOneWidget);
-
-      await tester.scrollUntilVisible(find.text('Daily Expenses (روزنامچہ)'), 200);
       expect(find.text('Daily Expenses (روزنامچہ)'), findsOneWidget);
+      expect(find.text('Financial Overview (حساب کتاب)'), findsOneWidget);
     });
 
     testWidgets('Tapping New Order in bottom bar switches to Create Order tab',

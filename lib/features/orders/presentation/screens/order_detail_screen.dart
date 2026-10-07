@@ -37,6 +37,7 @@ class OrderDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        centerTitle: true,
         title: Text('Order ${order.orderToken}'),
         actions: [
           IconButton(
@@ -301,13 +302,31 @@ class OrderDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Payment Summary',
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Payment Summary',
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => _showUpdateAdvanceDialog(context, order, provider),
+                          icon: const Icon(Icons.edit_note_rounded, size: 18),
+                          label: const Text(
+                            'Update Advance',
+                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 14),
                     _PriceRow(label: 'Total Rate', value: CurrencyFormatter.format(order.stitchingRate)),
@@ -389,6 +408,135 @@ class OrderDetailScreen extends StatelessWidget {
     ),
   ),
 ),
+    );
+  }
+
+  void _showUpdateAdvanceDialog(
+    BuildContext context,
+    dynamic order,
+    OrderListProvider provider,
+  ) {
+    final controller = TextEditingController(
+      text: order.advancePaid.toInt().toString(),
+    );
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final entered = double.tryParse(controller.text.trim()) ?? 0.0;
+            final rem = (order.stitchingRate - entered).clamp(0.0, double.infinity);
+
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(
+                      Icons.payments_outlined,
+                      size: 20,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text(
+                      'Update Advance Payment',
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Order Total: Rs ${order.stitchingRate.toInt()}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: controller,
+                    keyboardType: TextInputType.number,
+                    autofocus: true,
+                    onChanged: (_) => setModalState(() {}),
+                    decoration: const InputDecoration(
+                      labelText: 'Advance Paid (پیشگی رقم)',
+                      prefixText: 'Rs ',
+                      isDense: true,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      ActionChip(
+                        label: const Text('Mark Fully Paid'),
+                        labelStyle: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF16A34A),
+                        ),
+                        backgroundColor: const Color(0xFFF0FDF4),
+                        onPressed: () {
+                          controller.text = order.stitchingRate.toInt().toString();
+                          setModalState(() {});
+                        },
+                      ),
+                      Text(
+                        rem <= 0 ? 'Balance: Rs 0' : 'Balance: Rs ${rem.toInt()}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: rem <= 0 ? const Color(0xFF16A34A) : AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final val = double.tryParse(controller.text.trim()) ?? 0.0;
+                    Navigator.pop(ctx);
+                    await provider.updateAdvancePayment(order.id, val);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).clearSnackBars();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Advance payment updated successfully!'),
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Save Payment'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

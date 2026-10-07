@@ -10,6 +10,7 @@ import 'features/orders/presentation/providers/order_list_provider.dart';
 import 'features/orders/presentation/providers/order_form_provider.dart';
 import 'features/expenses/data/repositories/expense_repository.dart';
 import 'features/expenses/presentation/providers/expense_provider.dart';
+import 'features/notifications/presentation/providers/notification_provider.dart';
 
 /// MaterialApp entry configuring theme, declarative GoRouter, and MultiProvider injection
 class TailorMasterApp extends StatelessWidget {
@@ -33,6 +34,14 @@ class TailorMasterApp extends StatelessWidget {
           create: (_) => ExpenseProvider(
             repository: ExpenseRepository(),
           ),
+        ),
+        ChangeNotifierProxyProvider<OrderListProvider, NotificationProvider>(
+          create: (_) => NotificationProvider(),
+          update: (_, orderProvider, notificationProvider) {
+            final np = notificationProvider ?? NotificationProvider();
+            np.updateFromOrders(orderProvider.allOrders);
+            return np;
+          },
         ),
       ],
       child: MaterialApp.router(

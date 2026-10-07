@@ -90,14 +90,20 @@ Darzi Dairy is a lightweight, responsive Flutter application tailored to the dai
   3. **History (تاریخ):** Filterable archive of completed jobs.
   4. **Expenses (خرچہ / روزنامچہ):** Workshop stats, revenue, and daily expense ledger.
 
-### 5. 📊 Interactive Financial Charts (`fl_chart`)
-- **Revenue vs Expenses Bar Chart:** 4-month comparative bar chart with interactive tooltips showing exact rupee amounts.
-- **Expense Category Pie Chart:** Interactive distribution showing proportional expenditure on threads, rent, wages, etc., with touch highlighting and color-coded badges.
+### 5. 💰 Advance Payment & Balance Management
+- Real-time advance payment recording with automatic balance calculation (*Total Rate - Advance Paid = Balance Due*).
+- Shortcut buttons for *Full Payment*, *Half Advance*, and *Zero/Later*.
+- In-depth payment management on order details with one-tap payment recording and "Mark Fully Paid" functionality.
 
-### 6. 📄 Monthly PDF Report & Download
+### 6. 🔔 Workshop Delivery Notifications & Reminders
+- Automatic in-app notification center tracking delivery schedules.
+- Smart categorization: **Overdue Jobs**, **Due Today**, and **Upcoming Deliveries**.
+- Direct navigation to order details and instant customer call actions.
+
+### 7. 📄 Monthly PDF Report & Download
 - Instant monthly statement generation for any of the past 12 months.
 - Formatted with workshop branding, KPI summary, orders ledger, expenses table, and category breakdowns.
-- Native **Download / Print PDF** and **Share PDF** support across all devices.
+- Native **Download / Print PDF** support across all devices.
 
 ### 7. 📱 Foldable & Tablet Responsive Design
 - Automatic adaptation to screen widths:

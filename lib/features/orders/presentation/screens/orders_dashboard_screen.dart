@@ -7,6 +7,8 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../../core/theme/responsive_layout.dart';
+import '../../../notifications/presentation/providers/notification_provider.dart';
+import '../../../notifications/presentation/widgets/notifications_sheet.dart';
 import '../widgets/order_card.dart';
 import '../providers/order_list_provider.dart';
 
@@ -35,6 +37,7 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           AppStrings.appName,
           style: TextStyle(
@@ -43,6 +46,24 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
             letterSpacing: -0.2,
           ),
         ),
+        actions: [
+          Consumer<NotificationProvider>(
+            builder: (context, notificationProvider, _) {
+              final count = notificationProvider.unreadCount;
+              return IconButton(
+                icon: Badge(
+                  isLabelVisible: count > 0,
+                  label: Text('$count'),
+                  backgroundColor: const Color(0xFFDC2626),
+                  child: const Icon(Icons.notifications_outlined, size: 24),
+                ),
+                tooltip: 'Notifications & Reminders',
+                onPressed: () => NotificationsSheet.show(context),
+              );
+            },
+          ),
+          const SizedBox(width: 6),
+        ],
       ),
       body: Center(
         child: ConstrainedBox(
@@ -120,38 +141,74 @@ class _OrdersDashboardScreenState extends State<OrdersDashboardScreen> {
                     final orders = provider.activeOrders;
 
                     if (orders.isEmpty) {
+                      final isSearching = _searchController.text.trim().isNotEmpty;
                       return Center(
-                        child: Padding(
+                        child: SingleChildScrollView(
                           padding: const EdgeInsets.all(AppDimensions.space32),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.person_search_outlined,
-                                size: 64,
-                                color: AppColors.textMuted.withValues(alpha: 0.4),
+                                isSearching ? Icons.person_search_outlined : Icons.assignment_add,
+                                size: 68,
+                                color: AppColors.primary.withValues(alpha: 0.4),
                               ),
                               const SizedBox(height: AppDimensions.space16),
                               Text(
-                                _searchController.text.isNotEmpty
+                                isSearching
                                     ? 'No customer found matching "${_searchController.text}"'
                                     : 'No orders added yet',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   fontFamily: 'Nunito',
-                                  fontSize: 17,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.textSecondary,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: AppDimensions.space8),
-                              const Text(
-                                'Tap "+ New Order" below to add an order.',
-                                style: TextStyle(
+                              Text(
+                                isSearching
+                                    ? 'Try checking for spelling or search by a different name.'
+                                    : 'Start recording customer measurements, stitching rates, and delivery dates.',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
                                   fontSize: 13,
-                                  color: AppColors.textMuted,
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
+                              const SizedBox(height: AppDimensions.space20),
+                              if (isSearching)
+                                OutlinedButton.icon(
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    provider.setSearchQuery('');
+                                  },
+                                  icon: const Icon(Icons.clear_rounded, size: 18),
+                                  label: const Text('Clear Search'),
+                                )
+                              else
+                                ElevatedButton.icon(
+                                  onPressed: () => context.go(AppRouter.createOrder),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                                    ),
+                                    elevation: 2,
+                                  ),
+                                  icon: const Icon(Icons.add_rounded, size: 20),
+                                  label: const Text(
+                                    'Create New Order',
+                                    style: TextStyle(
+                                      fontFamily: 'Nunito',
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
