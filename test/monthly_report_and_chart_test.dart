@@ -7,7 +7,7 @@ import 'package:darzi_dairy/features/expenses/data/repositories/expense_reposito
 import 'package:darzi_dairy/features/expenses/domain/entities/expense_entity.dart';
 import 'package:darzi_dairy/features/expenses/presentation/providers/expense_provider.dart';
 import 'package:darzi_dairy/features/expenses/presentation/widgets/monthly_report_card.dart';
-import 'package:darzi_dairy/features/expenses/presentation/widgets/workshop_profile_card.dart';
+import 'package:darzi_dairy/features/expenses/presentation/widgets/financial_overview_card.dart';
 import 'package:darzi_dairy/features/expenses/utils/monthly_report_pdf_generator.dart';
 import 'package:darzi_dairy/features/orders/data/datasources/order_local_datasource.dart';
 import 'package:darzi_dairy/features/orders/data/repositories/order_repository_impl.dart';
@@ -23,23 +23,22 @@ void main() {
           id: 1,
           orderToken: '#1',
           customerId: 1,
-          customerName: 'Muhammad Ali',
-          customerPhone: '0300-1234567',
-          garmentType: 'Gentlemen Suit (شلوار قمیض)',
+          customerName: 'Test Customer',
+          customerPhone: '0300-1111111',
+          garmentType: 'Shalwar Kameez',
           bookingDate: now,
           targetDeadline: now.add(const Duration(days: 3)),
-          isUrgent: false,
+          stitchingRate: 2500.0,
+          advancePaid: 1000.0,
           status: OrderStatus.active,
-          stitchingRate: 2000.0,
-          advancePaid: 2000.0,
         ),
       ];
 
       final expenses = [
         ExpenseEntity(
           id: 1,
-          title: 'White Thread Spools',
-          category: 'Threads (دھاگہ)',
+          title: 'Zari Thread',
+          category: 'Materials',
           amount: 450.0,
           date: now,
           createdAt: now,
@@ -54,7 +53,6 @@ void main() {
       );
 
       expect(bytes, isNotEmpty);
-      // Valid PDF files begin with '%PDF'
       final header = ascii.decode(bytes.sublist(0, 4));
       expect(header, '%PDF');
     });
@@ -64,8 +62,8 @@ void main() {
       final bytes = await MonthlyReportPdfGenerator.generateMonthlyReportBytes(
         year: now.year,
         month: now.month,
-        allOrders: [],
-        allExpenses: [],
+        allOrders: const [],
+        allExpenses: const [],
       );
 
       expect(bytes, isNotEmpty);
@@ -100,40 +98,58 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Monthly PDF Report (ماہانہ رپورٹ)'), findsOneWidget);
-      expect(find.textContaining('Download PDF'), findsOneWidget);
+      expect(find.text('Monthly Report'), findsOneWidget);
+      expect(find.text('ماہانہ رپورٹ'), findsOneWidget);
+      expect(find.text('Download PDF'), findsOneWidget);
       expect(find.text('Share'), findsNothing);
     });
   });
 
-  group('WorkshopProfileCard Expense-Only Widget Tests', () {
-    testWidgets('renders expense ledger header and metrics without shop name or online elements',
+  group('FinancialOverviewCard Ledger Widget Tests', () {
+    testWidgets('renders financial ledger list with English on left and Urdu on right',
         (WidgetTester tester) async {
-      final expenseRepo = ExpenseRepository();
-      final provider = ExpenseProvider(repository: expenseRepo);
-
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: WorkshopProfileCard(expenseProvider: provider),
+            body: FinancialOverviewCard(
+              todayExpenses: 500.0,
+              thisMonthExpenses: 2500.0,
+              totalOrders: 10,
+              totalRevenue: 25000.0,
+              totalExpenses: 5000.0,
+              netProfit: 20000.0,
+            ),
           ),
         ),
       );
       await tester.pumpAndSettle();
 
-      // Verify Expense Header & Offline Badge
-      expect(find.text('Expense Ledger (روزنامچہ کھاتہ)'), findsOneWidget);
-      expect(find.text('100% Offline'), findsOneWidget);
-      expect(find.text('Daily Workshop Outflows & Petty Cash (اخراجات کا ریکارڈ)'), findsOneWidget);
+      // Verify Header
+      expect(find.text('Financial Overview'), findsOneWidget);
+      expect(find.text('حساب کتاب'), findsOneWidget);
 
-      // Verify Expense Metric Labels
-      expect(find.text("Today's Expense (آج)"), findsOneWidget);
-      expect(find.text('This Month (اس ماہ)'), findsOneWidget);
-      expect(find.text('Total Entries (اندراج)'), findsOneWidget);
+      // Verify English Labels
+      expect(find.text("Today's Expense"), findsOneWidget);
+      expect(find.text('This Month'), findsOneWidget);
+      expect(find.text('Total Orders'), findsOneWidget);
+      expect(find.text('Total Revenue'), findsOneWidget);
+      expect(find.text('Total Expenses'), findsOneWidget);
+      expect(find.text('Net Profit'), findsOneWidget);
 
-      // Verify previous shop name and subtitle are completely removed
-      expect(find.text('DarziDairy Tailors'), findsNothing);
-      expect(find.text('Master Tailoring & Stitching Workshop'), findsNothing);
+      // Verify Urdu Labels without brackets
+      expect(find.text('آج کا خرچہ'), findsOneWidget);
+      expect(find.text('اس ماہ کا خرچہ'), findsOneWidget);
+      expect(find.text('کل آرڈرز'), findsOneWidget);
+      expect(find.text('کل آمدنی'), findsOneWidget);
+      expect(find.text('کل اخراجات'), findsOneWidget);
+      expect(find.text('خالص منافع'), findsOneWidget);
+
+      // Verify numbers and down details have large font size (>= 22)
+      final todayExpenseValue = tester.widget<Text>(find.text('Rs. 500'));
+      expect(todayExpenseValue.style?.fontSize, greaterThanOrEqualTo(22.0));
+
+      final netProfitValue = tester.widget<Text>(find.text('Rs. 20,000'));
+      expect(netProfitValue.style?.fontSize, greaterThanOrEqualTo(22.0));
     });
   });
 }

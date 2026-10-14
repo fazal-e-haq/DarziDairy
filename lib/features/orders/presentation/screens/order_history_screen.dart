@@ -21,10 +21,33 @@ class OrderHistoryScreen extends StatefulWidget {
 
 class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  static const int _pageSize = 25;
+  int _visibleCount = _pageSize;
   String _searchQuery = '';
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 250) {
+      final total = context.read<OrderListProvider>().getCompletedOrders(_searchQuery).length;
+      if (_visibleCount < total) {
+        setState(() {
+          _visibleCount = (_visibleCount + _pageSize).clamp(0, total);
+        });
+      }
+    }
+  }
+
+  @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -41,6 +64,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           'Order History',
           style: TextStyle(
             fontFamily: 'Nunito',
+            fontSize: 21,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.2,
           ),
@@ -64,6 +88,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   onChanged: (val) {
                     setState(() {
                       _searchQuery = val.trim();
+                      _visibleCount = _pageSize;
                     });
                   },
                   style: const TextStyle(
@@ -90,6 +115,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                               _searchController.clear();
                               setState(() {
                                 _searchQuery = '';
+                                _visibleCount = _pageSize;
                               });
                             },
                           )
@@ -169,7 +195,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 
                     return RefreshIndicator(
                       color: const Color(0xFF16A34A),
-                      onRefresh: () => provider.loadOrders(),
+                      onRefresh: () async {
+                        setState(() {
+                          _visibleCount = _pageSize;
+                        });
+                        await provider.loadOrders();
+                      },
                       child: isUnfolded
                           ? _buildUnfoldedGrid(completedOrders)
                           : _buildMobileList(completedOrders),
@@ -184,13 +215,32 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     );
   }
 
-  /// Compact mobile single-column list
+  /// Compact mobile single-column list with lazy loading
   Widget _buildMobileList(List<OrderEntity> orders) {
+    final displayOrders = orders.take(_visibleCount).toList();
+    final hasMore = orders.length > displayOrders.length;
+
     return ListView.builder(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      addAutomaticKeepAlives: false,
+      addRepaintBoundaries: true,
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
-      itemCount: orders.length,
+      itemCount: displayOrders.length + (hasMore ? 1 : 0),
       itemBuilder: (context, index) {
-        final order = orders[index];
+        if (index == displayOrders.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 14),
+            child: Center(
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF16A34A)),
+              ),
+            ),
+          );
+        }
+        final order = displayOrders[index];
         return OrderCard(
           order: order,
           onTap: () => context.push(AppRouter.orderDetailPath(order.id)),
@@ -199,9 +249,16 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     );
   }
 
-  /// Unfolded / Tablet dual-column responsive grid
+  /// Unfolded / Tablet dual-column responsive grid with lazy loading
   Widget _buildUnfoldedGrid(List<OrderEntity> orders) {
+    final displayOrders = orders.take(_visibleCount).toList();
+    final hasMore = orders.length > displayOrders.length;
+
     return GridView.builder(
+      controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      addAutomaticKeepAlives: false,
+      addRepaintBoundaries: true,
       padding: const EdgeInsets.fromLTRB(24, 4, 24, 32),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -209,9 +266,18 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         mainAxisSpacing: 12,
         mainAxisExtent: 210,
       ),
-      itemCount: orders.length,
+      itemCount: displayOrders.length + (hasMore ? 1 : 0),
       itemBuilder: (context, index) {
-        final order = orders[index];
+        if (index == displayOrders.length) {
+          return const Center(
+            child: SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF16A34A)),
+            ),
+          );
+        }
+        final order = displayOrders[index];
         return OrderCard(
           order: order,
           margin: EdgeInsets.zero,

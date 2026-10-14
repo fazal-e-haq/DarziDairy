@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -10,6 +11,7 @@ import '../../../../shared/widgets/custom_text_field.dart';
 import '../widgets/measurement_grid_input.dart';
 import '../providers/order_list_provider.dart';
 import '../../domain/entities/order_entity.dart';
+import '../../../../core/services/notification_service.dart';
 
 /// Clean, simple, and responsive New/Edit Order screen.
 /// Supports both compact mobile screens and unfolded foldables/tablets.
@@ -200,7 +202,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       measurements: measurements,
     );
 
-    await orderProvider.repository.saveOrder(newOrder);
+    final savedId = await orderProvider.repository.saveOrder(newOrder);
+    await NotificationService.instance.schedule3DaysBefore(
+      newOrder.id == 0 ? newOrder.copyWith(id: savedId) : newOrder,
+    );
     await orderProvider.loadOrders();
 
     if (mounted) {
@@ -249,6 +254,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           widget.orderId != null ? 'Edit Order' : 'New Order',
           style: const TextStyle(
             fontFamily: 'Nunito',
+            fontSize: 21,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -272,16 +278,16 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       children: [
-        _buildCustomerCard(),
-        const SizedBox(height: 12),
-        _buildGarmentAndDeliveryCard(),
-        const SizedBox(height: 12),
-        _buildPriceCard(),
-        const SizedBox(height: 12),
-        _buildMeasurementsCard(),
-        const SizedBox(height: 24),
+        _buildCustomerSection(),
+        const SizedBox(height: 20),
+        _buildGarmentAndDeliverySection(),
+        const SizedBox(height: 20),
+        _buildPriceSection(),
+        const SizedBox(height: 20),
+        _buildMeasurementsSection(),
+        const SizedBox(height: 28),
         _buildSaveButton(),
-        const SizedBox(height: 32),
+        const SizedBox(height: 36),
       ],
     );
   }
@@ -293,7 +299,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Left Column: Customer details, garment & delivery, price (in SafeArea for foldables)
+          // Left Column: Customer details, garment & delivery, price
           Expanded(
             flex: 5,
             child: SafeArea(
@@ -303,24 +309,24 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               bottom: false,
               child: Column(
                 children: [
-                  _buildCustomerCard(),
-                  const SizedBox(height: 14),
-                  _buildGarmentAndDeliveryCard(),
-                  const SizedBox(height: 14),
-                  _buildPriceCard(),
+                  _buildCustomerSection(),
+                  const SizedBox(height: 20),
+                  _buildGarmentAndDeliverySection(),
+                  const SizedBox(height: 20),
+                  _buildPriceSection(),
                 ],
               ),
             ),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 24),
 
           // Right Column: Measurements grid + Save Button
           Expanded(
             flex: 6,
             child: Column(
               children: [
-                _buildMeasurementsCard(),
-                const SizedBox(height: 20),
+                _buildMeasurementsSection(),
+                const SizedBox(height: 24),
                 _buildSaveButton(),
               ],
             ),
@@ -330,321 +336,296 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     );
   }
 
-  /// Card 1: Customer Name and Phone Number
-  Widget _buildCustomerCard() {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.space16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x05000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  /// Clean section header without background card
+  Widget _buildSectionHeader({
+    required IconData icon,
+    required String title,
+    Widget? trailing,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
         children: [
-          Row(
-            children: [
-              const Icon(Icons.person_outline_rounded, size: 20, color: AppColors.primary),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Customer Details',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  ),
-                ),
+          Icon(icon, size: 20, color: AppColors.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: AppColors.primary,
               ),
-            ],
+            ),
           ),
-          const Divider(height: 20, color: Color(0xFFF1F5F9)),
-
-          // 1. Customer Name (Required)
-          CustomTextField(
-            controller: _customerNameController,
-            label: 'Customer Name *',
-            hint: 'e.g. Muhammad Ali',
-            prefixIcon: Icons.badge_outlined,
-            validator: (val) {
-              if (val == null || val.trim().isEmpty) {
-                return 'Customer name is required';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: AppDimensions.space12),
-
-          // 2. Phone Number (Required)
-          CustomTextField(
-            controller: _customerPhoneController,
-            label: 'Phone Number *',
-            hint: '0300-1234567',
-            prefixIcon: Icons.phone_outlined,
-            keyboardType: TextInputType.phone,
-            validator: (val) {
-              if (val == null || val.trim().isEmpty) {
-                return 'Phone number is required';
-              }
-              if (val.trim().length < 7) {
-                return 'Please enter a valid phone number';
-              }
-              return null;
-            },
-          ),
+          ?trailing,
         ],
       ),
     );
   }
 
-  /// Card 2: Garment Type, Delivery Date & Urgent Toggle
-  Widget _buildGarmentAndDeliveryCard() {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.space16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x05000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.content_cut_outlined, size: 20, color: AppColors.primary),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Garment & Delivery',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Divider(height: 20, color: Color(0xFFF1F5F9)),
+  /// Section 1: Customer Name and Phone Number (Without Card)
+  Widget _buildCustomerSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(
+          icon: Icons.person_outline_rounded,
+          title: 'Customer Details',
+        ),
+        // 1. Customer Name (Required, alphabets and spaces only)
+        CustomTextField(
+          controller: _customerNameController,
+          label: 'Customer Name *',
+          hint: 'e.g. Muhammad Ali',
+          prefixIcon: Icons.badge_outlined,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+          ],
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return 'Customer name is required';
+            }
+            if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(val.trim())) {
+              return 'Only alphabets are allowed';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: AppDimensions.space12),
 
-          // 3. Garment Type
-          const Text(
-            'Garment Type',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textSecondary,
-            ),
+        // 2. Phone Number (Required, exactly 11 digits)
+        CustomTextField(
+          controller: _customerPhoneController,
+          label: 'Phone Number *',
+          hint: '03001234567',
+          prefixIcon: Icons.phone_outlined,
+          keyboardType: TextInputType.phone,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(11),
+          ],
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return 'Phone number is required';
+            }
+            if (val.trim().length != 11) {
+              return 'Phone number must be exactly 11 digits';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  /// Section 2: Garment Type Radio Column & Delivery Date
+  Widget _buildGarmentAndDeliverySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(
+          icon: Icons.content_cut_outlined,
+          title: 'Garment Type',
+        ),
+
+        // Garment types in a column list of radio buttons: English on left, Urdu on right without brackets
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: AppStrings.defaultGarments.map((garment) {
-              final isSelected = _selectedGarment == garment;
-              return ChoiceChip(
-                label: Text(garment),
-                selected: isSelected,
-                selectedColor: AppColors.primary,
-                backgroundColor: const Color(0xFFF8FAFC),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(
-                    color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
+          child: RadioGroup<String>(
+            groupValue: _selectedGarment,
+            onChanged: (val) {
+              if (val != null) {
+                setState(() => _selectedGarment = val);
+              }
+            },
+            child: Column(
+              children: AppStrings.garmentTypes.map((garment) {
+                final isSelected = _selectedGarment == garment['en'];
+                return InkWell(
+                  onTap: () => setState(() => _selectedGarment = garment['en']!),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    child: Row(
+                      children: [
+                        Radio<String>(
+                          value: garment['en']!,
+                          activeColor: AppColors.primary,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        const SizedBox(width: 8),
+                        // English word on left side
+                        Expanded(
+                          child: Text(
+                            garment['en']!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                              color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        // Urdu word on right side without brackets
+                        Text(
+                          garment['ur']!,
+                          textDirection: TextDirection.rtl,
+                          style: TextStyle(
+                            fontFamily: 'Nunito',
+                            fontSize: 14.5,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                            color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                   ),
                 ),
-                labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : const Color(0xFF334155),
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  fontSize: 13,
-                ),
-                onSelected: (val) {
-                  if (val) setState(() => _selectedGarment = garment);
-                },
               );
             }).toList(),
           ),
-          const SizedBox(height: 16),
+        ),
+      ),
+      const SizedBox(height: 18),
 
-          // 4. Delivery Date & 5. Urgent Switch
-          Row(
-            children: [
-              // Delivery Date Tile
-              Expanded(
-                child: InkWell(
-                  onTap: _selectDeadlineDate,
-                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Delivery Date',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.textMuted,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.calendar_month_outlined,
-                              size: 16,
-                              color: AppColors.secondary,
-                            ),
-                            const SizedBox(width: 6),
-                            Flexible(
-                              child: Text(
-                                DateFormatter.formatDate(_targetDeadline),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13.5,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // Urgent Check Tile (Check icon with name instead of toggle)
-              InkWell(
-                onTap: () => setState(() => _isUrgent = !_isUrgent),
+        // Delivery Date & Urgent Toggle
+        _buildSectionHeader(
+          icon: Icons.calendar_month_outlined,
+          title: 'Delivery & Urgency',
+        ),
+        Row(
+          children: [
+            // Delivery Date Tile
+            Expanded(
+              child: InkWell(
+                onTap: _selectDeadlineDate,
                 borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                   decoration: BoxDecoration(
-                    color: _isUrgent ? const Color(0xFFFEF2F2) : const Color(0xFFF8FAFC),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-                    border: Border.all(
-                      color: _isUrgent ? const Color(0xFFFECACA) : const Color(0xFFE2E8F0),
-                      width: _isUrgent ? 1.5 : 1.0,
-                    ),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: _isUrgent ? const Color(0xFFDC2626) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF94A3B8),
-                            width: 1.8,
-                          ),
-                        ),
-                        child: _isUrgent
-                            ? const Icon(
-                                Icons.check_rounded,
-                                size: 16,
-                                color: Colors.white,
-                              )
-                            : null,
+                      const Icon(
+                        Icons.calendar_month_outlined,
+                        size: 18,
+                        color: AppColors.secondary,
                       ),
                       const SizedBox(width: 8),
                       Flexible(
-                        child: Text(
-                          'Urgent',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13.5,
-                            color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF475569),
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Delivery Date',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.textMuted,
+                              ),
+                            ),
+                            Text(
+                              DateFormatter.formatDate(_targetDeadline),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13.5,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+            const SizedBox(width: 12),
+
+            // Urgent Check Tile
+            InkWell(
+              onTap: () => setState(() => _isUrgent = !_isUrgent),
+              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                  color: _isUrgent ? const Color(0xFFFEF2F2) : Colors.white,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+                  border: Border.all(
+                    color: _isUrgent ? const Color(0xFFFECACA) : const Color(0xFFE2E8F0),
+                    width: _isUrgent ? 1.5 : 1.0,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: _isUrgent ? const Color(0xFFDC2626) : Colors.transparent,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF94A3B8),
+                          width: 1.8,
+                        ),
+                      ),
+                      child: _isUrgent
+                          ? const Icon(
+                              Icons.check_rounded,
+                              size: 16,
+                              color: Colors.white,
+                            )
+                          : null,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Urgent',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.5,
+                        color: _isUrgent ? const Color(0xFFDC2626) : const Color(0xFF475569),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
-  /// Card 3: Payment & Advance Payment
-  Widget _buildPriceCard() {
+  /// Section 3: Payment & Advance (No quick options, simple & clean)
+  Widget _buildPriceSection() {
     final totalPrice = double.tryParse(_priceController.text.trim()) ?? 0.0;
     final advancePaid = double.tryParse(_advanceController.text.trim()) ?? 0.0;
     final balance = (totalPrice - advancePaid).clamp(0.0, double.infinity);
     final isFullyPaid = totalPrice > 0 && advancePaid >= totalPrice;
 
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.space16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x05000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.payments_outlined, size: 20, color: AppColors.primary),
-              const SizedBox(width: 8),
-              const Expanded(
-                child: Text(
-                  'Payment & Advance (ادائیگی اور پیشگی)',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-              if (isFullyPaid)
-                Container(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(
+          icon: Icons.payments_outlined,
+          title: 'Payment & Advance',
+          trailing: isFullyPaid
+              ? Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: const Color(0xFFDCFCE7),
@@ -659,198 +640,113 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       color: Color(0xFF15803D),
                     ),
                   ),
-                ),
-            ],
-          ),
-          const Divider(height: 20, color: Color(0xFFF1F5F9)),
+                )
+              : null,
+        ),
 
-          // 1. Total Stitching Rate
-          CustomTextField(
-            controller: _priceController,
-            label: 'Total Rate *',
-            hint: '1800',
-            prefixText: 'Rs',
-            keyboardType: TextInputType.number,
-            validator: (val) {
-              if (val == null || val.trim().isEmpty) {
-                return 'Rate required';
-              }
-              if (double.tryParse(val.trim()) == null) {
-                return 'Invalid rate';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 12),
+        // 1. Total Stitching Rate
+        CustomTextField(
+          controller: _priceController,
+          label: 'Total Rate *',
+          hint: '1800',
+          prefixText: 'Rs',
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return 'Rate required';
+            }
+            if (double.tryParse(val.trim()) == null) {
+              return 'Invalid rate';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 12),
 
-          // 2. Advance Paid
-          CustomTextField(
-            controller: _advanceController,
-            label: 'Advance Paid',
-            hint: '0',
-            prefixText: 'Rs',
-            keyboardType: TextInputType.number,
-            validator: (val) {
-              if (val == null || val.trim().isEmpty) {
-                return 'Advance required';
-              }
-              if (double.tryParse(val.trim()) == null) {
-                return 'Invalid advance';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 10),
+        // 2. Advance Paid
+        CustomTextField(
+          controller: _advanceController,
+          label: 'Advance Paid',
+          hint: '0',
+          prefixText: 'Rs',
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+          validator: (val) {
+            if (val == null || val.trim().isEmpty) {
+              return 'Advance required';
+            }
+            if (double.tryParse(val.trim()) == null) {
+              return 'Invalid advance';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 14),
 
-          // Quick Advance Chips
-          Wrap(
-            spacing: 8,
-            runSpacing: 6,
-            crossAxisAlignment: WrapCrossAlignment.center,
+        // Balance Due calculation bar
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: isFullyPaid ? const Color(0xFFF0FDF4) : Colors.white,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+            border: Border.all(
+              color: isFullyPaid ? const Color(0xFFBBF7D0) : const Color(0xFFE2E8F0),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'فوری انتخاب (Quick):',
+                'Balance Due:',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 13.5,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textMuted,
+                  color: AppColors.textSecondary,
                 ),
               ),
-              ActionChip(
-                label: const Text('پوری رقم (Full)'),
-                labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
-                backgroundColor: const Color(0xFFF1F5F9),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-                onPressed: () {
-                  _advanceController.text = totalPrice.toInt().toString();
-                },
-              ),
-              ActionChip(
-                label: const Text('آدھی رقم (Half)'),
-                labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
-                backgroundColor: const Color(0xFFF1F5F9),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-                onPressed: () {
-                  _advanceController.text = (totalPrice / 2).round().toString();
-                },
-              ),
-              ActionChip(
-                label: const Text('باقی بعد میں (Later)'),
-                labelStyle: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
-                backgroundColor: const Color(0xFFF1F5F9),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
-                onPressed: () {
-                  _advanceController.text = '0';
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Balance Due calculation bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: isFullyPaid ? const Color(0xFFF0FDF4) : const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
-              border: Border.all(
-                color: isFullyPaid ? const Color(0xFFBBF7D0) : const Color(0xFFE2E8F0),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Balance Due (بقیہ رقم):',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    isFullyPaid ? 'Rs 0 (PAID)' : 'Rs ${balance.toInt()}',
-                    style: TextStyle(
-                      fontFamily: 'Nunito',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      color: isFullyPaid ? const Color(0xFF16A34A) : AppColors.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Card 4: Measurements Grid
-  Widget _buildMeasurementsCard() {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.space16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x05000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.straighten, size: 20, color: AppColors.secondary),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Measurements (Inches)',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: 'Nunito',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
-                  ),
+              Text(
+                isFullyPaid ? 'Rs 0 (PAID)' : 'Rs ${balance.toInt()}',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: isFullyPaid ? const Color(0xFF16A34A) : AppColors.primary,
                 ),
               ),
             ],
           ),
-          const Divider(height: 20, color: Color(0xFFF1F5F9)),
-
-          // 7. Measurement Grid
-          MeasurementGridInput(
-            controllers: _measurementControllers,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  /// Action button to save order
+  /// Section 4: Measurements (No outer background card)
+  Widget _buildMeasurementsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(
+          icon: Icons.straighten,
+          title: 'Measurements (Inches)',
+        ),
+        MeasurementGridInput(
+          controllers: _measurementControllers,
+        ),
+      ],
+    );
+  }
+
+  /// Action button to save order with bilingual label
   Widget _buildSaveButton() {
     return CustomButton(
       text: widget.orderId != null
-          ? 'تبدیلی محفوظ کریں (Update)'
-          : 'آرڈر بک کریں (Save Order)',
+          ? 'Update Order (تبدیلی محفوظ کریں)'
+          : 'Save Order (آرڈر محفوظ کریں)',
       icon: Icons.check_circle_outline,
       onPressed: _saveOrder,
     );

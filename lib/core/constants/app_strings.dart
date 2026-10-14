@@ -3,23 +3,24 @@ class AppStrings {
   AppStrings._();
 
   static const String appName = 'DarziDairy';
-  static const String appTagline = 'Offline Khata & Workshop';
 
-  // Common Navigation
-  static const String navOrders = 'Orders';
-  static const String navCustomers = 'Customers';
-  static const String navDiary = 'Diary (Roznamcha)';
-  static const String navBackup = 'Backup';
-
-  // Garment Types
-  static const List<String> defaultGarments = [
-    'Silai Shalwar Kameez',
-    'Silai Kurta Pajama',
-    'Silai Pant / Shirt',
-    'Silai Waistcoat',
-    'Silai Two-Piece Suit',
-    'Silai Sherwani',
+  // Garment Types (English on left, Urdu on right without brackets)
+  static const List<Map<String, String>> garmentTypes = [
+    {'en': 'Shalwar Kameez', 'ur': 'شلوار قمیض'},
+    {'en': 'Kurta Pajama', 'ur': 'کرتہ پاجامہ'},
+    {'en': 'Pant Shirt', 'ur': 'پینٹ شرٹ'},
+    {'en': 'Waistcoat', 'ur': 'واسکٹ'},
+    {'en': 'Two-Piece Suit', 'ur': 'ٹو پیس سوٹ'},
+    {'en': 'Three-Piece Suit', 'ur': 'تھری پیس سوٹ'},
+    {'en': 'Sherwani', 'ur': 'شیروانی'},
+    {'en': 'Prince Coat', 'ur': 'پرنس کوٹ'},
+    {'en': 'Safari Suit', 'ur': 'سفاری سوٹ'},
+    {'en': 'Only Kameez / Kurta', 'ur': 'صرف قمیض کرتہ'},
+    {'en': 'Only Shalwar / Trouser', 'ur': 'صرف شلوار ٹراؤزر'},
   ];
+
+  static List<String> get defaultGarments =>
+      garmentTypes.map((g) => g['en']!).toList();
 
   // Measurement Labels with Urdu translations in brackets
   static const List<String> standardMeasurementKeys = [

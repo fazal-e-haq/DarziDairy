@@ -50,4 +50,44 @@ class OrderEntity {
   double get balanceDue => totalBill - advancePaid;
   bool get isFullyPaid => balanceDue <= 0;
   bool get isCompleted => status == OrderStatus.completed;
+
+  OrderEntity copyWith({
+    int? id,
+    String? orderToken,
+    int? customerId,
+    String? customerName,
+    String? customerPhone,
+    String? garmentType,
+    DateTime? bookingDate,
+    DateTime? targetDeadline,
+    bool? isUrgent,
+    OrderStatus? status,
+    double? stitchingRate,
+    double? fabricCharges,
+    double? urgentSurcharge,
+    double? advancePaid,
+    Map<String, String>? measurements,
+    bool? isDeleted,
+    DateTime? deletedAt,
+  }) {
+    return OrderEntity(
+      id: id ?? this.id,
+      orderToken: orderToken ?? this.orderToken,
+      customerId: customerId ?? this.customerId,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
+      garmentType: garmentType ?? this.garmentType,
+      bookingDate: bookingDate ?? this.bookingDate,
+      targetDeadline: targetDeadline ?? this.targetDeadline,
+      isUrgent: isUrgent ?? this.isUrgent,
+      status: status ?? this.status,
+      stitchingRate: stitchingRate ?? this.stitchingRate,
+      fabricCharges: fabricCharges ?? this.fabricCharges,
+      urgentSurcharge: urgentSurcharge ?? this.urgentSurcharge,
+      advancePaid: advancePaid ?? this.advancePaid,
+      measurements: measurements ?? this.measurements,
+      isDeleted: isDeleted ?? this.isDeleted,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
+  }
 }

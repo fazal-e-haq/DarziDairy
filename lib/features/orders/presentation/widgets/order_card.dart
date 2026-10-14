@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_dimensions.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../domain/entities/order_entity.dart';
 
-/// Senior-designed, minimalist order card with zero inner buttons.
-/// The entire card is a single clean touch target that navigates to order details.
-/// Features responsive badge scaling, zero-overflow typography, and subtle status tinting.
+/// Clean, card-less order card with low opacity order number,
+/// big customer name on top, phone number subtitle, plain garment text,
+/// and left-right aligned financial and date metrics.
 class OrderCard extends StatelessWidget {
   final OrderEntity order;
   final VoidCallback? onTap;
@@ -21,98 +20,46 @@ class OrderCard extends StatelessWidget {
     this.margin,
   });
 
+  String _formatOrderTitle(String token, int id) {
+    final clean = token.replaceAll('#', '').trim();
+    if (clean.toLowerCase().startsWith('order')) return clean;
+    if (clean.isEmpty) return 'Order $id';
+    return 'Order $clean';
+  }
+
   @override
   Widget build(BuildContext context) {
-    final deadlineText = DateFormatter.formatDeadline(order.targetDeadline);
-    final isOverdue = deadlineText.contains('Overdue') && !order.isCompleted;
-
     final isCompleted = order.isCompleted;
     final isUrgent = order.isUrgent && !isCompleted;
 
-    // Card styling parameters based on status and urgency
-    Color cardBgColor = AppColors.surface;
-    Color borderColor = const Color(0xFFE2E8F0);
-    double borderWidth = 1.0;
-    Color shadowColor = const Color(0x06000000);
-    double shadowBlur = 8;
-    Color tagBgColor = const Color(0xFFF8FAFC);
-    Color tagBorderColor = const Color(0xFFE2E8F0);
-    Color dividerColor = const Color(0xFFF1F5F9);
-
-    if (isCompleted) {
-      cardBgColor = const Color(0xFFF0FDF4); // Soft subtle green tint
-      borderColor = const Color(0xFF86EFAC); // Soft green border
-      borderWidth = 1.5;
-      shadowColor = const Color(0x1416A34A); // Soft green shadow
-      shadowBlur = 10;
-      tagBgColor = Colors.white;
-      tagBorderColor = const Color(0xFFBBF7D0);
-      dividerColor = const Color(0xFFDCFCE7);
-    } else if (isUrgent) {
-      cardBgColor = const Color(0xFFFFF1F1); // Soft subtle red tint
-      borderColor = const Color(0xFFFCA5A5); // Soft red border
-      borderWidth = 1.5;
-      shadowColor = const Color(0x14DC2626); // Soft red shadow
-      shadowBlur = 10;
-      tagBgColor = Colors.white;
-      tagBorderColor = const Color(0xFFFECACA);
-      dividerColor = const Color(0xFFFEE2E2);
-    }
-
-    return Container(
-      margin: margin ?? const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: cardBgColor,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        border: Border.all(
-          color: borderColor,
-          width: borderWidth,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: shadowColor,
-            blurRadius: shadowBlur,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
+    return RepaintBoundary(
+      child: Padding(
+        padding: margin ?? const EdgeInsets.symmetric(vertical: 4),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: isCompleted
+                  ? const Color(0xFFF0FDF4)
+                  : (isUrgent ? const Color(0xFFFFF1F1) : Colors.white),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isCompleted
+                    ? const Color(0xFF86EFAC)
+                    : (isUrgent ? const Color(0xFFFCA5A5) : const Color(0xFFE2E8F0)),
+                width: isCompleted || isUrgent ? 1.5 : 1.0,
+              ),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
-                // Top Row: Token Badge + Customer Name & Phone + Price
+                // 1. Top Row: Name on top in big text, and "Order 1" in low opacity on right
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Order Token Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: isUrgent
-                            ? const Color(0xFFDC2626)
-                            : (isCompleted ? const Color(0xFF16A34A) : AppColors.primary),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        order.orderToken,
-                        style: const TextStyle(
-                          fontFamily: 'Nunito',
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-
-                    // Customer Name and Phone Number (Expands safely)
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,202 +70,167 @@ class OrderCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontFamily: 'Nunito',
-                              fontSize: 18,
+                              fontSize: 16.5,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.primary,
-                              letterSpacing: -0.2,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                           if (order.customerPhone.isNotEmpty) ...[
-                            const SizedBox(height: 2),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.phone_outlined,
-                                  size: 13,
-                                  color: Color(0xFF64748B),
-                                ),
-                                const SizedBox(width: 4),
-                                Flexible(
-                                  child: Text(
-                                    order.customerPhone,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 12.5,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF64748B),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-
-                    // Price (Right-aligned, prominent, scaled safely)
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        CurrencyFormatter.format(order.stitchingRate),
-                        style: const TextStyle(
-                          fontFamily: 'Nunito',
-                          fontSize: 16.5,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Middle: Type of Cutting / Garment & Urgent Badge
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 6,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3.5),
-                      decoration: BoxDecoration(
-                        color: tagBgColor,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: tagBorderColor,
-                        ),
-                      ),
-                      child: Text(
-                        order.garmentType,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF475569),
-                        ),
-                      ),
-                    ),
-                    if (isUrgent)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEF2F2),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: const Color(0xFFFECACA)),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.bolt, size: 13, color: Color(0xFFDC2626)),
-                            SizedBox(width: 2),
+                            const SizedBox(height: 1),
                             Text(
-                              'URGENT',
-                              style: TextStyle(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFFDC2626),
+                              order.customerPhone,
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                  ],
-                ),
-
-                const SizedBox(height: 8),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: dividerColor,
-                ),
-                const SizedBox(height: 8),
-
-                // Bottom Row: Booking Date & Time + Delivery / Completed Date
-                Row(
-                  children: [
-                    // Booking Date
-                    Expanded(
-                      flex: 5,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.schedule_rounded,
-                            size: 13,
-                            color: Color(0xFF94A3B8),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              DateFormatter.formatDate(order.bookingDate),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF64748B),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 8),
-
-                    // Delivery Date / Completed Status
-                    Expanded(
-                      flex: 6,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Icon(
-                            isCompleted
-                                ? Icons.check_circle_rounded
-                                : Icons.event_available_outlined,
-                            size: 13.5,
-                            color: isCompleted
-                                ? const Color(0xFF16A34A)
-                                : (isOverdue
-                                    ? const Color(0xFFDC2626)
-                                    : AppColors.secondary),
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                isCompleted
-                                    ? 'Done: ${DateFormatter.formatDate(order.targetDeadline)}'
-                                    : 'Due: ${DateFormatter.formatDate(order.targetDeadline)}',
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: isCompleted
-                                      ? const Color(0xFF15803D)
-                                      : (isOverdue
-                                          ? const Color(0xFFDC2626)
-                                          : const Color(0xFF1E293B)),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                    // Order 1 in low opacity with no card or background
+                    Text(
+                      _formatOrderTitle(order.orderToken, order.id),
+                      style: TextStyle(
+                        fontFamily: 'Nunito',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary.withValues(alpha: 0.35),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+                const SizedBox(height: 5),
+
+                // Divider between name/number and type
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 5),
+
+                // 2. Type of garment (urgent & completed text removed completely)
+                Text(
+                  order.garmentType,
+                  style: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: 5),
+
+                // Divider between type and calculations
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 5),
+
+              // 3. Compact metric rows: Total & Advance, Remain & Due Date, Order Date
+              _buildMetricPair(
+                label1: 'Total',
+                value1: CurrencyFormatter.format(order.totalBill),
+                label2: 'Advance',
+                value2: CurrencyFormatter.format(order.advancePaid),
+              ),
+              const SizedBox(height: 3),
+              _buildMetricPair(
+                label1: 'Remain',
+                value1: order.isFullyPaid ? 'Rs 0 (PAID)' : CurrencyFormatter.format(order.balanceDue),
+                value1Color: order.isFullyPaid ? const Color(0xFF16A34A) : AppColors.primary,
+                isBold1: true,
+                label2: 'Due Date',
+                value2: DateFormatter.formatDate(order.targetDeadline),
+              ),
+              const SizedBox(height: 3),
+              _buildMetricPair(
+                label1: 'Order Date',
+                value1: DateFormatter.formatDate(order.bookingDate),
+              ),
+            ],
           ),
         ),
       ),
+    ),
+  );
+}
+
+  Widget _buildMetricPair({
+    required String label1,
+    required String value1,
+    String? label2,
+    String? value2,
+    Color? value1Color,
+    Color? value2Color,
+    bool isBold1 = false,
+    bool isBold2 = false,
+  }) {
+    return Row(
+      children: [
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label1,
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 12.5,
+                  fontWeight: isBold1 ? FontWeight.w700 : FontWeight.w600,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  value1,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 12.5,
+                    fontWeight: isBold1 ? FontWeight.w800 : FontWeight.w700,
+                    color: value1Color ?? AppColors.textPrimary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (label2 != null && value2 != null) ...[
+          const SizedBox(width: 14),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  label2,
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 12.5,
+                    fontWeight: isBold2 ? FontWeight.w700 : FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    value2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 12.5,
+                      fontWeight: isBold2 ? FontWeight.w800 : FontWeight.w700,
+                      color: value2Color ?? AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ] else ...[
+          const Spacer(),
+        ],
+      ],
     );
   }
 }

@@ -83,29 +83,29 @@ Darzi Dairy is a lightweight, responsive Flutter application tailored to the dai
   - *Threads (دھاگہ)*, *Buttons (بٹن)*, *Bukram (بکرم)*, *Needles / Oil (سوئی / تیل)*, *Shop Rent (دکان کرایہ)*, *Electricity (بجلی بل)*, *Tea & Food (چائے / کھانا)*, *Staff Wages (اجرت / دیہاڑی)*, *Other (دیگر)*.
 - **Quick Expense Entry Modal:** Add expenses in seconds with one tap.
 
-### 4. 🧭 Polished 4-Destination Bottom Navigation Bar
-- Modern Material 3 navigation bar with elevated ambient shadow and active pill indicators:
-  1. **Orders (آرڈرز):** Live pipeline of pending stitching jobs.
-  2. **New Order (نیا آرڈر):** Direct form to register new customers and measurements.
-  3. **History (تاریخ):** Filterable archive of completed jobs.
-  4. **Expenses (خرچہ / روزنامچہ):** Workshop stats, revenue, and daily expense ledger.
+### 4. 🧭 Polished 3-Destination Bottom Navigation + Floating Action Button
+- Streamlined Material 3 navigation bar matched with dedicated Floating Action Button:
+  1. **Orders (آرڈرز):** Live pipeline of pending stitching jobs with high-performance lazy loading.
+  2. **History (تاریخ):** Filterable archive of completed jobs.
+  3. **Expenses (خرچہ):** Live financial overview ledger and daily expense tracking.
+  - **New Order (نیا آرڈر):** Dedicated high-visibility Floating Action Button (FAB) on the orders dashboard for rapid customer intake.
 
 ### 5. 💰 Advance Payment & Balance Management
 - Real-time advance payment recording with automatic balance calculation (*Total Rate - Advance Paid = Balance Due*).
 - Shortcut buttons for *Full Payment*, *Half Advance*, and *Zero/Later*.
 - In-depth payment management on order details with one-tap payment recording and "Mark Fully Paid" functionality.
 
-### 6. 🔔 Workshop Delivery Notifications & Reminders
-- Automatic in-app notification center tracking delivery schedules.
-- Smart categorization: **Overdue Jobs**, **Due Today**, and **Upcoming Deliveries**.
-- Direct navigation to order details and instant customer call actions.
+### 6. 🔔 Native OS Delivery Notifications & Reminders
+- Native system notification reminders powered by `flutter_local_notifications` with Android core library desugaring.
+- Automatically schedules notification tray alerts 3 days prior to customer delivery deadlines.
+- Automatically cancels reminders upon order completion or deletion with zero background battery waste.
 
 ### 7. 📄 Monthly PDF Report & Download
 - Instant monthly statement generation for any of the past 12 months.
 - Formatted with workshop branding, KPI summary, orders ledger, expenses table, and category breakdowns.
 - Native **Download / Print PDF** support across all devices.
 
-### 7. 📱 Foldable & Tablet Responsive Design
+### 8. 📱 Foldable & Tablet Responsive Design
 - Automatic adaptation to screen widths:
   - **Mobile (< 600dp):** Polished bottom navigation bar and single-column cards.
   - **Foldables & Tablets (≥ 600dp):** Side `NavigationRail` and balanced dual-column layouts.
@@ -276,8 +276,7 @@ flutter analyze
 - **Urgent Accent:** Soft Coral (`#FEF2F2` bg, `#DC2626` text)
 - **Completed Accent:** Soft Mint (`#F0FDF4` bg, `#16A34A` text)
 - **Typography:**
-  - Headings: `Nunito` (rounded, bold)
-  - Body: `Poppins` (clean, readable)
+  - Font Family: `Nunito` (rounded, clear, and legible for both headings and body)
 
 ---
 

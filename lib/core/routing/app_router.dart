@@ -17,7 +17,6 @@ class AppRouter {
   static const String editOrder = '/orders/edit/:id';
   static const String history = '/history';
   static const String expenses = '/expenses';
-  static const String settings = '/settings';
 
   // Helper generators for parameterized paths
   static String orderDetailPath(int id) => '/orders/$id';
@@ -43,13 +42,13 @@ class AppRouter {
         ),
       ),
 
-      // 2. New Order Tab
+      // 2. Create Order Page (Pushed full-screen with back navigation)
       GoRoute(
         path: createOrder,
         name: 'createOrder',
         pageBuilder: (context, state) => _buildTransitionPage(
           state: state,
-          child: const MainShellScreen(initialIndex: 1),
+          child: const CreateOrderScreen(),
         ),
       ),
 
@@ -59,7 +58,7 @@ class AppRouter {
         name: 'history',
         pageBuilder: (context, state) => _buildTransitionPage(
           state: state,
-          child: const MainShellScreen(initialIndex: 2),
+          child: const MainShellScreen(initialIndex: 1),
         ),
       ),
 
@@ -69,15 +68,7 @@ class AppRouter {
         name: 'expenses',
         pageBuilder: (context, state) => _buildTransitionPage(
           state: state,
-          child: const MainShellScreen(initialIndex: 3),
-        ),
-      ),
-      GoRoute(
-        path: settings,
-        name: 'settings',
-        pageBuilder: (context, state) => _buildTransitionPage(
-          state: state,
-          child: const MainShellScreen(initialIndex: 3),
+          child: const MainShellScreen(initialIndex: 2),
         ),
       ),
 

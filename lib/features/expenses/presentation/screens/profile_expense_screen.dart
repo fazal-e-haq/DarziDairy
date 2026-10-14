@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/utils/currency_formatter.dart';
 import '../../../orders/presentation/providers/order_list_provider.dart';
 import '../providers/expense_provider.dart';
 import '../widgets/add_expense_modal.dart';
@@ -11,8 +9,10 @@ import '../widgets/expense_list_item.dart';
 import '../widgets/financial_overview_card.dart';
 import '../widgets/monthly_report_card.dart';
 
-/// Screen combining Daily Expense Tracker (Roznamcha) on top and Financial Overview (Bahi-Khata).
-/// 100% offline with zero external dependencies.
+/// Clean, card-less Expenses screen aligned into 3 unified sections:
+/// 1. Financial Overview (with today, month, total orders, profit & expenses list)
+/// 2. Daily Expenses (header with words on left, add icon on right, and list of expenses)
+/// 3. Monthly Report Download
 class ProfileExpenseScreen extends StatelessWidget {
   const ProfileExpenseScreen({super.key});
 
@@ -23,7 +23,7 @@ class ProfileExpenseScreen extends StatelessWidget {
 
     final totalRevenue = orderProvider.allOrders.fold(
       0.0,
-      (sum, o) => sum + o.stitchingRate,
+      (sum, o) => sum + o.totalBill,
     );
     final totalExpenses = expenseProvider.totalExpenses;
     final netProfit = totalRevenue - totalExpenses;
@@ -33,9 +33,10 @@ class ProfileExpenseScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Profile & Expenses',
+          'Expenses',
           style: TextStyle(
             fontFamily: 'Nunito',
+            fontSize: 21,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.2,
           ),
@@ -47,23 +48,26 @@ class ProfileExpenseScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             children: [
-              // 1. Top: Workshop Daily Expense Card (روزنامچہ)
-              _buildExpenseTopCard(context, expenseProvider),
-              const SizedBox(height: 12),
-
-              // 2. Expenses List
-              _buildExpensesList(context, expenseProvider),
-              const SizedBox(height: 20),
-
-              // 3. Financial Summary Card (حساب کتاب)
+              // 1. Financial Overview: today, month, total orders, revenue, expenses & profit
               FinancialOverviewCard(
+                todayExpenses: expenseProvider.todayExpenses,
+                thisMonthExpenses: expenseProvider.thisMonthExpenses,
+                totalOrders: orderProvider.allOrders.length,
                 totalRevenue: totalRevenue,
                 totalExpenses: totalExpenses,
                 netProfit: netProfit,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
+              const Divider(color: Color(0xFFE2E8F0)),
+              const SizedBox(height: 14),
 
-              // 4. Monthly PDF Report & Download Card
+              // 2. Daily Expenses: words on left, add icon on right, followed by expenses list
+              _buildDailyExpensesSection(context, expenseProvider),
+              const SizedBox(height: 20),
+              const Divider(color: Color(0xFFE2E8F0)),
+              const SizedBox(height: 14),
+
+              // 3. Monthly Report Download
               const MonthlyReportCard(),
               const SizedBox(height: 32),
             ],
@@ -73,148 +77,57 @@ class ProfileExpenseScreen extends StatelessWidget {
     );
   }
 
-  /// Top Expense Card with live daily/monthly stats and "+ Add Expense" button
-  Widget _buildExpenseTopCard(BuildContext context, ExpenseProvider expenseProvider) {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.space16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x04000000),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Daily Expenses (روزنامچہ)',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: 'Nunito',
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Threads, buttons, rent & workshop costs',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton.icon(
-                onPressed: () => AddExpenseModal.show(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
+  /// Section 2: Daily Expenses header with words on left, add icon button on right, and list
+  Widget _buildDailyExpensesSection(BuildContext context, ExpenseProvider expenseProvider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.receipt_long_outlined, size: 20, color: AppColors.primary),
+                SizedBox(width: 8),
+                Text(
+                  'Daily Expenses',
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
                   ),
                 ),
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: const Text(
-                  '+ نیا خرچہ (Add Expense)',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                SizedBox(width: 8),
+                Text(
+                  'روزنامچہ',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const Divider(height: 20, color: Color(0xFFF1F5F9)),
-
-          // Expense Quick Metrics
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatBlock(
-                  label: "Today's Expense (آج)",
-                  value: CurrencyFormatter.format(expenseProvider.todayExpenses),
-                  color: AppColors.primary,
-                ),
-              ),
-              Container(width: 1, height: 32, color: const Color(0xFFE2E8F0)),
-              Expanded(
-                child: _buildStatBlock(
-                  label: 'This Month (اس ماہ)',
-                  value: CurrencyFormatter.format(expenseProvider.thisMonthExpenses),
-                  color: const Color(0xFFD97706),
-                ),
-              ),
-              Container(width: 1, height: 32, color: const Color(0xFFE2E8F0)),
-              Expanded(
-                child: _buildStatBlock(
-                  label: 'Total Entries (اندراج)',
-                  value: '${expenseProvider.expenses.length}',
-                  color: const Color(0xFF16A34A),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatBlock({
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Column(
-      children: [
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            value,
-            style: TextStyle(
-              fontFamily: 'Nunito',
-              fontSize: 16.5,
-              fontWeight: FontWeight.w800,
-              color: color,
+              ],
             ),
-          ),
+            IconButton(
+              onPressed: () => AddExpenseModal.show(context),
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.all(8),
+              ),
+              icon: const Icon(Icons.add_rounded, size: 20),
+              tooltip: 'Add Expense',
+            ),
+          ],
         ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textMuted,
-          ),
-        ),
+        const SizedBox(height: 10),
+        _buildExpensesList(context, expenseProvider),
       ],
     );
   }
 
-  /// List of expense items with empty state and delete action
+  /// List of expense items with card-less empty state and delete action
   Widget _buildExpensesList(BuildContext context, ExpenseProvider expenseProvider) {
     if (expenseProvider.isLoading) {
       return const Center(
@@ -227,36 +140,24 @@ class ProfileExpenseScreen extends StatelessWidget {
 
     final expenses = expenseProvider.expenses;
     if (expenses.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusLarge),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-        ),
-        child: const Column(
-          children: [
-            Icon(Icons.receipt_long_outlined, size: 44, color: AppColors.textDisabled),
-            SizedBox(height: 12),
-            Text(
-              'No expenses recorded yet',
-              style: TextStyle(
-                fontFamily: 'Nunito',
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textSecondary,
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(Icons.receipt_long_outlined, size: 40, color: AppColors.textDisabled),
+              SizedBox(height: 8),
+              Text(
+                'No expenses recorded yet',
+                style: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                ),
               ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              'خرچہ درج کرنے کے لیے اوپر "+ نیا خرچہ" دبائیں',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12.5,
-                color: AppColors.textMuted,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     }

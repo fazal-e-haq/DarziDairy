@@ -22,6 +22,6 @@ class CurrencyFormatter {
     }
 
     final formatted = buffer.toString().split('').reversed.join();
-    return '$symbol ${isNegative ? '-' : ''}$formatted';
+    return '${isNegative ? '-' : ''}$symbol $formatted';
   }
 }

@@ -5,7 +5,7 @@ import '../constants/app_dimensions.dart';
 
 /// Complete Material 3 Theme for DarziDairy.
 ///
-/// Uses Nunito for headings and Poppins for body and general text.
+/// Uses Nunito throughout for clean, unified typography.
 class AppTheme {
   AppTheme._();
 
@@ -38,8 +38,8 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: colorScheme,
 
-      // --- Base Font: Poppins for body text ---
-      fontFamily: 'Poppins',
+      // --- Base Font: Nunito ---
+      fontFamily: 'Nunito',
 
       // --- Simple TextTheme: Heading & Body properties ---
       textTheme: const TextTheme(
@@ -71,21 +71,21 @@ class AppTheme {
           color: AppColors.textPrimary,
         ),
 
-        // Body properties (Poppins)
+        // Body properties (Nunito)
         bodyLarge: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: 'Nunito',
           fontSize: 15,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         bodyMedium: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: 'Nunito',
           fontSize: 13,
-          fontWeight: FontWeight.w400,
+          fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
         bodySmall: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: 'Nunito',
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: AppColors.textMuted,
@@ -101,18 +101,18 @@ class AppTheme {
         centerTitle: true,
         titleTextStyle: TextStyle(
           fontFamily: 'Nunito',
-          fontSize: 19,
+          fontSize: 21,
           fontWeight: FontWeight.w800,
           color: AppColors.surface,
           letterSpacing: 0.1,
         ),
         iconTheme: IconThemeData(
           color: AppColors.surface,
-          size: AppDimensions.iconMedium,
+          size: 26.0,
         ),
         actionsIconTheme: IconThemeData(
           color: AppColors.surface,
-          size: AppDimensions.iconMedium,
+          size: 26.0,
         ),
       ),
 
@@ -138,16 +138,19 @@ class AppTheme {
         ),
         isDense: false,
         hintStyle: const TextStyle(
+          fontFamily: 'Nunito',
           color: AppColors.textDisabled,
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
         labelStyle: const TextStyle(
+          fontFamily: 'Nunito',
           color: AppColors.textSecondary,
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
         floatingLabelStyle: const TextStyle(
+          fontFamily: 'Nunito',
           color: AppColors.primary,
           fontSize: 13,
           fontWeight: FontWeight.w600,
@@ -173,6 +176,7 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.statusError, width: 2.0),
         ),
         suffixStyle: const TextStyle(
+          fontFamily: 'Nunito',
           color: AppColors.textSecondary,
           fontSize: 14,
           fontWeight: FontWeight.w600,
@@ -191,9 +195,10 @@ class AppTheme {
           ),
           padding: const EdgeInsets.symmetric(horizontal: AppDimensions.space20),
           textStyle: const TextStyle(
+            fontFamily: 'Nunito',
             fontSize: 15,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.3,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.2,
           ),
         ),
       ),
@@ -209,8 +214,9 @@ class AppTheme {
           side: const BorderSide(color: AppColors.border, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: AppDimensions.space20),
           textStyle: const TextStyle(
+            fontFamily: 'Nunito',
             fontSize: 15,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -247,6 +253,7 @@ class AppTheme {
           side: const BorderSide(color: AppColors.border),
         ),
         labelStyle: const TextStyle(
+          fontFamily: 'Nunito',
           fontSize: 13,
           fontWeight: FontWeight.w600,
         ),
@@ -269,12 +276,14 @@ class AppTheme {
         titleTextStyle: const TextStyle(
           fontFamily: 'Nunito',
           fontSize: 18,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
           color: AppColors.textPrimary,
         ),
         contentTextStyle: const TextStyle(
+          fontFamily: 'Nunito',
           color: AppColors.textSecondary,
           fontSize: 14,
+          fontWeight: FontWeight.w600,
         ),
       ),
 
@@ -290,29 +299,11 @@ class AppTheme {
           fontWeight: FontWeight.w700,
         ),
         unselectedLabelStyle: TextStyle(
+          fontFamily: 'Nunito',
           fontSize: 14,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
-}
-
-/// Convenience extension providing direct heading and body properties on TextTheme
-extension AppTextThemeProperties on TextTheme {
-  TextStyle get heading =>
-      headlineMedium ??
-      const TextStyle(
-        fontFamily: 'Nunito',
-        fontSize: 20,
-        fontWeight: FontWeight.w800,
-      );
-
-  TextStyle get body =>
-      bodyMedium ??
-      const TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-      );
 }

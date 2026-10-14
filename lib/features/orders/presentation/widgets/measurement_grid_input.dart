@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
@@ -34,10 +35,10 @@ class MeasurementGridInput extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: AppDimensions.roundedMedium,
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: const Color(0xFFE2E8F0),
+              color: const Color(0xFFCBD5E1),
               width: 1.0,
             ),
           ),
@@ -65,6 +66,9 @@ class MeasurementGridInput extends StatelessWidget {
                     child: TextField(
                       controller: controller,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                      ],
                       style: const TextStyle(
                         fontFamily: 'Nunito',
                         fontSize: 18,

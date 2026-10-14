@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -6,6 +7,8 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../providers/expense_provider.dart';
 
 /// Modal bottom sheet widget for quickly logging workshop expenses.
+/// Uses radio buttons for category with English on left and Urdu on right,
+/// no close icon, no English in brackets, and Urdu in the save button.
 class AddExpenseModal extends StatefulWidget {
   const AddExpenseModal({super.key});
 
@@ -32,18 +35,18 @@ class _AddExpenseModalState extends State<AddExpenseModal> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
 
-  String _selectedCategory = 'Threads (دھاگہ)';
+  String _selectedCategory = 'Threads';
 
-  static const List<String> _categories = [
-    'Threads (دھاگہ)',
-    'Buttons (بٹن)',
-    'Bukram (بکرم)',
-    'Needles / Oil (سوئی / تیل)',
-    'Shop Rent (دکان کرایہ)',
-    'Electricity (بجلی بل)',
-    'Tea & Food (چائے / کھانا)',
-    'Staff Wages (اجرت / دیہاڑی)',
-    'Other (دیگر)',
+  static const List<Map<String, String>> _categories = [
+    {'en': 'Threads', 'ur': 'دھاگہ'},
+    {'en': 'Buttons', 'ur': 'بٹن'},
+    {'en': 'Bukram', 'ur': 'بکرم'},
+    {'en': 'Needles & Oil', 'ur': 'سوئی اور تیل'},
+    {'en': 'Shop Rent', 'ur': 'دکان کا کرایہ'},
+    {'en': 'Electricity Bill', 'ur': 'بجلی کا بل'},
+    {'en': 'Tea & Food', 'ur': 'چائے اور کھانا'},
+    {'en': 'Staff Wages', 'ur': 'کاریگر اجرت'},
+    {'en': 'Other', 'ur': 'دیگر اخراجات'},
   ];
 
   @override
@@ -88,11 +91,12 @@ class _AddExpenseModalState extends State<AddExpenseModal> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
+              // Header without close icon and without English in brackets
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'نیا خرچہ درج کریں (Add Expense)',
+                  Text(
+                    'Add Expense',
                     style: TextStyle(
                       fontFamily: 'Nunito',
                       fontSize: 17,
@@ -100,57 +104,107 @@ class _AddExpenseModalState extends State<AddExpenseModal> {
                       color: AppColors.primary,
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
+                  Text(
+                    'نیا خرچہ',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
 
-              // Category Chips
-              const Text(
-                'Category',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
-                ),
+              // Category Label
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Category',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    'قسم',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _categories.map((cat) {
-                  final isSelected = _selectedCategory == cat;
-                  return ChoiceChip(
-                    label: Text(cat),
-                    selected: isSelected,
-                    selectedColor: AppColors.primary,
-                    backgroundColor: const Color(0xFFF8FAFC),
-                    labelStyle: TextStyle(
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? Colors.white : const Color(0xFF334155),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(
-                        color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
-                      ),
-                    ),
-                    onSelected: (val) {
-                      if (val) setState(() => _selectedCategory = cat);
-                    },
-                  );
-                }).toList(),
+              const SizedBox(height: 6),
+
+              // Category Radio Column List (English on left, Urdu on right without brackets)
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: RadioGroup<String>(
+                  groupValue: _selectedCategory,
+                  onChanged: (val) {
+                    if (val != null) setState(() => _selectedCategory = val);
+                  },
+                  child: Column(
+                    children: _categories.map((cat) {
+                      final isSelected = _selectedCategory == cat['en'];
+                      return InkWell(
+                        onTap: () => setState(() => _selectedCategory = cat['en']!),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                          child: Row(
+                            children: [
+                              Radio<String>(
+                                value: cat['en']!,
+                                activeColor: AppColors.primary,
+                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  cat['en']!,
+                                  style: TextStyle(
+                                    fontFamily: 'Nunito',
+                                    fontSize: 13.5,
+                                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                    color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                cat['ur']!,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
               const SizedBox(height: 14),
 
-              // Expense Amount in Rs
+              // Amount input in Rs (digits only)
               TextFormField(
                 controller: _amountController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 decoration: InputDecoration(
                   labelText: 'Amount (Rs)',
                   prefixText: 'Rs  ',
@@ -170,11 +224,11 @@ class _AddExpenseModalState extends State<AddExpenseModal> {
               ),
               const SizedBox(height: 12),
 
-              // Optional Title / Item details
+              // Optional details
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: 'Expense Detail (Optional)',
+                  labelText: 'Detail / Note (Optional)',
                   hintText: 'e.g. 5 spools white thread',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppDimensions.radiusMedium),
@@ -183,7 +237,7 @@ class _AddExpenseModalState extends State<AddExpenseModal> {
               ),
               const SizedBox(height: 18),
 
-              // Save Expense Button
+              // Save Button with Urdu
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -197,10 +251,11 @@ class _AddExpenseModalState extends State<AddExpenseModal> {
                   ),
                   onPressed: _submitExpense,
                   child: const Text(
-                    'خرچہ محفوظ کریں (Save)',
+                    'Save Expense (خرچہ محفوظ کریں)',
                     style: TextStyle(
+                      fontFamily: 'Nunito',
                       fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),

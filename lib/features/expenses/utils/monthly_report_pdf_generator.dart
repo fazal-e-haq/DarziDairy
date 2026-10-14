@@ -31,7 +31,7 @@ class MonthlyReportPdfGenerator {
       return e.date.year == year && e.date.month == month;
     }).toList();
 
-    final totalRevenue = monthOrders.fold(0.0, (sum, o) => sum + o.stitchingRate);
+    final totalRevenue = monthOrders.fold(0.0, (sum, o) => sum + o.totalBill);
     final totalExpenses = monthExpenses.fold(0.0, (sum, e) => sum + e.amount);
     final netProfit = totalRevenue - totalExpenses;
 
@@ -178,7 +178,7 @@ class MonthlyReportPdfGenerator {
                     o.customerPhone,
                     _cleanTextForPdf(o.garmentType),
                     o.status.displayName,
-                    CurrencyFormatter.format(o.stitchingRate),
+                    CurrencyFormatter.format(o.totalBill),
                   ];
                 }).toList(),
               ),

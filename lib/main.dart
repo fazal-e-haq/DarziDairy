@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'app.dart';
 import 'core/database/isar_service.dart';
+import 'core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize production Isar offline database
   await IsarService.instance.init();
+  await NotificationService.instance.init();
 
   runApp(const TailorMasterApp());
 }

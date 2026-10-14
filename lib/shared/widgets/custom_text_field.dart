@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
 
@@ -12,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final String? prefixText;
   final String? suffixText;
   final IconData? prefixIcon;
+  final List<TextInputFormatter>? inputFormatters;
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
 
@@ -25,6 +27,7 @@ class CustomTextField extends StatelessWidget {
     this.prefixText,
     this.suffixText,
     this.prefixIcon,
+    this.inputFormatters,
     this.onChanged,
     this.validator,
   });
@@ -48,6 +51,7 @@ class CustomTextField extends StatelessWidget {
           keyboardType: isNumericOnly
               ? const TextInputType.numberWithOptions(decimal: true)
               : keyboardType,
+          inputFormatters: inputFormatters,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w500,
@@ -61,7 +65,7 @@ class CustomTextField extends StatelessWidget {
               color: AppColors.textDisabled,
               fontSize: 14,
             ),
-            prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+            prefixIconConstraints: const BoxConstraints(minWidth: 46, minHeight: 46),
             prefixIcon: prefixText != null
                 ? Padding(
                     padding: const EdgeInsets.only(left: 14, right: 10),
@@ -86,7 +90,12 @@ class CustomTextField extends StatelessWidget {
                       ],
                     ),
                   )
-                : (prefixIcon != null ? Icon(prefixIcon, size: 20) : null),
+                : (prefixIcon != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 14, right: 10),
+                        child: Icon(prefixIcon, size: 20, color: AppColors.primary),
+                      )
+                    : null),
             suffixText: suffixText,
           ),
         ),

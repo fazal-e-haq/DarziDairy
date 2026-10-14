@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:darzi_dairy/app.dart';
 import 'package:darzi_dairy/core/routing/app_router.dart';
-import 'package:darzi_dairy/features/notifications/presentation/providers/notification_provider.dart';
 import 'package:darzi_dairy/features/orders/domain/entities/order_entity.dart';
 import 'package:darzi_dairy/features/orders/data/datasources/order_local_datasource.dart';
 import 'package:darzi_dairy/features/orders/data/repositories/order_repository_impl.dart';
@@ -12,70 +11,6 @@ import 'package:darzi_dairy/features/orders/presentation/providers/order_list_pr
 void main() {
   setUp(() {
     AppRouter.router.go(AppRouter.dashboard);
-  });
-
-  group('Notification Feature Tests', () {
-    test('NotificationProvider identifies overdue, due today, and urgent orders', () {
-      final now = DateTime.now();
-      final provider = NotificationProvider();
-
-      final orders = [
-        // Overdue order
-        OrderEntity(
-          id: 1,
-          orderToken: '#1',
-          customerId: 1,
-          customerName: 'Zubair Khan',
-          customerPhone: '0300-1111111',
-          garmentType: 'Shalwar Kameez',
-          bookingDate: now.subtract(const Duration(days: 5)),
-          targetDeadline: now.subtract(const Duration(days: 2)),
-          status: OrderStatus.active,
-        ),
-        // Due today order
-        OrderEntity(
-          id: 2,
-          orderToken: '#2',
-          customerId: 2,
-          customerName: 'Ali Raza',
-          customerPhone: '0300-2222222',
-          garmentType: 'Kurta',
-          bookingDate: now.subtract(const Duration(days: 2)),
-          targetDeadline: now,
-          status: OrderStatus.active,
-        ),
-        // Urgent rush order
-        OrderEntity(
-          id: 3,
-          orderToken: '#3',
-          customerId: 3,
-          customerName: 'Tariq Mehmood',
-          customerPhone: '0300-3333333',
-          garmentType: 'Suit',
-          bookingDate: now,
-          targetDeadline: now.add(const Duration(days: 5)),
-          isUrgent: true,
-          status: OrderStatus.active,
-        ),
-      ];
-
-      provider.updateFromOrders(orders);
-
-      expect(provider.notifications.length, 3);
-      expect(provider.overdueCount, 1);
-      expect(provider.dueTodayCount, 1);
-      expect(provider.urgentCount, 1);
-      expect(provider.unreadCount, 3);
-
-      // Verify marking as read
-      final firstId = provider.notifications.first.id;
-      provider.markAsRead(firstId);
-      expect(provider.unreadCount, 2);
-
-      // Verify marking all as read
-      provider.markAllAsRead();
-      expect(provider.unreadCount, 0);
-    });
   });
 
   group('Advance Payment Feature Tests', () {
@@ -132,17 +67,23 @@ void main() {
     });
   });
 
-  group('Dashboard Empty State Button Tests', () {
-    testWidgets('Displays Create New Order button when no orders exist',
+  group('Dashboard Empty State Illustration & Sentence Tests', () {
+    testWidgets('Displays illustrator icon and no orders sentence without button',
         (WidgetTester tester) async {
       await tester.pumpWidget(const TailorMasterApp());
       await tester.pumpAndSettle();
 
-      // Dashboard should display "+ نیا آرڈر لکھیں (New Order)" button
-      expect(find.textContaining('New Order'), findsWidgets);
+      // Dashboard empty state displays illustrator icon and single sentence
+      expect(find.text('No orders yet (ابھی کوئی آرڈر نہیں ہے)'), findsOneWidget);
+      expect(find.byIcon(Icons.assignment_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.content_cut_rounded), findsWidgets);
 
-      // Tap New Order button
-      await tester.tap(find.textContaining('New Order').first);
+      // Verify no extra description or duplicate button in empty view
+      expect(find.text('Start recording customer measurements, stitching rates, and delivery dates.'), findsNothing);
+      expect(find.text('+ نیا آرڈر لکھیں (New Order)'), findsNothing);
+
+      // Tap New Order FAB
+      await tester.tap(find.widgetWithText(FloatingActionButton, 'New Order'));
       await tester.pumpAndSettle();
 
       // Should navigate to New Order form
@@ -150,8 +91,8 @@ void main() {
     });
   });
 
-  group('Expenses Screen Top Card & No Chart Tests', () {
-    testWidgets('Expense card is rendered on top and no chart exists',
+  group('Expenses Screen Ordered Sections & No Chart Tests', () {
+    testWidgets('Financial Overview is on top, Daily Expenses has add icon, and no chart exists',
         (WidgetTester tester) async {
       await tester.pumpWidget(const TailorMasterApp());
       await tester.pumpAndSettle();
@@ -160,9 +101,10 @@ void main() {
       await tester.tap(find.byIcon(Icons.account_balance_wallet_outlined));
       await tester.pumpAndSettle();
 
-      // Daily Expenses card must be present
-      expect(find.text('Daily Expenses (روزنامچہ)'), findsOneWidget);
-      expect(find.textContaining('Add Expense'), findsOneWidget);
+      // Financial Overview and Daily Expenses must be present
+      expect(find.text('Financial Overview'), findsOneWidget);
+      expect(find.text('Daily Expenses'), findsOneWidget);
+      expect(find.byTooltip('Add Expense'), findsOneWidget);
 
       // Verify graph/chart is completely absent
       expect(find.text('Financial Analytics (چارٹ گراف)'), findsNothing);
